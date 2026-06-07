@@ -121,6 +121,10 @@
     .budget-over { background:rgba(248,113,113,.08); border:1px solid rgba(248,113,113,.22); border-radius:8px; padding:7px 10px; font-size:11px; color:#fca5a5; margin-bottom:8px; }
 
     /* RANKING */
+    .metric-tabs { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:12px; }
+    .metric-tab { padding:4px 9px; border-radius:6px; border:1px solid var(--bd); background:transparent; color:var(--tx2); font-size:11px; cursor:pointer; font-family:inherit; transition:all .15s; white-space:nowrap; }
+    .metric-tab:hover { border-color:rgba(124,111,245,.4); color:var(--tx); }
+    .metric-tab.active { background:rgba(124,111,245,.18); border-color:var(--acc); color:var(--acc2); font-weight:700; }
     .rank-metric { font-size:10px; color:var(--tx2); margin-bottom:11px; opacity:.7; }
     .rank-list-wrap { display:flex; flex-direction:column; gap:9px; }
     .rank-item { display:flex; align-items:center; gap:9px; }
@@ -136,7 +140,8 @@
     .rank-badges { display:flex; gap:3px; flex-wrap:wrap; margin-top:3px; }
     .badge-trial { font-size:9px; font-weight:700; padding:1px 5px; border-radius:3px; background:rgba(52,211,153,.12); color:var(--green); border:1px solid rgba(52,211,153,.2); }
     .badge-annual { font-size:9px; font-weight:700; padding:1px 5px; border-radius:3px; background:rgba(124,111,245,.12); color:var(--acc2); border:1px solid rgba(124,111,245,.2); }
-    .rank-score { font-size:11px; color:var(--tx2); flex-shrink:0; min-width:32px; text-align:right; }
+    .rank-score { font-size:11px; color:var(--tx2); flex-shrink:0; min-width:56px; text-align:right; }
+    .rank-cover-hint { font-size:11px; color:var(--tx2); text-align:center; padding:10px; opacity:.7; }
 
     /* RESULTS: trial/annual badges */
     .svc-trial { font-size:10px; color:var(--green); font-weight:600; }
@@ -305,7 +310,8 @@
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
         サービスランキング
       </div>
-      <div class="rank-metric" id="rankMetric">コスパスコア = 作品数 ÷ 月額 × 1000</div>
+      <div class="metric-tabs" id="metricTabs"></div>
+      <div class="rank-metric" id="rankMetric"></div>
       <div class="rank-list-wrap" id="rankListWrap"></div>
     </div>
 
@@ -740,44 +746,107 @@ function onBudgetChange(val) {
 // ─────────────────────────────────────────────────────
 // ランキング
 // ─────────────────────────────────────────────────────
-function renderRanking() {
-  const selItems = allItems().filter(c => selected.has(c.id));
-  const useSelection = selItems.length > 0;
+const METRICS = [
+  { key:'cospa',  label:'コスパ',     desc:'収録作品数 ÷ 月額 × 1000' },
+  { key:'count',  label:'作品数',     desc:'DBに収録されている作品の総数' },
+  { key:'price',  label:'月額安さ',   desc:'月額料金が安い順' },
+  { key:'trial',  label:'無料期間',   desc:'無料トライアルの日数' },
+  { key:'annual', label:'年払い節約', desc:'年払いで月あたりいくら節約できるか' },
+  { key:'genre',  label:'ジャンル幅', desc:'対応しているジャンルの種類数' },
+  { key:'cover',  label:'カバー率',   desc:'選択中の作品を何%カバーできるか' },
+];
+let currentMetric = 'cospa';
 
-  const counts = {};
-  const coverCounts = {};
-  Object.keys(SVC).forEach(k => { counts[k] = 0; coverCounts[k] = 0; });
-  DB.forEach(it => it.s.forEach(k => { if (k in counts) counts[k]++; }));
+function buildMetricTabs() {
+  document.getElementById('metricTabs').innerHTML = METRICS.map(m =>
+    `<button class="metric-tab${currentMetric === m.key ? ' active' : ''}" onclick="switchMetric('${m.key}')">${m.label}</button>`
+  ).join('');
+}
+
+function switchMetric(key) {
+  currentMetric = key;
+  buildMetricTabs();
+  renderRanking();
+}
+
+function computeScores(metric, selItems) {
+  const counts = {}, genres = {}, coverCounts = {};
+  Object.keys(SVC).forEach(k => { counts[k] = 0; genres[k] = new Set(); coverCounts[k] = 0; });
+  DB.forEach(it => it.s.forEach(k => {
+    if (k in counts) { counts[k]++; genres[k].add(it.g); }
+  }));
   selItems.forEach(it => (it.s || []).forEach(k => { if (k in coverCounts) coverCounts[k]++; }));
 
-  const ranked = Object.entries(SVC).map(([k, v]) => {
-    const n = useSelection ? coverCounts[k] : counts[k];
-    return { key: k, svc: v, n, score: n === 0 ? 0 : Math.round(n / v.price * 10000) / 10 };
+  return Object.entries(SVC).map(([k, v]) => {
+    let score = 0, display = '';
+    const annualSave = v.annual ? Math.round((v.price * 12 - v.annual) / 12) : 0;
+    switch (metric) {
+      case 'cospa':
+        score = Math.round(counts[k] / v.price * 1000 * 10) / 10;
+        display = score.toFixed(1) + 'pt';
+        break;
+      case 'count':
+        score = counts[k];
+        display = counts[k] + '作品';
+        break;
+      case 'price':
+        score = 15000 - v.price;
+        display = '¥' + v.price.toLocaleString();
+        break;
+      case 'trial':
+        score = v.trial || 0;
+        display = v.trial ? v.trial + '日間' : 'なし';
+        break;
+      case 'annual':
+        score = annualSave;
+        display = annualSave ? '月' + annualSave.toLocaleString() + '円' : 'なし';
+        break;
+      case 'genre':
+        score = genres[k].size;
+        display = genres[k].size + 'ジャンル';
+        break;
+      case 'cover':
+        const total = selItems.length;
+        const pct = total ? Math.round(coverCounts[k] / total * 100) : 0;
+        score = pct;
+        display = total ? pct + '% (' + coverCounts[k] + '/' + total + ')' : '-';
+        break;
+    }
+    return { key: k, svc: v, score, display };
   }).sort((a, b) => b.score - a.score);
+}
 
-  const maxScore = ranked[0]?.score || 1;
+function renderRanking() {
+  buildMetricTabs();
+  const selItems = allItems().filter(c => selected.has(c.id));
+  const m = METRICS.find(x => x.key === currentMetric);
+  document.getElementById('rankMetric').textContent = m.desc;
+
+  if (currentMetric === 'cover' && selItems.length === 0) {
+    document.getElementById('rankListWrap').innerHTML =
+      `<div class="rank-cover-hint">作品を選択するとカバー率が表示されます</div>`;
+    return;
+  }
+
+  const ranked = computeScores(currentMetric, selItems);
+  const maxScore = Math.max(...ranked.map(r => r.score), 1);
   const numLabel = ['gold','silver','bronze'];
+  const annualSave = (v) => v.annual ? Math.round((v.price * 12 - v.annual) / 12) : 0;
 
-  document.getElementById('rankMetric').textContent = useSelection
-    ? 'あなたの選択作品カバー率 ÷ 月額のスコア'
-    : 'コスパスコア = 収録作品数 ÷ 月額 × 1000';
-
-  document.getElementById('rankListWrap').innerHTML = ranked.map((r, i) => {
-    const annualSave = r.svc.annual ? Math.round((r.svc.price * 12 - r.svc.annual) / 12) : 0;
-    return `<div class="rank-item">
+  document.getElementById('rankListWrap').innerHTML = ranked.map((r, i) => `
+    <div class="rank-item">
       <span class="rank-num${i < 3 ? ' '+numLabel[i] : ''}">${i+1}</span>
       <span class="rank-dot" style="background:${r.svc.color}"></span>
       <div class="rank-info">
         <div class="rank-name">${r.svc.name}</div>
-        <div class="rank-bar-bg"><div class="rank-bar" style="width:${maxScore ? Math.round(r.score/maxScore*100) : 0}%;background:${r.svc.color}"></div></div>
+        <div class="rank-bar-bg"><div class="rank-bar" style="width:${Math.round(r.score/maxScore*100)}%;background:${r.svc.color}"></div></div>
         <div class="rank-badges">
-          ${r.svc.trial ? `<span class="badge-trial">🎁 ${r.svc.trial}日間無料</span>` : ''}
-          ${r.svc.annual ? `<span class="badge-annual">📅 年払い月${annualSave.toLocaleString()}円お得</span>` : ''}
+          ${r.svc.trial ? `<span class="badge-trial">🎁${r.svc.trial}日無料</span>` : ''}
+          ${r.svc.annual ? `<span class="badge-annual">📅月${annualSave(r.svc).toLocaleString()}円節約</span>` : ''}
         </div>
       </div>
-      <span class="rank-score">${r.score.toFixed(1)}</span>
-    </div>`;
-  }).join('');
+      <span class="rank-score">${r.display}</span>
+    </div>`).join('');
 }
 
 function setSearchMode(mode) {
