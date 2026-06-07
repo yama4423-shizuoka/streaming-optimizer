@@ -167,6 +167,16 @@
     .cov-tag { font-size:10px; background:var(--s3); border:1px solid var(--bd); border-radius:4px; padding:2px 6px; color:var(--tx2); }
     .warn { background:rgba(248,113,113,.1); border:1px solid rgba(248,113,113,.28); border-radius:var(--r2); padding:11px; font-size:12px; color:#fca5a5; margin-bottom:11px; line-height:1.55; }
     .no-result-box { text-align:center; padding:30px 10px; color:var(--tx2); font-size:13px; }
+    .plan-svc-link { font-size:10px; padding:3px 9px; border:1.5px solid; border-radius:20px; text-decoration:none; font-weight:700; white-space:nowrap; transition:opacity .13s; flex-shrink:0; }
+    .plan-svc-link:hover { opacity:.75; }
+    .plan-register { margin-top:12px; padding-top:12px; border-top:1px solid var(--bd); }
+    .plan-register-lbl { font-size:11px; color:var(--tx2); margin-bottom:8px; }
+    .plan-register-btns { display:flex; flex-direction:column; gap:6px; }
+    .plan-register-btn { display:flex; align-items:center; justify-content:space-between; padding:9px 12px; border-radius:var(--r2); text-decoration:none; font-size:12px; font-weight:700; color:#fff; transition:opacity .13s; }
+    .plan-register-btn:hover { opacity:.85; }
+    .plan-register-btn-name { flex:1; }
+    .plan-register-btn-price { font-size:11px; font-weight:400; opacity:.85; margin-right:10px; }
+    .plan-register-btn-arrow { font-size:13px; }
     .footer { text-align:center; padding:28px 24px; font-size:11px; color:var(--tx2); border-top:1px solid var(--bd); margin-top:32px; }
     ::-webkit-scrollbar { width:5px; }
     ::-webkit-scrollbar-track { background:transparent; }
@@ -274,15 +284,15 @@ const IS_DEPLOYED = location.protocol !== 'file:';
 // サービス定義
 // ─────────────────────────────────────────────────────
 const SVC = {
-  netflix: { name:'Netflix',             price:1590, color:'#E50914', abbr:'N' },
-  amazon:  { name:'Amazon Prime Video',  price:600,  color:'#00A8E0', abbr:'Prime' },
-  disney:  { name:'Disney+',             price:990,  color:'#0063E5', abbr:'D+' },
-  hulu:    { name:'Hulu',                price:1026, color:'#1DB954', abbr:'Hulu' },
-  unext:   { name:'U-NEXT',              price:2189, color:'#FF6B00', abbr:'U-NEXT' },
-  apple:   { name:'Apple TV+',           price:900,  color:'#888888', abbr:'TV+' },
-  abema:   { name:'ABEMA Premium',       price:960,  color:'#00C8FF', abbr:'ABEMA' },
-  lemino:  { name:'Lemino',              price:990,  color:'#D4145A', abbr:'Lemino' },
-  dazn:    { name:'DAZN',                price:3700, color:'#F5A623', abbr:'DAZN' },
+  netflix: { name:'Netflix',             price:1590, color:'#E50914', abbr:'N',      url:'https://www.netflix.com/jp/signup' },
+  amazon:  { name:'Amazon Prime Video',  price:600,  color:'#00A8E0', abbr:'Prime',  url:'https://www.amazon.co.jp/prime' },
+  disney:  { name:'Disney+',             price:990,  color:'#0063E5', abbr:'D+',     url:'https://www.disneyplus.com/ja-jp/sign-up' },
+  hulu:    { name:'Hulu',                price:1026, color:'#1DB954', abbr:'Hulu',   url:'https://www.hulu.jp/account/register' },
+  unext:   { name:'U-NEXT',              price:2189, color:'#FF6B00', abbr:'U-NEXT', url:'https://video.unext.jp/' },
+  apple:   { name:'Apple TV+',           price:900,  color:'#888888', abbr:'TV+',    url:'https://tv.apple.com/jp' },
+  abema:   { name:'ABEMA Premium',       price:960,  color:'#00C8FF', abbr:'ABEMA',  url:'https://abema.tv/premium' },
+  lemino:  { name:'Lemino',              price:990,  color:'#D4145A', abbr:'Lemino', url:'https://lemino.docomo.ne.jp/' },
+  dazn:    { name:'DAZN',                price:3700, color:'#F5A623', abbr:'DAZN',   url:'https://www.dazn.com/ja-JP/account/signup' },
 };
 
 // ─────────────────────────────────────────────────────
@@ -929,6 +939,17 @@ function renderPlan(plan, isBest, allSel, idx, naiveCost) {
           <div class="cov-titles">${ts.map(it=>`<span class="cov-tag">${it.e} ${esc(it.t)}</span>`).join('')}</div>
         </div>`;
       }).join('')}
+    </div>
+    <div class="plan-register">
+      <div class="plan-register-lbl">このプランに登録する</div>
+      <div class="plan-register-btns">
+        ${plan.combo.map(k=>`
+        <a href="${SVC[k].url}" target="_blank" rel="noopener" class="plan-register-btn" style="background:${SVC[k].color}">
+          <span class="plan-register-btn-name">${SVC[k].name}</span>
+          <span class="plan-register-btn-price">¥${SVC[k].price.toLocaleString()}/月</span>
+          <span class="plan-register-btn-arrow">→</span>
+        </a>`).join('')}
+      </div>
     </div>
   </div>`;
 }
