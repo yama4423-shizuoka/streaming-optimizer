@@ -656,7 +656,7 @@ async function loadWikiPoster(thumbEl, wikiTitle) {
 
 function observePosters() {
   if (!posterObserver) return;
-  document.querySelectorAll('.card-thumb[data-poster-q]').forEach(el => posterObserver.observe(el));
+  document.querySelectorAll('.card-thumb[data-poster-q], .card-thumb[data-wiki]').forEach(el => posterObserver.observe(el));
 }
 
 // ─────────────────────────────────────────────────────
