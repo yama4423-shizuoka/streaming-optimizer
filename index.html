@@ -805,12 +805,13 @@ function computeScores(metric, selItems) {
         score = genres[k].size;
         display = genres[k].size + 'ジャンル';
         break;
-      case 'cover':
+      case 'cover': {
         const total = selItems.length;
         const pct = total ? Math.round(coverCounts[k] / total * 100) : 0;
         score = pct;
         display = total ? pct + '% (' + coverCounts[k] + '/' + total + ')' : '-';
         break;
+      }
     }
     return { key: k, svc: v, score, display };
   }).sort((a, b) => b.score - a.score);
