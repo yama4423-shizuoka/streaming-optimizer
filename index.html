@@ -113,6 +113,38 @@
     .tmdb-clr-btn { background:none; border:none; color:var(--tx2); cursor:pointer; font-size:11px; margin-left:auto; font-family:inherit; transition:color .13s; }
     .tmdb-clr-btn:hover { color:var(--red); }
 
+    /* BUDGET */
+    .budget-wrap { margin:12px 0; }
+    .budget-label { font-size:12px; color:var(--tx2); margin-bottom:7px; display:flex; justify-content:space-between; align-items:center; }
+    .budget-val { font-weight:700; color:var(--tx); font-size:13px; }
+    .budget-slider { width:100%; accent-color:var(--acc); cursor:pointer; height:4px; }
+    .budget-over { background:rgba(248,113,113,.08); border:1px solid rgba(248,113,113,.22); border-radius:8px; padding:7px 10px; font-size:11px; color:#fca5a5; margin-bottom:8px; }
+
+    /* RANKING */
+    .rank-metric { font-size:10px; color:var(--tx2); margin-bottom:11px; opacity:.7; }
+    .rank-list-wrap { display:flex; flex-direction:column; gap:9px; }
+    .rank-item { display:flex; align-items:center; gap:9px; }
+    .rank-num { font-size:12px; font-weight:800; color:var(--tx2); width:16px; text-align:center; flex-shrink:0; }
+    .rank-num.gold { color:#f0c040; }
+    .rank-num.silver { color:#aaaacc; }
+    .rank-num.bronze { color:#c07040; }
+    .rank-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .rank-info { flex:1; min-width:0; }
+    .rank-name { font-size:11.5px; font-weight:600; margin-bottom:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .rank-bar-bg { height:3px; background:var(--s3); border-radius:2px; overflow:hidden; }
+    .rank-bar { height:100%; border-radius:2px; transition:width .6s cubic-bezier(.4,0,.2,1); }
+    .rank-badges { display:flex; gap:3px; flex-wrap:wrap; margin-top:3px; }
+    .badge-trial { font-size:9px; font-weight:700; padding:1px 5px; border-radius:3px; background:rgba(52,211,153,.12); color:var(--green); border:1px solid rgba(52,211,153,.2); }
+    .badge-annual { font-size:9px; font-weight:700; padding:1px 5px; border-radius:3px; background:rgba(124,111,245,.12); color:var(--acc2); border:1px solid rgba(124,111,245,.2); }
+    .rank-score { font-size:11px; color:var(--tx2); flex-shrink:0; min-width:32px; text-align:right; }
+
+    /* RESULTS: trial/annual badges */
+    .svc-trial { font-size:10px; color:var(--green); font-weight:600; }
+    .svc-annual-note { font-size:10px; color:var(--acc2); margin-top:2px; }
+    .plan-annual-total { margin-top:8px; padding:8px 10px; background:rgba(124,111,245,.07); border:1px solid rgba(124,111,245,.18); border-radius:8px; font-size:12px; display:flex; justify-content:space-between; align-items:center; }
+    .plan-annual-val { font-weight:800; color:var(--acc2); }
+    .plan-annual-save { font-size:10px; color:var(--green); }
+
     /* SEARCH MODE TOGGLE */
     .search-mode { display:flex; gap:4px; margin-bottom:9px; background:rgba(255,255,255,.04); border-radius:8px; padding:3px; }
     .mode-btn { flex:1; padding:5px; border:none; border-radius:6px; font-size:11.5px; font-weight:600; cursor:pointer; font-family:inherit; transition:all .15s; background:transparent; color:var(--tx2); }
@@ -258,7 +290,23 @@
       <ul class="sel-list" id="selList">
         <li class="sel-empty">左から観たい作品を<br>クリックして追加してください</li>
       </ul>
+      <div class="budget-wrap">
+        <div class="budget-label">
+          <span>月額予算上限</span>
+          <span class="budget-val" id="budgetVal">上限なし</span>
+        </div>
+        <input type="range" class="budget-slider" id="budgetSlider" min="0" max="15000" step="500" value="0" oninput="onBudgetChange(this.value)">
+      </div>
       <button class="calc-btn" id="calcBtn" disabled onclick="calculate()">最安プランを計算する →</button>
+    </div>
+
+    <div class="panel">
+      <div class="panel-ttl">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        サービスランキング
+      </div>
+      <div class="rank-metric" id="rankMetric">コスパスコア = 作品数 ÷ 月額 × 1000</div>
+      <div class="rank-list-wrap" id="rankListWrap"></div>
     </div>
 
     <div class="panel">
@@ -325,15 +373,15 @@ const IS_DEPLOYED = location.protocol !== 'file:';
 // サービス定義
 // ─────────────────────────────────────────────────────
 const SVC = {
-  netflix: { name:'Netflix',             price:1590, color:'#E50914', abbr:'N',      url:'https://www.netflix.com/jp/signup' },
-  amazon:  { name:'Amazon Prime Video',  price:600,  color:'#00A8E0', abbr:'Prime',  url:'https://www.amazon.co.jp/prime' },
-  disney:  { name:'Disney+',             price:990,  color:'#0063E5', abbr:'D+',     url:'https://www.disneyplus.com/ja-jp/sign-up' },
-  hulu:    { name:'Hulu',                price:1026, color:'#1DB954', abbr:'Hulu',   url:'https://www.hulu.jp/account/register' },
-  unext:   { name:'U-NEXT',              price:2189, color:'#FF6B00', abbr:'U-NEXT', url:'https://video.unext.jp/' },
-  apple:   { name:'Apple TV+',           price:900,  color:'#888888', abbr:'TV+',    url:'https://tv.apple.com/jp' },
-  abema:   { name:'ABEMA Premium',       price:960,  color:'#00C8FF', abbr:'ABEMA',  url:'https://abema.tv/premium' },
-  lemino:  { name:'Lemino',              price:990,  color:'#D4145A', abbr:'Lemino', url:'https://lemino.docomo.ne.jp/' },
-  dazn:    { name:'DAZN',                price:3700, color:'#F5A623', abbr:'DAZN',   url:'https://www.dazn.com/ja-JP/account/signup' },
+  netflix: { name:'Netflix',             price:1590, color:'#E50914', abbr:'N',      url:'https://www.netflix.com/jp/signup',             trial:null, annual:null },
+  amazon:  { name:'Amazon Prime Video',  price:600,  color:'#00A8E0', abbr:'Prime',  url:'https://www.amazon.co.jp/prime',                trial:30,   annual:5900 },
+  disney:  { name:'Disney+',             price:990,  color:'#0063E5', abbr:'D+',     url:'https://www.disneyplus.com/ja-jp/sign-up',      trial:null, annual:9900 },
+  hulu:    { name:'Hulu',                price:1026, color:'#1DB954', abbr:'Hulu',   url:'https://www.hulu.jp/account/register',          trial:14,   annual:null },
+  unext:   { name:'U-NEXT',              price:2189, color:'#FF6B00', abbr:'U-NEXT', url:'https://video.unext.jp/',                       trial:31,   annual:null },
+  apple:   { name:'Apple TV+',           price:900,  color:'#888888', abbr:'TV+',    url:'https://tv.apple.com/jp',                       trial:7,    annual:null },
+  abema:   { name:'ABEMA Premium',       price:960,  color:'#00C8FF', abbr:'ABEMA',  url:'https://abema.tv/premium',                      trial:14,   annual:8400 },
+  lemino:  { name:'Lemino',              price:990,  color:'#D4145A', abbr:'Lemino', url:'https://lemino.docomo.ne.jp/',                  trial:null, annual:null },
+  dazn:    { name:'DAZN',                price:3700, color:'#F5A623', abbr:'DAZN',   url:'https://www.dazn.com/ja-JP/account/signup',     trial:null, annual:null },
 };
 
 // ─────────────────────────────────────────────────────
@@ -678,7 +726,59 @@ let activeGenre  = 'all';
 let searchQ      = '';
 let checkedSvcs  = new Set();
 let addDebounce  = null;
-let searchMode   = 'title'; // 'title' | 'person'
+let searchMode   = 'title';
+let budget       = 0; // 'title' | 'person'
+
+// ─────────────────────────────────────────────────────
+// 予算
+// ─────────────────────────────────────────────────────
+function onBudgetChange(val) {
+  budget = parseInt(val) || 0;
+  document.getElementById('budgetVal').textContent = budget ? `¥${budget.toLocaleString()}/月` : '上限なし';
+}
+
+// ─────────────────────────────────────────────────────
+// ランキング
+// ─────────────────────────────────────────────────────
+function renderRanking() {
+  const selItems = allItems().filter(c => selected.has(c.id));
+  const useSelection = selItems.length > 0;
+
+  const counts = {};
+  const coverCounts = {};
+  Object.keys(SVC).forEach(k => { counts[k] = 0; coverCounts[k] = 0; });
+  DB.forEach(it => it.s.forEach(k => { if (k in counts) counts[k]++; }));
+  selItems.forEach(it => (it.s || []).forEach(k => { if (k in coverCounts) coverCounts[k]++; }));
+
+  const ranked = Object.entries(SVC).map(([k, v]) => {
+    const n = useSelection ? coverCounts[k] : counts[k];
+    return { key: k, svc: v, n, score: n === 0 ? 0 : Math.round(n / v.price * 10000) / 10 };
+  }).sort((a, b) => b.score - a.score);
+
+  const maxScore = ranked[0]?.score || 1;
+  const numLabel = ['gold','silver','bronze'];
+
+  document.getElementById('rankMetric').textContent = useSelection
+    ? 'あなたの選択作品カバー率 ÷ 月額のスコア'
+    : 'コスパスコア = 収録作品数 ÷ 月額 × 1000';
+
+  document.getElementById('rankListWrap').innerHTML = ranked.map((r, i) => {
+    const annualSave = r.svc.annual ? Math.round((r.svc.price * 12 - r.svc.annual) / 12) : 0;
+    return `<div class="rank-item">
+      <span class="rank-num${i < 3 ? ' '+numLabel[i] : ''}">${i+1}</span>
+      <span class="rank-dot" style="background:${r.svc.color}"></span>
+      <div class="rank-info">
+        <div class="rank-name">${r.svc.name}</div>
+        <div class="rank-bar-bg"><div class="rank-bar" style="width:${maxScore ? Math.round(r.score/maxScore*100) : 0}%;background:${r.svc.color}"></div></div>
+        <div class="rank-badges">
+          ${r.svc.trial ? `<span class="badge-trial">🎁 ${r.svc.trial}日間無料</span>` : ''}
+          ${r.svc.annual ? `<span class="badge-annual">📅 年払い月${annualSave.toLocaleString()}円お得</span>` : ''}
+        </div>
+      </div>
+      <span class="rank-score">${r.score.toFixed(1)}</span>
+    </div>`;
+  }).join('');
+}
 
 function setSearchMode(mode) {
   searchMode = mode;
@@ -720,6 +820,7 @@ function allItems() { return [...DB, ...customItems]; }
   initTmdbUI();
   initPosterObserver();
   renderGrid();
+  renderRanking();
 })();
 
 // ─────────────────────────────────────────────────────
@@ -759,12 +860,12 @@ function renderGrid() {
 
 function toggle(id) {
   selected.has(id) ? selected.delete(id) : selected.add(id);
-  renderGrid(); renderSelList(); syncUI();
+  renderGrid(); renderSelList(); syncUI(); renderRanking();
 }
 
 function removeItem(id) {
   selected.delete(id);
-  renderGrid(); renderSelList(); syncUI();
+  renderGrid(); renderSelList(); syncUI(); renderRanking();
 }
 
 function syncUI() {
@@ -1058,14 +1159,16 @@ function calculate() {
     }
   }
   valid.sort((a,b) => a.cost - b.cost);
-  renderResults(valid.slice(0, 3), items, uncoverable);
+  const withinBudget = budget ? valid.filter(p => p.cost <= budget) : valid;
+  const overBudget   = budget && withinBudget.length === 0;
+  renderResults((overBudget ? valid : withinBudget).slice(0, 3), items, uncoverable, overBudget);
   setTimeout(() => document.getElementById('resultArea').scrollIntoView({ behavior:'smooth', block:'nearest' }), 60);
 }
 
 // ─────────────────────────────────────────────────────
 // 結果表示
 // ─────────────────────────────────────────────────────
-function renderResults(plans, allSel, uncoverable) {
+function renderResults(plans, allSel, uncoverable, overBudget) {
   const area = document.getElementById('resultArea');
   if (!plans.length) {
     area.innerHTML = `<div class="panel"><div class="no-result-box">😔 選択された作品を全て視聴できるプランが見つかりませんでした</div></div>`;
@@ -1085,6 +1188,7 @@ function renderResults(plans, allSel, uncoverable) {
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
       最適プラン
     </div>
+    ${overBudget ? `<div class="warn">⚠️ 予算内に収まるプランが見つかりません。予算を上げるか、作品を減らしてみてください。</div>` : ''}
     ${uncoverable.length ? `<div class="warn">⚠️ 配信情報なし: ${uncoverable.map(i=>esc(i.t)).join('、')}</div>` : ''}
     ${plans.map((p,i) => renderPlan(p, i===0, allSel, i, naiveCost)).join('')}
   </div>`;
@@ -1101,9 +1205,18 @@ function renderPlan(plan, isBest, allSel, idx, naiveCost) {
       ${plan.combo.map(k=>`<div class="plan-svc-row">
         <div class="plan-dot" style="background:${SVC[k].color}"></div>
         <span class="plan-svc-name">${SVC[k].name}</span>
+        ${SVC[k].trial ? `<span class="svc-trial">🎁${SVC[k].trial}日無料</span>` : ''}
         <span class="plan-svc-price">¥${SVC[k].price.toLocaleString()}/月</span>
       </div>`).join('')}
     </div>
+    ${(() => {
+      const annualTotal = plan.combo.reduce((s,k) => s + (SVC[k].annual || SVC[k].price * 12), 0);
+      const monthlyTotal = plan.cost * 12;
+      const save = monthlyTotal - annualTotal;
+      return save > 0
+        ? `<div class="plan-annual-total"><span>📅 年払いに切替</span><div style="text-align:right"><span class="plan-annual-val">¥${Math.round(annualTotal/12).toLocaleString()}/月相当</span><div class="plan-annual-save">年間 ¥${save.toLocaleString()} お得</div></div></div>`
+        : '';
+    })()}
     <div class="plan-total">
       <span class="plan-total-lbl">月額合計</span>
       <div>
