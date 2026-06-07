@@ -449,25 +449,25 @@ const DB = [
   {id:122,t:'VIVANT',                       g:'jdrama',e:'🏜️',s:['unext','lemino']},
   {id:123,t:'ブラッシュアップライフ',         g:'jdrama',e:'🔁',s:['hulu']},
   // スポーツ
-  {id:200,t:'Jリーグ',                      g:'sports',e:'⚽',s:['dazn']},
-  {id:201,t:'プレミアリーグ',               g:'sports',e:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',s:['dazn']},
-  {id:202,t:'ラ・リーガ（スペイン）',        g:'sports',e:'🇪🇸',s:['dazn']},
-  {id:203,t:'セリエA（イタリア）',           g:'sports',e:'🇮🇹',s:['dazn']},
-  {id:204,t:'ブンデスリーガ（ドイツ）',      g:'sports',e:'🇩🇪',s:['dazn']},
-  {id:205,t:'UEFAチャンピオンズリーグ',     g:'sports',e:'🏆',s:['dazn']},
-  {id:206,t:'NBA（バスケットボール）',       g:'sports',e:'🏀',s:['dazn','amazon']},
-  {id:207,t:'MLB（大リーグ）',              g:'sports',e:'⚾',s:['dazn']},
-  {id:208,t:'プロ野球（NPB）',              g:'sports',e:'🏟️',s:['dazn','amazon']},
-  {id:209,t:'F1グランプリ',                 g:'sports',e:'🏎️',s:['dazn']},
-  {id:210,t:'テニス グランドスラム',         g:'sports',e:'🎾',s:['dazn','amazon']},
-  {id:211,t:'ボクシング',                   g:'sports',e:'🥊',s:['dazn','amazon']},
-  {id:212,t:'ゴルフ（PGAツアー等）',        g:'sports',e:'⛳',s:['dazn']},
-  {id:213,t:'ラグビー（国際試合）',          g:'sports',e:'🏉',s:['dazn','abema']},
-  {id:214,t:'箱根駅伝',                     g:'sports',e:'🏃',s:['hulu','abema']},
-  {id:215,t:'大相撲',                       g:'sports',e:'🏯',s:['abema']},
-  {id:216,t:'WBC・侍ジャパン',              g:'sports',e:'🌏',s:['abema']},
-  {id:217,t:'Bリーグ（バスケ）',            g:'sports',e:'🏀',s:['dazn']},
-  {id:218,t:'格闘技（RIZIN等）',            g:'sports',e:'🥋',s:['abema','amazon']},
+  {id:200,t:'Jリーグ',                      g:'sports',e:'⚽',s:['dazn'],          wiki:'J1_League'},
+  {id:201,t:'プレミアリーグ',               g:'sports',e:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',s:['dazn'],          wiki:'Premier_League'},
+  {id:202,t:'ラ・リーガ（スペイン）',        g:'sports',e:'🇪🇸',s:['dazn'],          wiki:'La_Liga'},
+  {id:203,t:'セリエA（イタリア）',           g:'sports',e:'🇮🇹',s:['dazn'],          wiki:'Serie_A'},
+  {id:204,t:'ブンデスリーガ（ドイツ）',      g:'sports',e:'🇩🇪',s:['dazn'],          wiki:'Bundesliga'},
+  {id:205,t:'UEFAチャンピオンズリーグ',     g:'sports',e:'🏆',s:['dazn'],          wiki:'UEFA_Champions_League'},
+  {id:206,t:'NBA（バスケットボール）',       g:'sports',e:'🏀',s:['dazn','amazon'], wiki:'National_Basketball_Association'},
+  {id:207,t:'MLB（大リーグ）',              g:'sports',e:'⚾',s:['dazn'],          wiki:'Major_League_Baseball'},
+  {id:208,t:'プロ野球（NPB）',              g:'sports',e:'🏟️',s:['dazn','amazon'], wiki:'Nippon_Professional_Baseball'},
+  {id:209,t:'F1グランプリ',                 g:'sports',e:'🏎️',s:['dazn'],          wiki:'Formula_One'},
+  {id:210,t:'テニス グランドスラム',         g:'sports',e:'🎾',s:['dazn','amazon'], wiki:'Grand_Slam_(tennis)'},
+  {id:211,t:'ボクシング',                   g:'sports',e:'🥊',s:['dazn','amazon'], wiki:'Boxing'},
+  {id:212,t:'ゴルフ（PGAツアー等）',        g:'sports',e:'⛳',s:['dazn'],          wiki:'PGA_Tour'},
+  {id:213,t:'ラグビー（国際試合）',          g:'sports',e:'🏉',s:['dazn','abema'],  wiki:'Rugby_union'},
+  {id:214,t:'箱根駅伝',                     g:'sports',e:'🏃',s:['hulu','abema'],  wiki:'Hakone_Ekiden'},
+  {id:215,t:'大相撲',                       g:'sports',e:'🏯',s:['abema'],         wiki:'Sumo'},
+  {id:216,t:'WBC・侍ジャパン',              g:'sports',e:'🌏',s:['abema'],         wiki:'World_Baseball_Classic'},
+  {id:217,t:'Bリーグ（バスケ）',            g:'sports',e:'🏀',s:['dazn'],          wiki:'B.League_(basketball)'},
+  {id:218,t:'格闘技（RIZIN等）',            g:'sports',e:'🥋',s:['abema','amazon'],wiki:'Mixed_martial_arts'},
   // バラエティ
   {id:300,t:'テラスハウス',                  g:'variety',e:'🏠',s:['netflix']},
   {id:301,t:'水曜日のダウンタウン',           g:'variety',e:'📺',s:['unext','lemino']},
@@ -608,14 +608,16 @@ function enqueuePoster(thumbEl) {
 
 async function runPoster(thumbEl) {
   posterConcurrent++;
-  const q = decodeURIComponent(thumbEl.dataset.posterQ || '');
-  if (q) await loadPoster(thumbEl, q);
+  const wiki = thumbEl.dataset.wiki ? decodeURIComponent(thumbEl.dataset.wiki) : null;
+  const q    = thumbEl.dataset.posterQ ? decodeURIComponent(thumbEl.dataset.posterQ) : null;
+  if (wiki) await loadWikiPoster(thumbEl, wiki);
+  else if (q) await loadPoster(thumbEl, q);
   posterConcurrent--;
   if (posterPending.length) runPoster(posterPending.shift());
 }
 
 async function loadPoster(thumbEl, title) {
-  const key = title.toLowerCase();
+  const key = 'tmdb:' + title.toLowerCase();
   let path = posterCache[key];
   if (path === undefined) {
     try {
@@ -631,6 +633,25 @@ async function loadPoster(thumbEl, title) {
   if (!img) return;
   img.onload = () => img.classList.add('loaded');
   img.src = `https://image.tmdb.org/t/p/w185${path}`;
+}
+
+async function loadWikiPoster(thumbEl, wikiTitle) {
+  const key = 'wiki:' + wikiTitle;
+  let url = posterCache[key];
+  if (url === undefined) {
+    try {
+      const r = await fetch(`/api/wiki-poster?t=${encodeURIComponent(wikiTitle)}`);
+      const d = await r.json();
+      url = d.poster || '';
+      posterCache[key] = url;
+      try { localStorage.setItem('poster_cache', JSON.stringify(posterCache)); } catch {}
+    } catch { return; }
+  }
+  if (!url) return;
+  const img = thumbEl.querySelector('.card-poster');
+  if (!img) return;
+  img.onload = () => img.classList.add('loaded');
+  img.src = url;
 }
 
 function observePosters() {
@@ -698,10 +719,11 @@ function renderGrid() {
   grid.innerHTML = items.map(it => {
     const sel = selected.has(it.id);
     const col = SVC[it.s[0]]?.color || '#555';
-    const hasPoster = it.g !== 'sports' && it.g !== 'variety';
+    const wikiAttr = it.wiki ? ` data-wiki="${encodeURIComponent(it.wiki)}"` : '';
+    const posterAttr = it.g !== 'sports' ? ` data-poster-q="${encodeURIComponent(it.t)}"` : '';
     return `<div class="card${sel?' sel':''}" onclick="toggle(${it.id})">
-      <div class="card-thumb" style="background:linear-gradient(160deg,${col}22,${col}44)"${hasPoster ? ` data-poster-q="${encodeURIComponent(it.t)}"` : ''}>
-        ${hasPoster ? '<img class="card-poster" src="" alt="">' : ''}
+      <div class="card-thumb" style="background:linear-gradient(160deg,${col}22,${col}44)"${posterAttr}${wikiAttr}>
+        <img class="card-poster" src="" alt="">
         <span class="card-emoji">${it.e}</span>
         <div class="card-chk">✓</div>
       </div>
