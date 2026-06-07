@@ -698,9 +698,10 @@ function renderGrid() {
   grid.innerHTML = items.map(it => {
     const sel = selected.has(it.id);
     const col = SVC[it.s[0]]?.color || '#555';
+    const hasPoster = it.g !== 'sports' && it.g !== 'variety';
     return `<div class="card${sel?' sel':''}" onclick="toggle(${it.id})">
-      <div class="card-thumb" style="background:linear-gradient(160deg,${col}22,${col}44)" data-poster-q="${encodeURIComponent(it.t)}">
-        <img class="card-poster" src="" alt="">
+      <div class="card-thumb" style="background:linear-gradient(160deg,${col}22,${col}44)"${hasPoster ? ` data-poster-q="${encodeURIComponent(it.t)}"` : ''}>
+        ${hasPoster ? '<img class="card-poster" src="" alt="">' : ''}
         <span class="card-emoji">${it.e}</span>
         <div class="card-chk">✓</div>
       </div>
