@@ -58,7 +58,11 @@
     .card:hover { border-color:rgba(124,111,245,.45); transform:translateY(-4px) scale(1.01); box-shadow:0 16px 40px rgba(0,0,0,.55),0 0 0 1px rgba(124,111,245,.15); }
     .card.sel { border-color:var(--acc); box-shadow:0 0 0 2px var(--accG),0 12px 28px rgba(0,0,0,.4),0 0 20px rgba(124,111,245,.15); }
     .card-thumb { aspect-ratio:2/3; display:flex; align-items:center; justify-content:center; font-size:42px; position:relative; overflow:hidden; }
-    .card-thumb::after { content:''; position:absolute; inset:0; background:linear-gradient(to bottom,transparent 40%,rgba(0,0,0,.5)); }
+    .card-thumb::after { content:''; position:absolute; inset:0; background:linear-gradient(to bottom,transparent 40%,rgba(0,0,0,.5)); z-index:1; }
+    .card-poster { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity .4s ease; }
+    .card-poster.loaded { opacity:1; }
+    .card-emoji { position:relative; z-index:0; transition:opacity .4s ease; }
+    .card-poster.loaded ~ .card-emoji { opacity:0; }
     .card-chk { position:absolute; top:8px; right:8px; width:26px; height:26px; background:linear-gradient(135deg,#7c6ff5,#a89cf7); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; opacity:0; transform:scale(.6); transition:opacity .18s,transform .25s cubic-bezier(.34,1.56,.64,1); z-index:2; box-shadow:0 3px 12px rgba(124,111,245,.5); }
     .card.sel .card-chk { opacity:1; transform:scale(1); }
     .card-body { padding:10px 11px; background:linear-gradient(to bottom,transparent,rgba(0,0,0,.15)); }
@@ -576,6 +580,65 @@ async function tmdbSearch(q) {
 }
 
 // ─────────────────────────────────────────────────────
+// ポスター画像 遅延ロード
+// ─────────────────────────────────────────────────────
+const posterCache = JSON.parse(localStorage.getItem('poster_cache') || '{}');
+let posterObserver = null;
+let posterConcurrent = 0;
+const posterPending = [];
+
+function initPosterObserver() {
+  if (!IS_DEPLOYED) return;
+  posterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(el => {
+      if (!el.isIntersecting) return;
+      posterObserver.unobserve(el.target);
+      enqueuePoster(el.target);
+    });
+  }, { rootMargin:'120px' });
+}
+
+function enqueuePoster(thumbEl) {
+  if (posterConcurrent < 4) {
+    runPoster(thumbEl);
+  } else {
+    posterPending.push(thumbEl);
+  }
+}
+
+async function runPoster(thumbEl) {
+  posterConcurrent++;
+  const q = decodeURIComponent(thumbEl.dataset.posterQ || '');
+  if (q) await loadPoster(thumbEl, q);
+  posterConcurrent--;
+  if (posterPending.length) runPoster(posterPending.shift());
+}
+
+async function loadPoster(thumbEl, title) {
+  const key = title.toLowerCase();
+  let path = posterCache[key];
+  if (path === undefined) {
+    try {
+      const r = await fetch(`/api/poster?t=${encodeURIComponent(title)}`);
+      const d = await r.json();
+      path = d.poster || '';
+      posterCache[key] = path;
+      try { localStorage.setItem('poster_cache', JSON.stringify(posterCache)); } catch {}
+    } catch { return; }
+  }
+  if (!path) return;
+  const img = thumbEl.querySelector('.card-poster');
+  if (!img) return;
+  img.onload = () => img.classList.add('loaded');
+  img.src = `https://image.tmdb.org/t/p/w185${path}`;
+}
+
+function observePosters() {
+  if (!posterObserver) return;
+  document.querySelectorAll('.card-thumb[data-poster-q]').forEach(el => posterObserver.observe(el));
+}
+
+// ─────────────────────────────────────────────────────
 // State
 // ─────────────────────────────────────────────────────
 let selected     = new Set();
@@ -613,6 +676,7 @@ function allItems() { return [...DB, ...customItems]; }
 
   buildSvcCheckGrid();
   initTmdbUI();
+  initPosterObserver();
   renderGrid();
 })();
 
@@ -635,8 +699,10 @@ function renderGrid() {
     const sel = selected.has(it.id);
     const col = SVC[it.s[0]]?.color || '#555';
     return `<div class="card${sel?' sel':''}" onclick="toggle(${it.id})">
-      <div class="card-thumb" style="background:linear-gradient(160deg,${col}1a,${col}38)">
-        <span>${it.e}</span><div class="card-chk">✓</div>
+      <div class="card-thumb" style="background:linear-gradient(160deg,${col}22,${col}44)" data-poster-q="${encodeURIComponent(it.t)}">
+        <img class="card-poster" src="" alt="">
+        <span class="card-emoji">${it.e}</span>
+        <div class="card-chk">✓</div>
       </div>
       <div class="card-body">
         <div class="card-title">${esc(it.t)}</div>
@@ -644,6 +710,7 @@ function renderGrid() {
       </div>
     </div>`;
   }).join('');
+  observePosters();
 }
 
 function toggle(id) {
