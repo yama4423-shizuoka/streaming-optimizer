@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>サブスク最適化 | 観たい作品で最安プランを計算</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg:#0d0d14; --s1:#16161f; --s2:#1e1e2d; --s3:#262638;
+      --bd:#2d2d46; --tx:#eeeef5; --tx2:#8888aa;
+      --acc:#8b7cf6; --acc2:#a78bfa; --accG:rgba(139,124,246,.22);
+      --green:#4ade80; --red:#f87171; --r:12px; --r2:8px;
+    }
+    body { font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI',sans-serif; background:var(--bg); color:var(--tx); min-height:100vh; line-height:1.5; }
+
+    /* HEADER */
+    .header { position:sticky; top:0; z-index:50; background:rgba(13,13,20,.94); backdrop-filter:blur(14px); border-bottom:1px solid var(--bd); padding:12px 24px; }
+    .header-inner { max-width:1400px; margin:0 auto; display:flex; align-items:center; gap:14px; }
+    .logo { font-size:18px; font-weight:800; letter-spacing:-.5px; background:linear-gradient(135deg,#8b7cf6,#c4b5fd); -webkit-background-clip:text; -webkit-text-fill-color:transparent; white-space:nowrap; flex-shrink:0; line-height:1.2; }
+    .logo small { display:block; font-size:10px; font-weight:500; letter-spacing:.3px; }
+    .search-wrap { flex:1; max-width:480px; position:relative; }
+    .search-wrap svg { position:absolute; left:11px; top:50%; transform:translateY(-50%); color:var(--tx2); pointer-events:none; }
+    .search-input { width:100%; padding:9px 14px 9px 38px; background:var(--s2); border:1px solid var(--bd); border-radius:var(--r); color:var(--tx); font-size:14px; outline:none; transition:border-color .15s; font-family:inherit; }
+    .search-input::placeholder { color:var(--tx2); }
+    .search-input:focus { border-color:var(--acc); }
+    .header-badge { display:flex; align-items:center; gap:7px; background:var(--s2); border:1px solid var(--bd); border-radius:var(--r); padding:7px 13px; font-size:13px; color:var(--tx2); white-space:nowrap; flex-shrink:0; }
+    .hbadge-num { background:var(--acc); color:#fff; border-radius:20px; padding:1px 9px; font-weight:700; font-size:13px; min-width:26px; text-align:center; }
+
+    /* LAYOUT */
+    .layout { max-width:1400px; margin:0 auto; padding:22px 24px; display:grid; grid-template-columns:1fr 316px; gap:22px; align-items:start; }
+    @media(max-width:960px){ .layout{grid-template-columns:1fr;padding:14px 16px;} }
+
+    /* FILTERS */
+    .filter-row { display:flex; gap:7px; flex-wrap:wrap; margin-bottom:18px; }
+    .fb { padding:5px 13px; border-radius:20px; border:1px solid var(--bd); background:transparent; color:var(--tx2); font-size:13px; cursor:pointer; transition:all .13s; font-family:inherit; }
+    .fb:hover { border-color:var(--acc); color:var(--tx); }
+    .fb.active { background:var(--acc); border-color:var(--acc); color:#fff; font-weight:600; }
+
+    /* GRID */
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(148px,1fr)); gap:11px; }
+
+    /* CARD */
+    .card { background:var(--s1); border:1.5px solid var(--bd); border-radius:var(--r); overflow:hidden; cursor:pointer; transition:border-color .13s,transform .13s,box-shadow .13s; user-select:none; }
+    .card:hover { border-color:var(--acc); transform:translateY(-3px); box-shadow:0 12px 28px rgba(0,0,0,.45); }
+    .card.sel { border-color:var(--acc); box-shadow:0 0 0 2px var(--accG),0 8px 20px rgba(0,0,0,.35); }
+    .card-thumb { aspect-ratio:2/3; display:flex; align-items:center; justify-content:center; font-size:38px; position:relative; }
+    .card-chk { position:absolute; top:7px; right:7px; width:25px; height:25px; background:var(--acc); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; opacity:0; transform:scale(.7); transition:opacity .13s,transform .13s; }
+    .card.sel .card-chk { opacity:1; transform:scale(1); }
+    .card-body { padding:9px 10px; }
+    .card-title { font-size:11.5px; font-weight:600; line-height:1.35; margin-bottom:6px; }
+    .svc-tags { display:flex; flex-wrap:wrap; gap:3px; }
+    .svc-tag { font-size:9px; font-weight:800; padding:2px 5px; border-radius:3px; color:#fff; letter-spacing:.2px; }
+    .grid-empty { grid-column:1/-1; text-align:center; padding:80px 20px; color:var(--tx2); }
+    .grid-empty .e { font-size:44px; display:block; margin-bottom:10px; }
+
+    /* SIDEBAR */
+    .sidebar { position:sticky; top:72px; display:flex; flex-direction:column; gap:14px; }
+    .panel { background:var(--s1); border:1px solid var(--bd); border-radius:16px; padding:18px; }
+    .panel-ttl { font-size:13.5px; font-weight:700; color:var(--tx); margin-bottom:14px; display:flex; align-items:center; gap:7px; }
+
+    /* SELECTED LIST */
+    .sel-list { list-style:none; max-height:240px; overflow-y:auto; margin-bottom:13px; }
+    .sel-list::-webkit-scrollbar { width:4px; }
+    .sel-list::-webkit-scrollbar-thumb { background:var(--bd); border-radius:2px; }
+    .sel-item { display:flex; align-items:center; gap:9px; padding:7px 0; border-bottom:1px solid var(--bd); font-size:13px; }
+    .sel-item:last-child { border-bottom:none; }
+    .sel-em { font-size:17px; flex-shrink:0; }
+    .sel-name { flex:1; line-height:1.3; }
+    .sel-rm { background:none; border:none; color:var(--tx2); cursor:pointer; font-size:13px; padding:3px 5px; border-radius:4px; transition:color .13s,background .13s; font-family:inherit; flex-shrink:0; }
+    .sel-rm:hover { color:var(--red); background:rgba(248,113,113,.1); }
+    .sel-empty { text-align:center; color:var(--tx2); font-size:13px; padding:22px 0; line-height:1.7; }
+    .calc-btn { width:100%; padding:12px; background:linear-gradient(135deg,#8b7cf6,#a78bfa); border:none; border-radius:var(--r); color:#fff; font-size:14px; font-weight:700; cursor:pointer; transition:opacity .13s,transform .1s; font-family:inherit; }
+    .calc-btn:hover:not(:disabled) { opacity:.86; }
+    .calc-btn:active:not(:disabled) { transform:scale(.99); }
+    .calc-btn:disabled { opacity:.32; cursor:not-allowed; }
+
+    /* TMDB SETUP */
+    .tmdb-setup { background:var(--s3); border:1px solid var(--bd); border-radius:var(--r2); padding:12px; margin-bottom:12px; }
+    .tmdb-setup-title { font-size:12px; font-weight:700; color:var(--tx); margin-bottom:6px; }
+    .tmdb-setup-steps { font-size:11px; color:var(--tx2); line-height:1.8; margin-bottom:10px; }
+    .tmdb-setup-steps a { color:var(--acc2); text-decoration:none; }
+    .tmdb-setup-steps a:hover { text-decoration:underline; }
+    .tmdb-key-row { display:flex; gap:6px; }
+    .tmdb-key-inp { flex:1; min-width:0; padding:7px 10px; background:var(--s2); border:1px solid var(--bd); border-radius:var(--r2); color:var(--tx); font-size:12px; outline:none; font-family:inherit; transition:border-color .13s; }
+    .tmdb-key-inp:focus { border-color:var(--acc); }
+    .tmdb-key-inp::placeholder { color:var(--tx2); }
+    .tmdb-key-btn { padding:7px 12px; background:var(--acc); border:none; border-radius:var(--r2); color:#fff; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; white-space:nowrap; transition:opacity .13s; }
+    .tmdb-key-btn:hover { opacity:.85; }
+    .tmdb-active { display:flex; align-items:center; gap:8px; font-size:12px; padding:8px 10px; background:rgba(74,222,128,.07); border:1px solid rgba(74,222,128,.22); border-radius:var(--r2); color:var(--green); margin-bottom:12px; }
+    .tmdb-clr-btn { background:none; border:none; color:var(--tx2); cursor:pointer; font-size:11px; margin-left:auto; font-family:inherit; transition:color .13s; }
+    .tmdb-clr-btn:hover { color:var(--red); }
+
+    /* ADD PANEL */
+    .add-wrap { position:relative; }
+    .add-input { width:100%; padding:9px 12px; background:var(--s2); border:1px solid var(--bd); border-radius:var(--r2); color:var(--tx); font-size:13px; outline:none; font-family:inherit; transition:border-color .15s; }
+    .add-input::placeholder { color:var(--tx2); }
+    .add-input:focus { border-color:var(--acc); }
+
+    /* DROPDOWN */
+    .add-dd { position:absolute; top:calc(100% + 4px); left:0; right:0; background:var(--s2); border:1px solid var(--bd); border-radius:var(--r2); z-index:200; box-shadow:0 10px 32px rgba(0,0,0,.6); overflow:hidden; display:none; }
+    .add-dd.open { display:block; }
+    .dd-section { border-bottom:1px solid var(--bd); }
+    .dd-section:last-child { border-bottom:none; }
+    .dd-section-hd { font-size:10px; font-weight:700; color:var(--tx2); padding:6px 11px 4px; letter-spacing:.5px; text-transform:uppercase; }
+    .dd-item { display:flex; align-items:center; gap:8px; padding:8px 11px; cursor:pointer; font-size:12.5px; transition:background .1s; border-top:1px solid var(--bd); }
+    .dd-item:first-of-type { border-top:none; }
+    .dd-item:hover { background:var(--s3); }
+    .dd-em { font-size:16px; flex-shrink:0; }
+    .dd-info { flex:1; min-width:0; }
+    .dd-title { font-weight:600; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .dd-meta { font-size:10px; color:var(--tx2); margin-top:1px; }
+    .dd-svcs { display:flex; gap:2px; flex-wrap:wrap; flex-shrink:0; max-width:90px; }
+    .dd-added { color:var(--acc); font-size:10px; font-weight:700; flex-shrink:0; }
+    .dd-nosvcs { font-size:10px; color:var(--tx2); font-style:italic; }
+
+    /* LOADING / STATUS */
+    .dd-status { padding:10px 12px; font-size:12px; color:var(--tx2); display:flex; align-items:center; gap:7px; }
+    .spinner { width:13px; height:13px; border:2px solid var(--bd); border-top-color:var(--acc); border-radius:50%; animation:spin .7s linear infinite; flex-shrink:0; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .dd-footer { padding:5px 11px 7px; font-size:10px; color:var(--tx2); border-top:1px solid var(--bd); }
+    .dd-footer a { color:var(--tx2); }
+
+    /* MANUAL FALLBACK */
+    .add-manual { margin-top:12px; display:none; }
+    .add-manual.show { display:block; }
+    .add-manual-msg { font-size:12px; color:var(--tx2); margin-bottom:8px; line-height:1.5; }
+    .add-manual-name { font-size:13px; font-weight:700; color:var(--tx); margin-bottom:10px; }
+    .svc-check-grid { display:grid; grid-template-columns:1fr 1fr; gap:5px; margin-bottom:10px; }
+    .svc-chk { display:flex; align-items:center; gap:5px; padding:6px 8px; background:var(--s3); border:1.5px solid var(--bd); border-radius:6px; cursor:pointer; font-size:11.5px; transition:border-color .13s,background .13s; user-select:none; }
+    .svc-chk:hover { border-color:var(--acc); }
+    .svc-chk.on { border-color:var(--acc); background:rgba(139,124,246,.12); }
+    .svc-chk-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+    .svc-chk-name { flex:1; }
+    .svc-chk-tick { color:var(--acc); font-size:11px; opacity:0; }
+    .svc-chk.on .svc-chk-tick { opacity:1; }
+    .add-row { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+    .add-row label { font-size:12px; color:var(--tx2); white-space:nowrap; }
+    .emoji-inp { width:42px; text-align:center; background:var(--s2); border:1px solid var(--bd); border-radius:6px; color:var(--tx); font-size:18px; padding:4px; outline:none; }
+    .add-confirm { width:100%; padding:9px; background:var(--s3); border:1.5px solid var(--acc); border-radius:var(--r2); color:var(--acc); font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; transition:background .13s; }
+    .add-confirm:hover { background:rgba(139,124,246,.18); }
+    .add-hint { font-size:11px; color:var(--tx2); margin-top:7px; line-height:1.5; }
+
+    /* RESULTS */
+    .result-plan { background:var(--s2); border:1.5px solid var(--bd); border-radius:var(--r); padding:14px; margin-bottom:10px; }
+    .result-plan:last-child { margin-bottom:0; }
+    .result-plan.best { border-color:var(--acc); background:rgba(139,124,246,.08); }
+    .best-badge { display:inline-flex; align-items:center; gap:4px; background:var(--acc); color:#fff; font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; margin-bottom:11px; }
+    .plan-alt-label { font-size:11px; color:var(--tx2); margin-bottom:11px; }
+    .plan-svcs { display:flex; flex-direction:column; gap:6px; margin-bottom:11px; }
+    .plan-svc-row { display:flex; align-items:center; gap:8px; font-size:13px; }
+    .plan-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+    .plan-svc-name { flex:1; }
+    .plan-svc-price { color:var(--tx2); font-size:12px; }
+    .plan-total { display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--bd); padding-top:10px; }
+    .plan-total-lbl { font-size:13px; color:var(--tx2); }
+    .plan-total-val { font-size:21px; font-weight:800; color:var(--green); }
+    .plan-saving { font-size:11px; color:var(--acc2); margin-top:2px; text-align:right; }
+    .cov-toggle { display:block; width:100%; background:none; border:none; color:var(--tx2); font-size:12px; text-align:left; cursor:pointer; padding:6px 0 0; font-family:inherit; transition:color .13s; }
+    .cov-toggle:hover { color:var(--tx); }
+    .cov-detail { display:none; margin-top:10px; padding-top:10px; border-top:1px solid var(--bd); }
+    .cov-detail.open { display:block; }
+    .cov-svc { margin-bottom:9px; }
+    .cov-svc-lbl { font-size:11px; font-weight:700; margin-bottom:5px; display:flex; align-items:center; gap:5px; }
+    .cov-dot { width:8px; height:8px; border-radius:50%; display:inline-block; }
+    .cov-titles { display:flex; flex-wrap:wrap; gap:4px; }
+    .cov-tag { font-size:10px; background:var(--s3); border:1px solid var(--bd); border-radius:4px; padding:2px 6px; color:var(--tx2); }
+    .warn { background:rgba(248,113,113,.1); border:1px solid rgba(248,113,113,.28); border-radius:var(--r2); padding:11px; font-size:12px; color:#fca5a5; margin-bottom:11px; line-height:1.55; }
+    .no-result-box { text-align:center; padding:30px 10px; color:var(--tx2); font-size:13px; }
+    .footer { text-align:center; padding:28px 24px; font-size:11px; color:var(--tx2); border-top:1px solid var(--bd); margin-top:32px; }
+    ::-webkit-scrollbar { width:5px; }
+    ::-webkit-scrollbar-track { background:transparent; }
+    ::-webkit-scrollbar-thumb { background:var(--bd); border-radius:3px; }
+    mark { background:rgba(139,124,246,.35); color:var(--tx); border-radius:2px; }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">サブスク最適化<small>観たい作品 → 最安プランを自動計算</small></div>
+    <div class="search-wrap">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input class="search-input" id="searchInput" type="text" placeholder="作品名で検索...">
+    </div>
+    <div class="header-badge">選択中 <span class="hbadge-num" id="countBadge">0</span></div>
+  </div>
+</header>
+
+<div class="layout">
+  <div>
+    <div class="filter-row" id="filterRow">
+      <button class="fb active" data-genre="all">すべて</button>
+      <button class="fb" data-genre="foreign">海外ドラマ</button>
+      <button class="fb" data-genre="anime">アニメ</button>
+      <button class="fb" data-genre="movie">映画</button>
+      <button class="fb" data-genre="kdrama">韓国ドラマ</button>
+      <button class="fb" data-genre="jdrama">日本ドラマ</button>
+      <button class="fb" data-genre="sports">スポーツ</button>
+      <button class="fb" data-genre="variety">バラエティ</button>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="panel">
+      <div class="panel-ttl">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        選択中の作品
+      </div>
+      <ul class="sel-list" id="selList">
+        <li class="sel-empty">左から観たい作品を<br>クリックして追加してください</li>
+      </ul>
+      <button class="calc-btn" id="calcBtn" disabled onclick="calculate()">最安プランを計算する →</button>
+    </div>
+
+    <div class="panel">
+      <div class="panel-ttl">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        リストにない作品を追加
+      </div>
+
+      <!-- TMDb 未設定時 -->
+      <div id="tmdbSetup" class="tmdb-setup">
+        <div class="tmdb-setup-title">🔑 配信サービスを自動検索するには</div>
+        <div class="tmdb-setup-steps">
+          1. <a href="https://www.themoviedb.org/" target="_blank">themoviedb.org</a> で無料アカウント作成<br>
+          2. 設定 → API → 「APIキーをリクエスト」<br>
+          3. 発行されたAPIキーを下に貼り付け
+        </div>
+        <div class="tmdb-key-row">
+          <input class="tmdb-key-inp" id="tmdbKeyInput" type="text" placeholder="APIキーを貼り付け（無料）">
+          <button class="tmdb-key-btn" onclick="saveTmdbKey()">保存</button>
+        </div>
+      </div>
+
+      <!-- TMDb 設定済み -->
+      <div id="tmdbActive" class="tmdb-active" style="display:none">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        <span id="tmdbActiveMsg">TMDb連携中 — リアルタイム検索が使えます</span>
+        <button class="tmdb-clr-btn" id="tmdbClrBtn" onclick="clearTmdbKey()">解除</button>
+      </div>
+
+      <div class="add-wrap">
+        <input class="add-input" id="addInput" type="text" placeholder="作品名を入力（日本語・英語）" autocomplete="off" spellcheck="false">
+        <div class="add-dd" id="addDd"></div>
+      </div>
+      <div class="add-hint" id="addHint">作品名を入力するとTMDbで配信サービスを自動検索します</div>
+      <div class="add-manual" id="addManual">
+        <div class="add-manual-msg">自動検索で見つかりませんでした。<br>配信サービスを手動で選択してください：</div>
+        <div class="add-manual-name" id="addManualName"></div>
+        <div class="svc-check-grid" id="svcCheckGrid"></div>
+        <div class="add-row"><label>絵文字</label><input class="emoji-inp" id="addEmoji" type="text" value="🎬" maxlength="4"></div>
+        <button class="add-confirm" onclick="addCustomManual()">この作品を追加する</button>
+      </div>
+    </div>
+
+    <div id="resultArea"></div>
+  </aside>
+</div>
+
+<div class="footer">
+  ※ 料金は2024年時点の月額（税込）。配信状況・価格は変更される場合があります。<br>
+  配信情報: <a href="https://www.themoviedb.org/" target="_blank" style="color:var(--tx2)">TMDb</a> / 各サービスにてご確認ください。
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────
+// 環境検出（Vercel等サーバー配信 vs ローカルfile://）
+// ─────────────────────────────────────────────────────
+const IS_DEPLOYED = location.protocol !== 'file:';
+
+// ─────────────────────────────────────────────────────
+// サービス定義
+// ─────────────────────────────────────────────────────
+const SVC = {
+  netflix: { name:'Netflix',             price:1590, color:'#E50914', abbr:'N' },
+  amazon:  { name:'Amazon Prime Video',  price:600,  color:'#00A8E0', abbr:'Prime' },
+  disney:  { name:'Disney+',             price:990,  color:'#0063E5', abbr:'D+' },
+  hulu:    { name:'Hulu',                price:1026, color:'#1DB954', abbr:'Hulu' },
+  unext:   { name:'U-NEXT',              price:2189, color:'#FF6B00', abbr:'U-NEXT' },
+  apple:   { name:'Apple TV+',           price:900,  color:'#888888', abbr:'TV+' },
+  abema:   { name:'ABEMA Premium',       price:960,  color:'#00C8FF', abbr:'ABEMA' },
+  lemino:  { name:'Lemino',              price:990,  color:'#D4145A', abbr:'Lemino' },
+  dazn:    { name:'DAZN',                price:3700, color:'#F5A623', abbr:'DAZN' },
+};
+
+// ─────────────────────────────────────────────────────
+// コンテンツDB
+// ─────────────────────────────────────────────────────
+const DB = [
+  // 海外ドラマ
+  {id:1,  t:'ストレンジャー・シングス',       g:'foreign',e:'🔦',s:['netflix']},
+  {id:2,  t:'ウェンズデー',                  g:'foreign',e:'🖤',s:['netflix']},
+  {id:3,  t:'イカゲーム',                    g:'foreign',e:'🦑',s:['netflix']},
+  {id:4,  t:'ブレイキング・バッド',            g:'foreign',e:'⚗️',s:['netflix']},
+  {id:5,  t:'ペーパー・ハウス',               g:'foreign',e:'🎭',s:['netflix']},
+  {id:6,  t:'エミリー、パリへ行く',            g:'foreign',e:'🗼',s:['netflix']},
+  {id:7,  t:'ブリジャートン家',               g:'foreign',e:'👑',s:['netflix']},
+  {id:8,  t:'ザ・クラウン',                  g:'foreign',e:'👸',s:['netflix']},
+  {id:9,  t:'ダーク',                        g:'foreign',e:'🌀',s:['netflix']},
+  {id:10, t:'ブラック・ミラー',               g:'foreign',e:'📱',s:['netflix']},
+  {id:11, t:'オザーク',                      g:'foreign',e:'🌊',s:['netflix']},
+  {id:12, t:'ナルコス',                      g:'foreign',e:'🌿',s:['netflix']},
+  {id:13, t:'ザ・ボーイズ',                  g:'foreign',e:'💥',s:['amazon']},
+  {id:14, t:'フォールアウト',                g:'foreign',e:'☢️',s:['amazon']},
+  {id:15, t:'リーチャー',                    g:'foreign',e:'💪',s:['amazon']},
+  {id:16, t:'インビンシブル',                g:'foreign',e:'🦸',s:['amazon']},
+  {id:17, t:'リングス・オブ・パワー',         g:'foreign',e:'💍',s:['amazon']},
+  {id:18, t:'マーベラス・ミセス・メイゼル',   g:'foreign',e:'🎤',s:['amazon']},
+  {id:19, t:'ジャック・ライアン',             g:'foreign',e:'🕵️',s:['amazon']},
+  {id:20, t:'ゲーム・オブ・スローンズ',       g:'foreign',e:'🐉',s:['unext']},
+  {id:21, t:'ハウス・オブ・ザ・ドラゴン',     g:'foreign',e:'🔥',s:['unext']},
+  {id:22, t:'サクセッション',                g:'foreign',e:'💼',s:['unext']},
+  {id:23, t:'ザ・ラスト・オブ・アス',         g:'foreign',e:'🍄',s:['unext']},
+  {id:24, t:'ホワイト・ロータス',             g:'foreign',e:'🌺',s:['unext']},
+  {id:25, t:'ウエストワールド',               g:'foreign',e:'🤖',s:['unext']},
+  {id:26, t:'ザ・ソプラノズ',                g:'foreign',e:'🔫',s:['unext']},
+  {id:27, t:'トゥルー・ディテクティブ',       g:'foreign',e:'🔎',s:['unext']},
+  {id:28, t:'バンド・オブ・ブラザーズ',       g:'foreign',e:'🎖️',s:['unext']},
+  {id:29, t:'ザ・マンダロリアン',             g:'foreign',e:'🚀',s:['disney']},
+  {id:30, t:'ロキ',                          g:'foreign',e:'🔱',s:['disney']},
+  {id:31, t:'アンドー',                      g:'foreign',e:'⭐',s:['disney']},
+  {id:32, t:'ワンダヴィジョン',               g:'foreign',e:'📺',s:['disney']},
+  {id:33, t:'ムーン・ナイト',                g:'foreign',e:'🌙',s:['disney']},
+  {id:34, t:'グレイズ・アナトミー',           g:'foreign',e:'👨‍⚕️',s:['hulu','disney']},
+  {id:35, t:'クリミナル・マインズ',           g:'foreign',e:'🧩',s:['hulu','disney']},
+  {id:36, t:'プリズン・ブレイク',             g:'foreign',e:'🔓',s:['hulu']},
+  {id:37, t:'ハウス（HOUSE）',               g:'foreign',e:'🏥',s:['hulu']},
+  {id:38, t:'24 -TWENTY FOUR-',             g:'foreign',e:'⏰',s:['hulu']},
+  {id:39, t:'ロスト',                        g:'foreign',e:'🏝️',s:['hulu']},
+  {id:40, t:'ハンドメイズ・テイル',           g:'foreign',e:'🔴',s:['hulu']},
+  {id:41, t:'ホームランド',                  g:'foreign',e:'🌍',s:['hulu']},
+  {id:42, t:'テッド・ラッソ',                g:'foreign',e:'⚽',s:['apple']},
+  {id:43, t:'セバーランス',                  g:'foreign',e:'🧠',s:['apple']},
+  {id:44, t:'ザ・モーニングショー',           g:'foreign',e:'🎙️',s:['apple']},
+  {id:45, t:'スロー・ホーシズ',              g:'foreign',e:'🐎',s:['apple']},
+  {id:46, t:'シュリンキング',                g:'foreign',e:'🌻',s:['apple']},
+  {id:47, t:'サイロ',                        g:'foreign',e:'🏚️',s:['apple']},
+  // アニメ
+  {id:50, t:'進撃の巨人',                    g:'anime',e:'⚔️',s:['netflix','amazon','hulu','unext']},
+  {id:51, t:'鬼滅の刃',                      g:'anime',e:'🌊',s:['netflix','amazon','hulu','unext']},
+  {id:52, t:'SPY×FAMILY',                   g:'anime',e:'🕵️',s:['amazon','netflix']},
+  {id:53, t:'呪術廻戦',                      g:'anime',e:'👁️',s:['netflix','amazon']},
+  {id:54, t:'推しの子',                      g:'anime',e:'⭐',s:['amazon']},
+  {id:55, t:'チェンソーマン',                g:'anime',e:'🪚',s:['amazon']},
+  {id:56, t:'葬送のフリーレン',               g:'anime',e:'🌿',s:['amazon']},
+  {id:57, t:'ダンジョン飯',                  g:'anime',e:'🍖',s:['netflix']},
+  {id:58, t:'薬屋のひとりごと',               g:'anime',e:'🌸',s:['netflix']},
+  {id:59, t:'BLUE LOCK',                    g:'anime',e:'⚽',s:['amazon']},
+  {id:60, t:'僕のヒーローアカデミア',          g:'anime',e:'🦸',s:['netflix','amazon']},
+  {id:61, t:'東京リベンジャーズ',             g:'anime',e:'🏍️',s:['netflix']},
+  {id:62, t:'ワンピース（アニメ）',            g:'anime',e:'🏴‍☠️',s:['amazon']},
+  {id:63, t:'ワンピース（実写）',              g:'anime',e:'⚓',s:['netflix']},
+  {id:64, t:'転生したらスライムだった件',      g:'anime',e:'💧',s:['netflix','amazon']},
+  {id:65, t:'鋼の錬金術師 BROTHERHOOD',      g:'anime',e:'⚙️',s:['netflix','amazon','hulu']},
+  {id:66, t:'コードギアス',                  g:'anime',e:'♟️',s:['netflix','amazon']},
+  {id:67, t:'ヴァイオレット・エヴァーガーデン', g:'anime',e:'✉️',s:['netflix']},
+  {id:68, t:'天元突破グレンラガン',            g:'anime',e:'🌀',s:['netflix','amazon']},
+  {id:69, t:'HUNTER×HUNTER',               g:'anime',e:'🎯',s:['netflix','amazon']},
+  {id:70, t:'NARUTO -ナルト-',              g:'anime',e:'🍥',s:['amazon','hulu']},
+  {id:71, t:'銀魂',                          g:'anime',e:'🗡️',s:['amazon','hulu']},
+  {id:72, t:'僕だけがいない街',               g:'anime',e:'🔄',s:['netflix','amazon']},
+  {id:73, t:'かぐや様は告らせたい',           g:'anime',e:'💌',s:['amazon']},
+  {id:74, t:'86（エイティシックス）',         g:'anime',e:'🔴',s:['netflix','amazon']},
+  {id:75, t:'リゼロ',                        g:'anime',e:'🕰️',s:['amazon','netflix']},
+  // 映画
+  {id:80, t:'アベンジャーズ エンドゲーム',    g:'movie',e:'🦸',s:['disney']},
+  {id:81, t:'スター・ウォーズシリーズ',       g:'movie',e:'⚡',s:['disney']},
+  {id:82, t:'ピクサー作品',                  g:'movie',e:'🎭',s:['disney']},
+  {id:83, t:'スパイダーマン NWH',            g:'movie',e:'🕷️',s:['disney']},
+  {id:84, t:'トップガン マーヴェリック',      g:'movie',e:'✈️',s:['netflix','amazon']},
+  {id:85, t:'バービー',                      g:'movie',e:'💖',s:['amazon','unext']},
+  {id:86, t:'オッペンハイマー',               g:'movie',e:'💣',s:['amazon','unext']},
+  {id:87, t:'ハリー・ポッターシリーズ',       g:'movie',e:'🪄',s:['hulu','unext','amazon']},
+  {id:88, t:'コーダ あいのうた',              g:'movie',e:'🎵',s:['apple']},
+  {id:89, t:'ナポレオン',                    g:'movie',e:'👑',s:['apple','amazon']},
+  {id:90, t:'インターステラー',               g:'movie',e:'🌌',s:['amazon','unext']},
+  {id:91, t:'マトリックスシリーズ',           g:'movie',e:'🟢',s:['unext','amazon']},
+  {id:92, t:'ボヘミアン・ラプソディ',         g:'movie',e:'🎸',s:['hulu','amazon']},
+  {id:93, t:'君の名は。',                    g:'movie',e:'🌠',s:['amazon','hulu','unext']},
+  {id:94, t:'千と千尋の神隠し',              g:'movie',e:'🏮',s:['netflix','amazon']},
+  // 韓国ドラマ
+  {id:100,t:'愛の不時着',                    g:'kdrama',e:'❤️',s:['netflix']},
+  {id:101,t:'梨泰院クラス',                  g:'kdrama',e:'🍺',s:['netflix']},
+  {id:102,t:'今、私たちの学校は…',            g:'kdrama',e:'🧟',s:['netflix']},
+  {id:103,t:'キングダム（韓国）',             g:'kdrama',e:'🏰',s:['netflix']},
+  {id:104,t:'ヴィンチェンツォ',               g:'kdrama',e:'🌹',s:['netflix']},
+  {id:105,t:'ムービング',                    g:'kdrama',e:'💨',s:['disney']},
+  {id:106,t:'マイ・ディア・ミスター',         g:'kdrama',e:'👔',s:['netflix','unext']},
+  {id:107,t:'ウ・ヨンウ弁護士は天才肌',      g:'kdrama',e:'🐋',s:['netflix']},
+  {id:108,t:'ミスター・サンシャイン',         g:'kdrama',e:'🌅',s:['netflix']},
+  {id:109,t:'スタートアップ：夢の扉',         g:'kdrama',e:'🚀',s:['netflix']},
+  // 日本ドラマ
+  {id:110,t:'全裸監督',                      g:'jdrama',e:'🎬',s:['netflix']},
+  {id:111,t:'サイレント',                    g:'jdrama',e:'🔇',s:['hulu']},
+  {id:112,t:'大豆田とわ子と三人の元夫',      g:'jdrama',e:'👩',s:['hulu']},
+  {id:113,t:'MIU404',                       g:'jdrama',e:'🚔',s:['amazon','unext']},
+  {id:114,t:'アンメット',                    g:'jdrama',e:'🧠',s:['unext','lemino']},
+  {id:115,t:'不適切にもほどがある！',         g:'jdrama',e:'📻',s:['unext','lemino']},
+  {id:116,t:'エルピス',                      g:'jdrama',e:'📡',s:['amazon','lemino']},
+  {id:117,t:'ハヤブサ消防団',               g:'jdrama',e:'🔥',s:['amazon','unext']},
+  {id:118,t:'だが、情熱はある',              g:'jdrama',e:'✊',s:['hulu','unext']},
+  {id:119,t:'コウノドリ',                    g:'jdrama',e:'🍼',s:['netflix','amazon']},
+  {id:120,t:'リバーサルオーケストラ',         g:'jdrama',e:'🎻',s:['hulu','unext']},
+  {id:121,t:'最高の教師',                    g:'jdrama',e:'🏫',s:['hulu']},
+  {id:122,t:'VIVANT',                       g:'jdrama',e:'🏜️',s:['unext','lemino']},
+  {id:123,t:'ブラッシュアップライフ',         g:'jdrama',e:'🔁',s:['hulu']},
+  // スポーツ
+  {id:200,t:'Jリーグ',                      g:'sports',e:'⚽',s:['dazn']},
+  {id:201,t:'プレミアリーグ',               g:'sports',e:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',s:['dazn']},
+  {id:202,t:'ラ・リーガ（スペイン）',        g:'sports',e:'🇪🇸',s:['dazn']},
+  {id:203,t:'セリエA（イタリア）',           g:'sports',e:'🇮🇹',s:['dazn']},
+  {id:204,t:'ブンデスリーガ（ドイツ）',      g:'sports',e:'🇩🇪',s:['dazn']},
+  {id:205,t:'UEFAチャンピオンズリーグ',     g:'sports',e:'🏆',s:['dazn']},
+  {id:206,t:'NBA（バスケットボール）',       g:'sports',e:'🏀',s:['dazn','amazon']},
+  {id:207,t:'MLB（大リーグ）',              g:'sports',e:'⚾',s:['dazn']},
+  {id:208,t:'プロ野球（NPB）',              g:'sports',e:'🏟️',s:['dazn','amazon']},
+  {id:209,t:'F1グランプリ',                 g:'sports',e:'🏎️',s:['dazn']},
+  {id:210,t:'テニス グランドスラム',         g:'sports',e:'🎾',s:['dazn','amazon']},
+  {id:211,t:'ボクシング',                   g:'sports',e:'🥊',s:['dazn','amazon']},
+  {id:212,t:'ゴルフ（PGAツアー等）',        g:'sports',e:'⛳',s:['dazn']},
+  {id:213,t:'ラグビー（国際試合）',          g:'sports',e:'🏉',s:['dazn','abema']},
+  {id:214,t:'箱根駅伝',                     g:'sports',e:'🏃',s:['hulu','abema']},
+  {id:215,t:'大相撲',                       g:'sports',e:'🏯',s:['abema']},
+  {id:216,t:'WBC・侍ジャパン',              g:'sports',e:'🌏',s:['abema']},
+  {id:217,t:'Bリーグ（バスケ）',            g:'sports',e:'🏀',s:['dazn']},
+  {id:218,t:'格闘技（RIZIN等）',            g:'sports',e:'🥋',s:['abema','amazon']},
+  // バラエティ
+  {id:300,t:'テラスハウス',                  g:'variety',e:'🏠',s:['netflix']},
+  {id:301,t:'水曜日のダウンタウン',           g:'variety',e:'📺',s:['unext','lemino']},
+  {id:302,t:'アメトーーク！',                g:'variety',e:'🎤',s:['abema']},
+  {id:303,t:'ガキの使いやあらへんで',         g:'variety',e:'😂',s:['hulu']},
+  {id:304,t:'しゃべくり007',                 g:'variety',e:'🎙️',s:['hulu']},
+  {id:305,t:'ゴッドタン',                    g:'variety',e:'😈',s:['amazon']},
+  {id:306,t:'YOUは何しに日本へ？',           g:'variety',e:'🌏',s:['amazon','hulu']},
+  {id:307,t:'M-1グランプリ',                 g:'variety',e:'🏆',s:['abema','amazon']},
+  {id:308,t:'キングオブコント',               g:'variety',e:'👑',s:['unext','lemino']},
+  {id:309,t:'THE SECOND グランプリ',         g:'variety',e:'🎭',s:['abema']},
+  {id:310,t:'有吉の壁',                      g:'variety',e:'🧱',s:['hulu','unext']},
+  {id:311,t:'笑点',                          g:'variety',e:'👘',s:['hulu']},
+  {id:312,t:'人志松本のすべらない話',          g:'variety',e:'🍶',s:['hulu']},
+  {id:313,t:'乃木坂46 SHOW！',              g:'variety',e:'🌸',s:['amazon']},
+  {id:314,t:'クィア・アイ',                  g:'variety',e:'✨',s:['netflix']},
+  {id:315,t:'ザ・サークル',                  g:'variety',e:'🔵',s:['netflix']},
+  {id:316,t:'全力坂',                        g:'variety',e:'🏃',s:['hulu']},
+  {id:317,t:'ダウンタウンDX',                g:'variety',e:'🌟',s:['hulu']},
+  {id:318,t:'家、ついて行ってイイですか？',    g:'variety',e:'🏡',s:['amazon']},
+];
+
+// ─────────────────────────────────────────────────────
+// TMDb API
+// ─────────────────────────────────────────────────────
+const TMDB = 'https://api.themoviedb.org/3';
+
+function getTmdbKey() { return localStorage.getItem('tmdb_key') || ''; }
+
+function saveTmdbKey() {
+  const k = document.getElementById('tmdbKeyInput').value.trim();
+  if (!k) return;
+  localStorage.setItem('tmdb_key', k);
+  document.getElementById('tmdbKeyInput').value = '';
+  initTmdbUI();
+}
+
+function clearTmdbKey() {
+  localStorage.removeItem('tmdb_key');
+  initTmdbUI();
+}
+
+function initTmdbUI() {
+  if (IS_DEPLOYED) {
+    document.getElementById('tmdbSetup').style.display = 'none';
+    document.getElementById('tmdbActive').style.display = 'flex';
+    document.getElementById('tmdbClrBtn').style.display = 'none';
+    document.getElementById('tmdbActiveMsg').textContent = 'リアルタイム配信サービス検索が使えます';
+    document.getElementById('addInput').placeholder = '作品名を入力（日本語・英語）';
+    return;
+  }
+  const hasKey = !!getTmdbKey();
+  document.getElementById('tmdbSetup').style.display  = hasKey ? 'none'  : 'block';
+  document.getElementById('tmdbActive').style.display = hasKey ? 'flex'  : 'none';
+  document.getElementById('addInput').placeholder     = hasKey
+    ? '作品名を入力（日本語・英語）'
+    : 'ローカル検索のみ（APIキー未設定）';
+}
+
+function nameToSvcKey(n) {
+  if (!n) return null;
+  n = n.toLowerCase();
+  if (n.includes('netflix'))                        return 'netflix';
+  if (n.includes('prime') || n.includes('amazon'))  return 'amazon';
+  if (n.includes('disney'))                         return 'disney';
+  if (n.includes('hulu'))                           return 'hulu';
+  if (n.includes('u-next') || n.includes('unext'))  return 'unext';
+  if (n.includes('apple'))                          return 'apple';
+  if (n.includes('abema'))                          return 'abema';
+  if (n.includes('lemino'))                         return 'lemino';
+  if (n.includes('dazn'))                           return 'dazn';
+  return null;
+}
+
+async function tmdbSearch(q) {
+  const key = getTmdbKey();
+  if (!key) return null;
+
+  // 作品検索
+  const sRes = await fetch(
+    `${TMDB}/search/multi?query=${encodeURIComponent(q)}&api_key=${key}&language=ja-JP&include_adult=false&page=1`
+  );
+  if (!sRes.ok) throw new Error('TMDb search ' + sRes.status);
+  const sData = await sRes.json();
+
+  const hits = (sData.results || [])
+    .filter(r => r.media_type === 'movie' || r.media_type === 'tv')
+    .slice(0, 6);
+
+  // 各作品の日本のwatch/providersを並行取得
+  const rows = await Promise.allSettled(hits.map(async r => {
+    const pRes = await fetch(
+      `${TMDB}/${r.media_type}/${r.id}/watch/providers?api_key=${key}`
+    );
+    const pData = await pRes.json();
+    const jp    = pData?.results?.JP;
+    const svcs  = [...new Set(
+      (jp?.flatrate || []).map(p => nameToSvcKey(p.provider_name)).filter(Boolean)
+    )];
+    return {
+      title: r.title || r.name || '',
+      year:  (r.release_date || r.first_air_date || '').slice(0, 4),
+      type:  r.media_type === 'movie' ? '映画' : 'TV',
+      svcs,
+      tmdbId: r.id,
+    };
+  }));
+
+  return rows.filter(r => r.status === 'fulfilled').map(r => r.value);
+}
+
+// ─────────────────────────────────────────────────────
+// State
+// ─────────────────────────────────────────────────────
+let selected     = new Set();
+let customItems  = [];
+let customSeq    = 2000;
+let activeGenre  = 'all';
+let searchQ      = '';
+let checkedSvcs  = new Set();
+let addDebounce  = null;
+
+function allItems() { return [...DB, ...customItems]; }
+
+// ─────────────────────────────────────────────────────
+// Init
+// ─────────────────────────────────────────────────────
+(function init() {
+  document.getElementById('searchInput').addEventListener('input', e => {
+    searchQ = e.target.value; renderGrid();
+  });
+  document.getElementById('filterRow').addEventListener('click', e => {
+    const btn = e.target.closest('.fb');
+    if (!btn) return;
+    document.querySelectorAll('.fb').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeGenre = btn.dataset.genre;
+    renderGrid();
+  });
+
+  const addInput = document.getElementById('addInput');
+  addInput.addEventListener('input', onAddInput);
+  addInput.addEventListener('keydown', e => { if (e.key === 'Escape') closeAdd(); });
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.add-wrap') && !e.target.closest('.add-manual')) closeDD();
+  });
+
+  buildSvcCheckGrid();
+  initTmdbUI();
+  renderGrid();
+})();
+
+// ─────────────────────────────────────────────────────
+// Grid
+// ─────────────────────────────────────────────────────
+function renderGrid() {
+  const grid = document.getElementById('grid');
+  const q = searchQ.trim().toLowerCase();
+  const items = DB.filter(it => {
+    const gOk = activeGenre === 'all' || it.g === activeGenre;
+    const sOk = !q || it.t.toLowerCase().includes(q);
+    return gOk && sOk;
+  });
+  if (!items.length) {
+    grid.innerHTML = `<div class="grid-empty"><span class="e">🔍</span>「${esc(searchQ)}」に一致する作品が見つかりません</div>`;
+    return;
+  }
+  grid.innerHTML = items.map(it => {
+    const sel = selected.has(it.id);
+    const col = SVC[it.s[0]]?.color || '#555';
+    return `<div class="card${sel?' sel':''}" onclick="toggle(${it.id})">
+      <div class="card-thumb" style="background:linear-gradient(160deg,${col}1a,${col}38)">
+        <span>${it.e}</span><div class="card-chk">✓</div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">${esc(it.t)}</div>
+        <div class="svc-tags">${it.s.map(k=>`<span class="svc-tag" style="background:${SVC[k].color}">${SVC[k].abbr}</span>`).join('')}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggle(id) {
+  selected.has(id) ? selected.delete(id) : selected.add(id);
+  renderGrid(); renderSelList(); syncUI();
+}
+
+function removeItem(id) {
+  selected.delete(id);
+  renderGrid(); renderSelList(); syncUI();
+}
+
+function syncUI() {
+  document.getElementById('calcBtn').disabled = selected.size === 0;
+  document.getElementById('countBadge').textContent = selected.size;
+}
+
+function renderSelList() {
+  const ul = document.getElementById('selList');
+  if (!selected.size) {
+    ul.innerHTML = '<li class="sel-empty">左から観たい作品を<br>クリックして追加してください</li>';
+    return;
+  }
+  ul.innerHTML = allItems().filter(c => selected.has(c.id)).map(it =>
+    `<li class="sel-item">
+      <span class="sel-em">${it.e}</span>
+      <span class="sel-name">${esc(it.t)}</span>
+      <button class="sel-rm" onclick="removeItem(${it.id})">✕</button>
+    </li>`
+  ).join('');
+}
+
+// ─────────────────────────────────────────────────────
+// カスタム追加 / TMDb検索
+// ─────────────────────────────────────────────────────
+
+// TMDb結果を一時保持（IDでアクセス）
+const tmdbCache = new Map();
+let tmdbCacheSeq = 0;
+
+function onAddInput() {
+  const q = document.getElementById('addInput').value.trim();
+  clearTimeout(addDebounce);
+
+  if (q.length < 2) { closeAdd(); return; }
+
+  const localHits = localSearch(q);
+  const canSearch = IS_DEPLOYED || !!getTmdbKey();
+
+  renderDD(localHits, null, q, canSearch ? 'searching' : 'nokey');
+  document.getElementById('addManual').className = 'add-manual';
+
+  if (canSearch) {
+    addDebounce = setTimeout(() => performTmdbSearch(q), 450);
+  }
+}
+
+function localSearch(q) {
+  return DB.filter(it => it.t.toLowerCase().includes(q.toLowerCase())).slice(0, 5);
+}
+
+async function performTmdbSearch(q) {
+  if (document.getElementById('addInput').value.trim() !== q) return;
+  const localHits = localSearch(q);
+  try {
+    let items;
+    if (IS_DEPLOYED) {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), 10000);
+      const res = await fetch(`/api/lookup?q=${encodeURIComponent(q)}`, { signal: ctrl.signal });
+      clearTimeout(t);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      items = (data.results || []).map(r => ({
+        title: r.title,
+        year: r.year,
+        type: r.type,
+        svcs: [...new Set((r.providers || []).map(nameToSvcKey).filter(Boolean))],
+      }));
+    } else {
+      items = await tmdbSearch(q);
+    }
+    if (document.getElementById('addInput').value.trim() !== q) return;
+    renderDD(localHits, items, q, 'done');
+  } catch(e) {
+    if (document.getElementById('addInput').value.trim() !== q) return;
+    const msg = e.message.includes('401') ? 'APIキーが無効です' : 'TMDb検索に失敗しました';
+    renderDD(localHits, [], q, 'error', msg);
+  }
+}
+
+function renderDD(localHits, tmdbItems, q, status, errMsg) {
+  const dd = document.getElementById('addDd');
+  const parts = [];
+
+  // ── ローカルDB結果
+  if (localHits.length) {
+    parts.push(`<div class="dd-section">
+      <div class="dd-section-hd">📋 登録済み作品</div>
+      ${localHits.map(it => {
+        const alr = selected.has(it.id);
+        return `<div class="dd-item" onclick="addFromDD_db(${it.id})">
+          <span class="dd-em">${it.e}</span>
+          <div class="dd-info"><div class="dd-title">${hlText(it.t, q)}</div></div>
+          <div class="dd-svcs">${it.s.map(k=>`<span class="svc-tag" style="background:${SVC[k].color};font-size:8px;padding:1px 4px">${SVC[k].abbr}</span>`).join('')}</div>
+          ${alr ? '<span class="dd-added">✓済</span>' : ''}
+        </div>`;
+      }).join('')}
+    </div>`);
+  }
+
+  // ── TMDb結果 / ステータス
+  if (status === 'searching') {
+    parts.push(`<div class="dd-section"><div class="dd-status"><div class="spinner"></div>TMDbで検索中...</div></div>`);
+
+  } else if (status === 'nokey') {
+    parts.push(`<div class="dd-section"><div class="dd-status" style="font-size:11px;flex-direction:column;align-items:flex-start;gap:2px">
+      <span>🔑 APIキー未設定のためネット検索できません</span>
+      <span style="color:var(--tx2)">上の設定フォームでキーを登録してください</span>
+    </div></div>`);
+
+  } else if (status === 'done' && tmdbItems) {
+    // ローカルと重複しないものだけ表示
+    const fresh = tmdbItems.filter(r =>
+      !localHits.some(l => l.t.toLowerCase() === r.title.toLowerCase())
+    );
+    if (fresh.length) {
+      parts.push(`<div class="dd-section">
+        <div class="dd-section-hd">🌐 TMDb検索結果</div>
+        ${fresh.map(item => {
+          const cid = 'tc' + (tmdbCacheSeq++);
+          tmdbCache.set(cid, item);
+          const hasSvcs = item.svcs.length > 0;
+          return `<div class="dd-item" onclick="addFromDD_tmdb('${cid}')">
+            <span class="dd-em">🎬</span>
+            <div class="dd-info">
+              <div class="dd-title">${hlText(item.title, q)}</div>
+              <div class="dd-meta">${item.type}${item.year ? ' · '+item.year : ''}</div>
+            </div>
+            ${hasSvcs
+              ? `<div class="dd-svcs">${item.svcs.map(k=>`<span class="svc-tag" style="background:${SVC[k].color};font-size:8px;padding:1px 4px">${SVC[k].abbr}</span>`).join('')}</div>`
+              : `<span class="dd-nosvcs">サブスク未対応</span>`}
+          </div>`;
+        }).join('')}
+      </div>`);
+    } else if (!localHits.length) {
+      showManualFallback(q);
+      return;
+    }
+    parts.push(`<div class="dd-footer">配信情報: <a href="https://www.themoviedb.org/" target="_blank">TMDb</a></div>`);
+
+  } else if (status === 'error') {
+    if (!localHits.length) { showManualFallback(q); return; }
+    parts.push(`<div class="dd-section"><div class="dd-status" style="font-size:11px">⚠️ ${errMsg || 'TMDb検索に失敗しました'}</div></div>`);
+  }
+
+  if (!parts.length) { closeDD(); return; }
+  dd.innerHTML = parts.join('');
+  dd.className = 'add-dd open';
+}
+
+function showManualFallback(q) {
+  closeDD();
+  document.getElementById('addManualName').textContent = `「${q}」`;
+  document.getElementById('addManual').className = 'add-manual show';
+  document.getElementById('addHint').textContent = '見つかりませんでした。配信サービスを選択して追加できます：';
+  checkedSvcs.clear();
+  document.querySelectorAll('.svc-chk').forEach(el => el.classList.remove('on'));
+  document.getElementById('addEmoji').value = '🎬';
+}
+
+function addFromDD_db(id) {
+  if (!selected.has(id)) {
+    selected.add(id);
+    renderSelList();
+    syncUI();
+  }
+  closeAdd();
+}
+
+function addFromDD_tmdb(cid) {
+  const item = tmdbCache.get(cid);
+  if (!item) return;
+  if (!item.svcs || item.svcs.length === 0) {
+    document.getElementById('addInput').value = item.title;
+    showManualFallback(item.title);
+    document.getElementById('addHint').textContent = '配信サービスの情報が取得できませんでした。手動で選択してください：';
+    return;
+  }
+  const custom = { id: customSeq++, t: item.title, g:'custom', e:'🎬', s: item.svcs };
+  customItems.push(custom);
+  selected.add(custom.id);
+  renderSelList();
+  syncUI();
+  closeAdd();
+}
+
+// ─ 手動追加（フォールバック）
+function buildSvcCheckGrid() {
+  document.getElementById('svcCheckGrid').innerHTML = Object.entries(SVC).map(([k,v]) =>
+    `<div class="svc-chk" id="chk-${k}" onclick="toggleSvcChk('${k}')">
+      <span class="svc-chk-dot" style="background:${v.color}"></span>
+      <span class="svc-chk-name">${v.name}</span>
+      <span class="svc-chk-tick">✓</span>
+    </div>`
+  ).join('');
+}
+
+function toggleSvcChk(k) {
+  checkedSvcs.has(k) ? checkedSvcs.delete(k) : checkedSvcs.add(k);
+  document.getElementById('chk-'+k).classList.toggle('on', checkedSvcs.has(k));
+}
+
+function addCustomManual() {
+  const q = document.getElementById('addInput').value.trim();
+  if (!q) return;
+  if (!checkedSvcs.size) { alert('配信サービスを1つ以上選択してください'); return; }
+  const emoji = document.getElementById('addEmoji').value.trim() || '🎬';
+  const item = { id: customSeq++, t: q, g:'custom', e: emoji, s: [...checkedSvcs] };
+  customItems.push(item);
+  selected.add(item.id);
+  renderSelList(); syncUI(); closeAdd();
+}
+
+function closeDD() {
+  const dd = document.getElementById('addDd');
+  dd.className = 'add-dd'; dd.innerHTML = '';
+}
+
+function closeAdd() {
+  closeDD();
+  document.getElementById('addInput').value = '';
+  document.getElementById('addManual').className = 'add-manual';
+  document.getElementById('addHint').textContent = '入力するとJustWatchで配信サービスを自動検索します';
+  checkedSvcs.clear();
+  document.querySelectorAll('.svc-chk').forEach(el => el.classList.remove('on'));
+  document.getElementById('addEmoji').value = '🎬';
+}
+
+// ─────────────────────────────────────────────────────
+// 計算
+// ─────────────────────────────────────────────────────
+function calculate() {
+  const items = allItems().filter(c => selected.has(c.id));
+  const keys = Object.keys(SVC);
+  const n = keys.length;
+  const uncoverable = items.filter(it => !it.s || !it.s.length);
+  const coverable   = items.filter(it => it.s && it.s.length);
+  const valid = [];
+
+  for (let mask = 1; mask < (1 << n); mask++) {
+    const combo = keys.filter((_,i) => mask & (1 << i));
+    if (coverable.every(it => it.s.some(s => combo.includes(s)))) {
+      const cost = combo.reduce((sum,k) => sum + SVC[k].price, 0);
+      valid.push({ combo, cost });
+    }
+  }
+  valid.sort((a,b) => a.cost - b.cost);
+  renderResults(valid.slice(0, 3), items, uncoverable);
+  setTimeout(() => document.getElementById('resultArea').scrollIntoView({ behavior:'smooth', block:'nearest' }), 60);
+}
+
+// ─────────────────────────────────────────────────────
+// 結果表示
+// ─────────────────────────────────────────────────────
+function renderResults(plans, allSel, uncoverable) {
+  const area = document.getElementById('resultArea');
+  if (!plans.length) {
+    area.innerHTML = `<div class="panel"><div class="no-result-box">😔 選択された作品を全て視聴できるプランが見つかりませんでした</div></div>`;
+    return;
+  }
+  const naiveCost = (() => {
+    const used = new Set();
+    allSel.forEach(it => {
+      if (it.s && it.s.length)
+        used.add(it.s.slice().sort((a,b) => SVC[a].price - SVC[b].price)[0]);
+    });
+    return [...used].reduce((s,k) => s + SVC[k].price, 0);
+  })();
+
+  area.innerHTML = `<div class="panel">
+    <div class="panel-ttl">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      最適プラン
+    </div>
+    ${uncoverable.length ? `<div class="warn">⚠️ 配信情報なし: ${uncoverable.map(i=>esc(i.t)).join('、')}</div>` : ''}
+    ${plans.map((p,i) => renderPlan(p, i===0, allSel, i, naiveCost)).join('')}
+  </div>`;
+}
+
+function renderPlan(plan, isBest, allSel, idx, naiveCost) {
+  const saving = naiveCost - plan.cost;
+  const cov = {};
+  plan.combo.forEach(svc => { cov[svc] = allSel.filter(it => it.s && it.s.includes(svc)); });
+  const did = `d${idx}`;
+  return `<div class="result-plan${isBest?' best':''}">
+    ${isBest ? '<div class="best-badge">★ 最安プラン</div>' : `<div class="plan-alt-label">代替プラン ${idx+1}</div>`}
+    <div class="plan-svcs">
+      ${plan.combo.map(k=>`<div class="plan-svc-row">
+        <div class="plan-dot" style="background:${SVC[k].color}"></div>
+        <span class="plan-svc-name">${SVC[k].name}</span>
+        <span class="plan-svc-price">¥${SVC[k].price.toLocaleString()}/月</span>
+      </div>`).join('')}
+    </div>
+    <div class="plan-total">
+      <span class="plan-total-lbl">月額合計</span>
+      <div>
+        <div class="plan-total-val">¥${plan.cost.toLocaleString()}</div>
+        ${saving > 0 && isBest ? `<div class="plan-saving">個別登録より ¥${saving.toLocaleString()} お得</div>` : ''}
+      </div>
+    </div>
+    <button class="cov-toggle" onclick="toggleCov('${did}',this)">▶ 内訳を見る</button>
+    <div class="cov-detail" id="${did}">
+      ${plan.combo.map(svc => {
+        const ts = cov[svc];
+        if (!ts || !ts.length) return '';
+        return `<div class="cov-svc">
+          <div class="cov-svc-lbl"><span class="cov-dot" style="background:${SVC[svc].color}"></span>${SVC[svc].name}</div>
+          <div class="cov-titles">${ts.map(it=>`<span class="cov-tag">${it.e} ${esc(it.t)}</span>`).join('')}</div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
+
+function toggleCov(id, btn) {
+  const el = document.getElementById(id);
+  btn.textContent = el.classList.toggle('open') ? '▼ 内訳を閉じる' : '▶ 内訳を見る';
+}
+
+// ─────────────────────────────────────────────────────
+// Utils
+// ─────────────────────────────────────────────────────
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function hlText(text, q) {
+  if (!q) return esc(text);
+  const i = text.toLowerCase().indexOf(q.toLowerCase());
+  if (i < 0) return esc(text);
+  return esc(text.slice(0,i)) + `<mark>${esc(text.slice(i,i+q.length))}</mark>` + esc(text.slice(i+q.length));
+}
+</script>
+</body>
+</html>
