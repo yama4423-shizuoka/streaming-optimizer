@@ -113,6 +113,11 @@
     .tmdb-clr-btn { background:none; border:none; color:var(--tx2); cursor:pointer; font-size:11px; margin-left:auto; font-family:inherit; transition:color .13s; }
     .tmdb-clr-btn:hover { color:var(--red); }
 
+    /* SEARCH MODE TOGGLE */
+    .search-mode { display:flex; gap:4px; margin-bottom:9px; background:rgba(255,255,255,.04); border-radius:8px; padding:3px; }
+    .mode-btn { flex:1; padding:5px; border:none; border-radius:6px; font-size:11.5px; font-weight:600; cursor:pointer; font-family:inherit; transition:all .15s; background:transparent; color:var(--tx2); }
+    .mode-btn.active { background:var(--acc); color:#fff; box-shadow:0 2px 8px rgba(124,111,245,.35); }
+
     /* ADD PANEL */
     .add-wrap { position:relative; }
     .add-input { width:100%; padding:10px 13px; background:rgba(255,255,255,.04); border:1px solid var(--bd); border-radius:var(--r2); color:var(--tx); font-size:13px; outline:none; font-family:inherit; transition:all .18s; }
@@ -283,6 +288,10 @@
         <button class="tmdb-clr-btn" id="tmdbClrBtn" onclick="clearTmdbKey()">解除</button>
       </div>
 
+      <div class="search-mode">
+        <button class="mode-btn active" id="modeTitle" onclick="setSearchMode('title')">🎬 作品名</button>
+        <button class="mode-btn" id="modePerson" onclick="setSearchMode('person')">🧑 出演者</button>
+      </div>
       <div class="add-wrap">
         <input class="add-input" id="addInput" type="text" placeholder="作品名を入力（日本語・英語）" autocomplete="off" spellcheck="false">
         <div class="add-dd" id="addDd"></div>
@@ -669,6 +678,18 @@ let activeGenre  = 'all';
 let searchQ      = '';
 let checkedSvcs  = new Set();
 let addDebounce  = null;
+let searchMode   = 'title'; // 'title' | 'person'
+
+function setSearchMode(mode) {
+  searchMode = mode;
+  document.getElementById('modeTitle').classList.toggle('active', mode === 'title');
+  document.getElementById('modePerson').classList.toggle('active', mode === 'person');
+  document.getElementById('addInput').placeholder = mode === 'person'
+    ? '出演者名を入力（日本語・英語）'
+    : '作品名を入力（日本語・英語）';
+  closeAdd();
+  document.getElementById('addInput').focus();
+}
 
 function allItems() { return [...DB, ...customItems]; }
 
@@ -788,7 +809,7 @@ function onAddInput() {
   document.getElementById('addManual').className = 'add-manual';
 
   if (canSearch) {
-    addDebounce = setTimeout(() => performTmdbSearch(q), 450);
+    addDebounce = setTimeout(() => searchMode === 'person' ? performPersonSearch(q) : performTmdbSearch(q), 450);
   }
 }
 
@@ -824,6 +845,49 @@ async function performTmdbSearch(q) {
     if (document.getElementById('addInput').value.trim() !== q) return;
     const msg = e.message.includes('401') ? 'APIキーが無効です' : 'TMDb検索に失敗しました';
     renderDD(localHits, [], q, 'error', msg);
+  }
+}
+
+async function performPersonSearch(q) {
+  if (document.getElementById('addInput').value.trim() !== q) return;
+  try {
+    const res = await fetch(`/api/person?q=${encodeURIComponent(q)}`);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if (document.getElementById('addInput').value.trim() !== q) return;
+
+    const dd = document.getElementById('addDd');
+    if (!data.person) {
+      dd.innerHTML = `<div class="dd-section"><div class="dd-status">😔 「${esc(q)}」という出演者が見つかりませんでした</div></div>`;
+      dd.className = 'add-dd open';
+      return;
+    }
+
+    const parts = [`<div class="dd-section">
+      <div class="dd-section-hd">🧑 ${esc(data.person.name)} の出演作品</div>
+      ${(data.results || []).map(item => {
+        const cid = 'tc' + (tmdbCacheSeq++);
+        tmdbCache.set(cid, { ...item, svcs: [...new Set((item.providers || []).map(nameToSvcKey).filter(Boolean))] });
+        const svcs = [...new Set((item.providers || []).map(nameToSvcKey).filter(Boolean))];
+        return `<div class="dd-item" onclick="addFromDD_tmdb('${cid}')">
+          <span class="dd-em">🎬</span>
+          <div class="dd-info">
+            <div class="dd-title">${esc(item.title)}</div>
+            <div class="dd-meta">${item.type}${item.year ? ' · ' + item.year : ''}</div>
+          </div>
+          ${svcs.length
+            ? `<div class="dd-svcs">${svcs.map(k=>`<span class="svc-tag" style="background:${SVC[k].color};font-size:8px;padding:1px 4px">${SVC[k].abbr}</span>`).join('')}</div>`
+            : `<span class="dd-nosvcs">未配信</span>`}
+        </div>`;
+      }).join('')}
+    </div>`];
+
+    dd.innerHTML = parts.join('') + `<div class="dd-footer">配信情報: <a href="https://www.themoviedb.org/" target="_blank">TMDb</a></div>`;
+    dd.className = 'add-dd open';
+  } catch(e) {
+    const dd = document.getElementById('addDd');
+    dd.innerHTML = `<div class="dd-section"><div class="dd-status">⚠️ 検索に失敗しました</div></div>`;
+    dd.className = 'add-dd open';
   }
 }
 
