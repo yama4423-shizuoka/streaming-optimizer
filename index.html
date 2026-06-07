@@ -650,7 +650,8 @@ function onAddInput() {
   const q = document.getElementById('addInput').value.trim();
   clearTimeout(addDebounce);
 
-  if (q.length < 2) { closeAdd(); return; }
+  if (q.length === 0) { closeAdd(); return; }
+  if (q.length < 2) { closeDD(); return; }
 
   const localHits = localSearch(q);
   const canSearch = IS_DEPLOYED || !!getTmdbKey();
