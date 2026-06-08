@@ -143,6 +143,42 @@
     .rank-score { font-size:11px; color:var(--tx2); flex-shrink:0; min-width:56px; text-align:right; }
     .rank-cover-hint { font-size:11px; color:var(--tx2); text-align:center; padding:10px; opacity:.7; }
 
+    /* SUBSCRIPTION MANAGER */
+    .sub-add-row { display:flex; gap:6px; margin-bottom:10px; }
+    .sub-select { flex:1; padding:7px 9px; background:rgba(255,255,255,.04); border:1px solid var(--bd); border-radius:var(--r2); color:var(--tx); font-size:12px; outline:none; font-family:inherit; cursor:pointer; }
+    .sub-select option { background:var(--s2); }
+    .sub-date { width:130px; padding:7px 9px; background:rgba(255,255,255,.04); border:1px solid var(--bd); border-radius:var(--r2); color:var(--tx); font-size:12px; outline:none; font-family:inherit; }
+    .sub-add-btn { padding:7px 11px; background:var(--acc); border:none; border-radius:var(--r2); color:#fff; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; white-space:nowrap; transition:opacity .13s; }
+    .sub-add-btn:hover { opacity:.85; }
+    .sub-trial-chk { display:flex; align-items:center; gap:5px; font-size:11px; color:var(--tx2); margin-bottom:10px; cursor:pointer; }
+    .sub-list { display:flex; flex-direction:column; gap:7px; margin-bottom:10px; }
+    .sub-item { background:rgba(255,255,255,.03); border:1px solid var(--bd); border-radius:8px; padding:9px 11px; position:relative; }
+    .sub-item.urgent { border-color:rgba(248,113,113,.4); background:rgba(248,113,113,.05); }
+    .sub-item.warn { border-color:rgba(251,191,36,.35); background:rgba(251,191,36,.04); }
+    .sub-item-head { display:flex; align-items:center; gap:7px; margin-bottom:4px; }
+    .sub-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .sub-name { font-size:12px; font-weight:700; flex:1; }
+    .sub-rm { background:none; border:none; color:var(--tx2); cursor:pointer; font-size:13px; padding:2px 4px; font-family:inherit; transition:color .13s; }
+    .sub-rm:hover { color:var(--red); }
+    .sub-deadline { font-size:11px; color:var(--tx2); line-height:1.6; }
+    .sub-days-ok   { color:var(--green); font-weight:700; }
+    .sub-days-warn { color:#fbbf24; font-weight:700; }
+    .sub-days-urg  { color:var(--red); font-weight:700; }
+    .sub-actions { display:flex; gap:5px; margin-top:7px; }
+    .sub-action-btn { flex:1; padding:5px 8px; border-radius:6px; font-size:10px; font-weight:700; cursor:pointer; font-family:inherit; transition:all .13s; border:1px solid; text-align:center; text-decoration:none; display:block; }
+    .sub-action-btn.cancel { color:var(--red); border-color:rgba(248,113,113,.3); background:transparent; }
+    .sub-action-btn.cancel:hover { background:rgba(248,113,113,.1); }
+    .sub-action-btn.ical { color:var(--acc2); border-color:rgba(124,111,245,.3); background:transparent; }
+    .sub-action-btn.ical:hover { background:rgba(124,111,245,.1); }
+    .sub-notif-btn { width:100%; padding:7px; background:transparent; border:1px solid var(--bd); border-radius:var(--r2); color:var(--tx2); font-size:11px; cursor:pointer; font-family:inherit; transition:all .13s; }
+    .sub-notif-btn:hover { border-color:var(--acc); color:var(--acc2); }
+    .sub-empty { font-size:12px; color:var(--tx2); text-align:center; padding:12px 0; opacity:.7; }
+    .deadline-alert { position:fixed; top:80px; right:20px; z-index:1000; background:rgba(10,10,20,.95); border:1px solid rgba(248,113,113,.4); border-radius:var(--r); padding:14px 16px; max-width:280px; box-shadow:0 8px 32px rgba(0,0,0,.6); animation:slideIn .3s ease; }
+    @keyframes slideIn { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:none} }
+    .alert-ttl { font-size:13px; font-weight:700; color:#fca5a5; margin-bottom:8px; }
+    .alert-item { font-size:12px; color:var(--tx2); padding:3px 0; }
+    .alert-close { position:absolute; top:10px; right:10px; background:none; border:none; color:var(--tx2); cursor:pointer; font-size:16px; font-family:inherit; }
+
     /* RESULTS: trial/annual badges */
     .svc-trial { font-size:10px; color:var(--green); font-weight:600; }
     .svc-annual-note { font-size:10px; color:var(--acc2); margin-top:2px; }
@@ -303,6 +339,25 @@
         <input type="range" class="budget-slider" id="budgetSlider" min="0" max="15000" step="500" value="0" oninput="onBudgetChange(this.value)">
       </div>
       <button class="calc-btn" id="calcBtn" disabled onclick="calculate()">最安プランを計算する →</button>
+    </div>
+
+    <div class="panel">
+      <div class="panel-ttl">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+        解約スケジュール管理
+      </div>
+      <div class="sub-add-row">
+        <select class="sub-select" id="subSvcSelect">
+          ${Object.entries(SVC).map(([k,v])=>`<option value="${k}">${v.name}</option>`).join('')}
+        </select>
+        <input type="date" class="sub-date" id="subStartDate">
+        <button class="sub-add-btn" onclick="addSub()">追加</button>
+      </div>
+      <label class="sub-trial-chk">
+        <input type="checkbox" id="subIsTrial"> 無料トライアル中
+      </label>
+      <div class="sub-list" id="subList"></div>
+      <button class="sub-notif-btn" id="subNotifBtn" onclick="requestNotifPermission()">🔔 ブラウザ通知を有効にする</button>
     </div>
 
     <div class="panel">
@@ -736,6 +791,165 @@ let searchMode   = 'title';
 let budget       = 0; // 'title' | 'person'
 
 // ─────────────────────────────────────────────────────
+// 解約スケジュール管理
+// ─────────────────────────────────────────────────────
+let mySubs = JSON.parse(localStorage.getItem('my_subs') || '[]');
+let subSeq = Date.now();
+
+function saveSubs() {
+  localStorage.setItem('my_subs', JSON.stringify(mySubs));
+}
+
+function addSub() {
+  const svcKey   = document.getElementById('subSvcSelect').value;
+  const startRaw = document.getElementById('subStartDate').value;
+  const isTrial  = document.getElementById('subIsTrial').checked;
+  if (!startRaw) { alert('開始日を選択してください'); return; }
+  mySubs.push({ id: 'sub' + (subSeq++), svcKey, startDate: startRaw, isTrial });
+  saveSubs();
+  renderSubList();
+  checkDeadlineAlerts();
+}
+
+function removeSub(id) {
+  mySubs = mySubs.filter(s => s.id !== id);
+  saveSubs();
+  renderSubList();
+}
+
+function getNextRenewal(startDate) {
+  const start = new Date(startDate);
+  const now   = new Date(); now.setHours(0,0,0,0);
+  const d     = new Date(start);
+  while (d <= now) d.setMonth(d.getMonth() + 1);
+  return d;
+}
+
+function getDeadlineInfo(sub) {
+  const svc   = SVC[sub.svcKey];
+  const today = new Date(); today.setHours(0,0,0,0);
+  if (sub.isTrial && svc.trial) {
+    const trialEnd = new Date(sub.startDate);
+    trialEnd.setDate(trialEnd.getDate() + svc.trial);
+    const days = Math.round((trialEnd - today) / 86400000);
+    return { type:'trial', deadline: trialEnd, daysLeft: days, label:`無料期間終了 ${fmt(trialEnd)}` };
+  }
+  const renewal = getNextRenewal(sub.startDate);
+  const cancelBy = new Date(renewal); cancelBy.setDate(cancelBy.getDate() - 2);
+  const days = Math.round((cancelBy - today) / 86400000);
+  return { type:'renewal', deadline: cancelBy, daysLeft: days, label:`解約期限 ${fmt(cancelBy)}（更新日 ${fmt(renewal)}）` };
+}
+
+function fmt(d) {
+  return `${d.getMonth()+1}/${d.getDate()}`;
+}
+
+function daysClass(n) {
+  if (n <= 0)  return 'sub-days-urg';
+  if (n <= 3)  return 'sub-days-urg';
+  if (n <= 7)  return 'sub-days-warn';
+  return 'sub-days-ok';
+}
+
+function urgencyClass(n) {
+  if (n <= 3)  return 'urgent';
+  if (n <= 7)  return 'warn';
+  return '';
+}
+
+function exportICS(sub) {
+  const info = getDeadlineInfo(sub);
+  const svc  = SVC[sub.svcKey];
+  const d    = info.deadline;
+  const pad  = n => String(n).padStart(2,'0');
+  const ds   = `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}`;
+  const next = new Date(d); next.setDate(next.getDate()+1);
+  const ds2  = `${next.getFullYear()}${pad(next.getMonth()+1)}${pad(next.getDate())}`;
+  const ics  = [
+    'BEGIN:VCALENDAR','VERSION:2.0','CALSCALE:GREGORIAN',
+    'BEGIN:VEVENT',
+    `DTSTART;VALUE=DATE:${ds}`,
+    `DTEND;VALUE=DATE:${ds2}`,
+    `SUMMARY:【解約期限】${svc.name}`,
+    `DESCRIPTION:${svc.name}の解約期限日です。今日中に手続きをしてください。`,
+    'BEGIN:VALARM','TRIGGER:-PT1440M','ACTION:DISPLAY',
+    `DESCRIPTION:【解約期限】${svc.name}`,
+    'END:VALARM',
+    'END:VEVENT','END:VCALENDAR'
+  ].join('\r\n');
+  const blob = new Blob([ics], { type:'text/calendar' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = `${sub.svcKey}-cancel.ics`; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function renderSubList() {
+  const el = document.getElementById('subList');
+  if (!mySubs.length) {
+    el.innerHTML = '<div class="sub-empty">登録中のサブスクはありません</div>';
+    return;
+  }
+  el.innerHTML = mySubs.map(sub => {
+    const svc  = SVC[sub.svcKey];
+    const info = getDeadlineInfo(sub);
+    const dc   = daysClass(info.daysLeft);
+    const uc   = urgencyClass(info.daysLeft);
+    const daysText = info.daysLeft < 0
+      ? `<span class="${dc}">⚠️ 期限切れ</span>`
+      : `<span class="${dc}">あと${info.daysLeft}日</span>`;
+    return `<div class="sub-item ${uc}">
+      <div class="sub-item-head">
+        <span class="sub-dot" style="background:${svc.color}"></span>
+        <span class="sub-name">${svc.name}${sub.isTrial ? ' 🎁' : ''}</span>
+        <button class="sub-rm" onclick="removeSub('${sub.id}')">✕</button>
+      </div>
+      <div class="sub-deadline">
+        ${info.label} — ${daysText}
+      </div>
+      <div class="sub-actions">
+        <a href="${svc.url}" target="_blank" rel="noopener" class="sub-action-btn cancel">解約ページへ →</a>
+        <button class="sub-action-btn ical" onclick="exportICS(mySubs.find(s=>s.id==='${sub.id}'))">📅 カレンダーに追加</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function checkDeadlineAlerts() {
+  const urgent = mySubs.map(s => {
+    const info = getDeadlineInfo(s);
+    return { svc: SVC[s.svcKey], info };
+  }).filter(x => x.info.daysLeft >= 0 && x.info.daysLeft <= 3);
+
+  if (!urgent.length) return;
+  const el = document.createElement('div');
+  el.className = 'deadline-alert';
+  el.innerHTML = `
+    <button class="alert-close" onclick="this.parentElement.remove()">✕</button>
+    <div class="alert-ttl">⚠️ 解約期限が近づいています</div>
+    ${urgent.map(x => `<div class="alert-item">・${x.svc.name} — あと${x.info.daysLeft}日</div>`).join('')}
+  `;
+  document.body.appendChild(el);
+
+  if (Notification.permission === 'granted') {
+    urgent.forEach(x => {
+      new Notification(`【解約期限】${x.svc.name}`, {
+        body: `解約期限まであと${x.info.daysLeft}日です。忘れずに手続きしてください。`,
+      });
+    });
+  }
+}
+
+async function requestNotifPermission() {
+  if (!('Notification' in window)) { alert('このブラウザは通知に対応していません'); return; }
+  const perm = await Notification.requestPermission();
+  if (perm === 'granted') {
+    document.getElementById('subNotifBtn').textContent = '🔔 通知が有効です';
+    document.getElementById('subNotifBtn').disabled = true;
+  }
+}
+
+// ─────────────────────────────────────────────────────
 // 予算
 // ─────────────────────────────────────────────────────
 function onBudgetChange(val) {
@@ -891,6 +1105,12 @@ function allItems() { return [...DB, ...customItems]; }
   initPosterObserver();
   renderGrid();
   renderRanking();
+  renderSubList();
+  setTimeout(checkDeadlineAlerts, 800);
+  if (Notification.permission === 'granted') {
+    document.getElementById('subNotifBtn').textContent = '🔔 通知が有効です';
+    document.getElementById('subNotifBtn').disabled = true;
+  }
 })();
 
 // ─────────────────────────────────────────────────────
