@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>サブスク最適化 | 観たい作品で最安プランを計算</title>
+  <title>サブスク診断 | 観たい作品で最安プランを自動計算</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
     :root {
@@ -286,6 +287,87 @@
     ::-webkit-scrollbar-track { background:transparent; }
     ::-webkit-scrollbar-thumb { background:var(--bd); border-radius:3px; }
     mark { background:rgba(124,111,245,.3); color:var(--tx); border-radius:3px; padding:0 1px; }
+
+    /* ─── LOGIN BUTTON ─── */
+    .login-btn { display:flex; align-items:center; gap:7px; padding:7px 14px; background:rgba(255,255,255,.04); border:1px solid rgba(124,111,245,.25); border-radius:var(--r); color:var(--tx); font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; transition:all .18s; white-space:nowrap; flex-shrink:0; }
+    .login-btn:hover { background:rgba(124,111,245,.1); border-color:rgba(124,111,245,.5); }
+    .user-menu { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+    .user-avatar { width:28px; height:28px; border-radius:50%; object-fit:cover; border:2px solid rgba(124,111,245,.4); flex-shrink:0; }
+    .user-name { font-size:13px; font-weight:600; max-width:80px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .logout-btn { padding:5px 10px; background:transparent; border:1px solid rgba(248,113,113,.3); border-radius:8px; color:#fca5a5; font-size:11px; cursor:pointer; font-family:inherit; transition:all .13s; }
+    .logout-btn:hover { background:rgba(248,113,113,.1); }
+    .sync-dot { width:6px; height:6px; border-radius:50%; background:var(--green); flex-shrink:0; animation:pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+    /* ─── MOBILE LAYOUT ─── */
+    @media(max-width:768px) {
+      .header { padding:8px 14px; }
+      .logo-sub { display:none; }
+      .search-wrap { display:none; }
+      .header-badge { font-size:11px; padding:6px 10px; }
+      .layout { grid-template-columns:1fr; padding:10px 12px; gap:0; }
+      .sidebar { display:none; }
+      .filter-row { flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; padding-bottom:4px; }
+      .filter-row::-webkit-scrollbar { display:none; }
+      .fb { white-space:nowrap; flex-shrink:0; font-size:11.5px; padding:5px 11px; }
+      .grid { grid-template-columns:repeat(2,1fr); gap:8px; }
+      .card-thumb { font-size:30px; }
+      .card-title { font-size:10.5px; }
+      .card-body { padding:8px 9px; }
+      .svc-tag { font-size:8px; padding:1px 5px; }
+      body { padding-bottom:70px; }
+      .login-btn .user-name { display:none; }
+    }
+
+    /* ─── MOBILE BOTTOM NAV ─── */
+    .mobile-tabbar { display:none; }
+    @media(max-width:768px) {
+      .mobile-tabbar {
+        display:flex; position:fixed; bottom:0; left:0; right:0; z-index:600;
+        background:rgba(7,7,15,.97); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
+        border-top:1px solid rgba(124,111,245,.18); height:64px;
+        padding-bottom:env(safe-area-inset-bottom,0px); safe-area-inset-bottom:env(safe-area-inset-bottom,0px);
+      }
+      .mobile-tab {
+        flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+        gap:2px; border:none; background:transparent; color:var(--tx2);
+        font-size:9px; font-weight:600; font-family:inherit; cursor:pointer;
+        transition:color .15s; padding:3px 2px; position:relative; letter-spacing:.1px;
+      }
+      .mobile-tab.active { color:var(--acc2); }
+      .mobile-tab-icon { font-size:20px; line-height:1.3; }
+      .mobile-tab-badge {
+        position:absolute; top:5px; right:calc(50% - 21px);
+        background:linear-gradient(135deg,#7c6ff5,#a89cf7); color:#fff;
+        font-size:8px; font-weight:800; border-radius:10px; padding:1px 5px;
+        min-width:14px; text-align:center; display:none; line-height:1.6;
+        box-shadow:0 2px 8px rgba(124,111,245,.5);
+      }
+      .mobile-tab-badge.show { display:block; }
+      /* Bottom Sheet */
+      .mobile-sheet { display:none; }
+      .mobile-sheet.open {
+        display:flex; flex-direction:column; justify-content:flex-end;
+        position:fixed; inset:0; z-index:700;
+      }
+      .mobile-sheet-bg { position:absolute; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(4px); }
+      .mobile-sheet-card {
+        position:relative; background:var(--s1); border-radius:22px 22px 0 0;
+        border-top:1px solid rgba(124,111,245,.28); max-height:90vh; overflow-y:auto;
+        overscroll-behavior:contain; z-index:1;
+      }
+      .mobile-sheet-inner { padding:0 16px 80px; }
+      .mobile-sheet-handle { width:36px; height:4px; background:var(--bd); border-radius:2px; margin:14px auto 20px; }
+      .mobile-sheet-ttl { font-size:18px; font-weight:800; margin-bottom:20px; letter-spacing:-.4px; }
+      .mob-inner-tabs { display:flex; gap:5px; margin-bottom:18px; }
+      .mob-inner-tab {
+        flex:1; padding:8px 5px; border-radius:8px; border:1px solid var(--bd);
+        background:transparent; color:var(--tx2); font-size:11px; font-weight:600;
+        cursor:pointer; font-family:inherit; transition:all .15s; text-align:center; white-space:nowrap;
+      }
+      .mob-inner-tab.active { background:rgba(124,111,245,.18); border-color:var(--acc); color:var(--acc2); }
+      .mob-result-area .panel-ttl { display:none; }
+    }
   </style>
 </head>
 <body>
@@ -304,6 +386,7 @@
       <input class="search-input" id="searchInput" type="text" placeholder="作品名で検索...">
     </div>
     <div class="header-badge">選択中 <span class="hbadge-num" id="countBadge">0</span></div>
+    <div id="authArea"></div>
   </div>
 </header>
 
@@ -422,6 +505,38 @@
 <div class="footer">
   ※ 料金は2024年時点の月額（税込）。配信状況・価格は変更される場合があります。<br>
   配信情報: <a href="https://www.themoviedb.org/" target="_blank" style="color:var(--tx2)">TMDb</a> / 各サービスにてご確認ください。
+</div>
+
+<!-- モバイル ボトムナビ -->
+<nav class="mobile-tabbar" id="mobileTabbar">
+  <button class="mobile-tab active" id="mTabGrid" onclick="mobileGoGrid()">
+    <span class="mobile-tab-icon">📺</span>
+    作品
+  </button>
+  <button class="mobile-tab" id="mTabSel" onclick="mobileOpenSheet('selected')">
+    <span class="mobile-tab-icon">✅</span>
+    <span class="mobile-tab-badge" id="mSelBadge"></span>
+    選択中
+  </button>
+  <button class="mobile-tab" id="mTabCalc" onclick="mobileCalc()">
+    <span class="mobile-tab-icon">💡</span>
+    最安計算
+  </button>
+  <button class="mobile-tab" id="mTabMore" onclick="mobileOpenSheet('more')">
+    <span class="mobile-tab-icon">⚙️</span>
+    設定
+  </button>
+</nav>
+
+<!-- モバイル ボトムシート -->
+<div class="mobile-sheet" id="mobileSheet">
+  <div class="mobile-sheet-bg" onclick="closeMobileSheet()"></div>
+  <div class="mobile-sheet-card">
+    <div class="mobile-sheet-inner">
+      <div class="mobile-sheet-handle"></div>
+      <div id="mobileSheetContent"></div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -606,6 +721,148 @@ const DB = [
   {id:316,t:'全力坂',                        g:'variety',e:'🏃',s:['hulu']},
   {id:317,t:'ダウンタウンDX',                g:'variety',e:'🌟',s:['hulu']},
   {id:318,t:'家、ついて行ってイイですか？',    g:'variety',e:'🏡',s:['amazon']},
+  // ─── 追加アニメ ───
+  {id:401,t:'新世紀エヴァンゲリオン',          g:'anime',  e:'🤖',s:['netflix','amazon']},
+  {id:402,t:'カウボーイビバップ',             g:'anime',  e:'🚀',s:['netflix','amazon']},
+  {id:403,t:'BLEACH ブリーチ',               g:'anime',  e:'⚔️',s:['amazon','hulu']},
+  {id:404,t:'無職転生',                       g:'anime',  e:'🧙',s:['netflix','amazon']},
+  {id:405,t:'約束のネバーランド',              g:'anime',  e:'🌿',s:['netflix','amazon']},
+  {id:406,t:'盾の勇者の成り上がり',            g:'anime',  e:'🛡️',s:['amazon']},
+  {id:407,t:'ぼっち・ざ・ろっく！',            g:'anime',  e:'🎸',s:['amazon','abema']},
+  {id:408,t:'フルーツバスケット',              g:'anime',  e:'🍊',s:['hulu','amazon']},
+  {id:409,t:'機動戦士ガンダム 水星の魔女',     g:'anime',  e:'🤖',s:['netflix','amazon']},
+  {id:410,t:'Dr.STONE ドクターストーン',      g:'anime',  e:'💎',s:['netflix','amazon']},
+  {id:411,t:'七つの大罪',                     g:'anime',  e:'⚡',s:['netflix','amazon']},
+  {id:412,t:'魔法少女まどか☆マギカ',          g:'anime',  e:'💜',s:['netflix','amazon']},
+  {id:413,t:'ソードアート・オンライン',         g:'anime',  e:'⚔️',s:['amazon']},
+  {id:414,t:'俺だけレベルアップな件',          g:'anime',  e:'💎',s:['netflix','amazon','abema']},
+  {id:415,t:'ダンダダン',                     g:'anime',  e:'👻',s:['netflix']},
+  {id:416,t:'ヴィンランド・サガ',              g:'anime',  e:'🪓',s:['amazon','netflix']},
+  {id:417,t:'バキ',                           g:'anime',  e:'💪',s:['netflix']},
+  {id:418,t:'はじめの一歩',                   g:'anime',  e:'🥊',s:['amazon','hulu']},
+  {id:419,t:'THE FIRST SLAM DUNK',           g:'anime',  e:'🏀',s:['amazon']},
+  {id:420,t:'彼方のアストラ',                 g:'anime',  e:'🌌',s:['amazon']},
+  {id:421,t:'その着せ替え人形は恋をする',       g:'anime',  e:'👘',s:['amazon']},
+  {id:422,t:'シャングリラ・フロンティア',        g:'anime',  e:'🎮',s:['amazon']},
+  {id:423,t:'烏は主を選ばない',               g:'anime',  e:'🐦',s:['netflix','amazon']},
+  {id:424,t:'ダーウィンズゲーム',              g:'anime',  e:'🎯',s:['amazon']},
+  {id:425,t:'ハイキュー!!',                   g:'anime',  e:'🏐',s:['netflix','amazon']},
+  {id:426,t:'TRIGUN STAMPEDE',               g:'anime',  e:'🔫',s:['amazon']},
+  {id:427,t:'スキップとローファー',             g:'anime',  e:'🎒',s:['amazon']},
+  {id:428,t:'青の祓魔師',                     g:'anime',  e:'🔥',s:['amazon','hulu']},
+  {id:429,t:'乙女ゲームの破滅フラグ',           g:'anime',  e:'🌹',s:['amazon']},
+  {id:430,t:'かのかり（彼女、お借りします）',    g:'anime',  e:'💗',s:['amazon']},
+  // ─── 追加海外ドラマ ───
+  {id:451,t:'フレンズ',                       g:'foreign',e:'☕',s:['amazon','hulu']},
+  {id:452,t:'SUITS スーツ',                   g:'foreign',e:'👔',s:['amazon','netflix']},
+  {id:453,t:'ビッグバン★セオリー',             g:'foreign',e:'🔭',s:['amazon']},
+  {id:454,t:'ハウス・オブ・カーズ',             g:'foreign',e:'♟️',s:['netflix']},
+  {id:455,t:'コブラ会',                       g:'foreign',e:'🐍',s:['netflix']},
+  {id:456,t:'ウォーキング・デッド',             g:'foreign',e:'🧟',s:['disney','amazon']},
+  {id:457,t:'ダウントン・アビー',               g:'foreign',e:'🏰',s:['amazon']},
+  {id:458,t:'シャーロック',                    g:'foreign',e:'🔍',s:['netflix','amazon']},
+  {id:459,t:'デスパレートな妻たち',             g:'foreign',e:'🌷',s:['hulu']},
+  {id:460,t:'スパルタカス',                    g:'foreign',e:'⚔️',s:['amazon']},
+  {id:461,t:'バイキングス',                    g:'foreign',e:'⛵',s:['amazon']},
+  {id:462,t:'グッド・プレイス',                 g:'foreign',e:'😇',s:['netflix']},
+  {id:463,t:'アウター・バンクス',               g:'foreign',e:'🏄',s:['netflix']},
+  {id:464,t:'オレンジ・イズ・ニュー・ブラック', g:'foreign',e:'🍊',s:['netflix']},
+  {id:465,t:'SHOGUN 将軍',                    g:'foreign',e:'⛩️',s:['disney','hulu']},
+  {id:466,t:'CSI: 科学捜査班',                 g:'foreign',e:'🔬',s:['hulu']},
+  {id:467,t:'マインドハンター',                 g:'foreign',e:'🧠',s:['netflix']},
+  {id:468,t:'クイーンズ・ギャンビット',          g:'foreign',e:'♟️',s:['netflix']},
+  {id:469,t:'グッド・オーメンズ',               g:'foreign',e:'😇',s:['amazon']},
+  {id:470,t:'モダン・ファミリー',               g:'foreign',e:'👨‍👩‍👧‍👦',s:['disney','hulu']},
+  {id:471,t:'ウィッチャー',                    g:'foreign',e:'🐺',s:['netflix']},
+  {id:472,t:'ダーク・マター（Apple TV+）',     g:'foreign',e:'🌌',s:['apple']},
+  {id:473,t:'オーファン・ブラック',             g:'foreign',e:'🧬',s:['amazon']},
+  {id:474,t:'エリート（Elite）',                g:'foreign',e:'🎓',s:['netflix']},
+  {id:475,t:'ルシファー',                      g:'foreign',e:'😈',s:['netflix']},
+  // ─── 追加映画 ───
+  {id:501,t:'ジョン・ウィック',                 g:'movie',  e:'💥',s:['amazon','hulu']},
+  {id:502,t:'ダークナイト',                    g:'movie',  e:'🦇',s:['amazon','unext']},
+  {id:503,t:'ジョーカー',                      g:'movie',  e:'🃏',s:['amazon','unext']},
+  {id:504,t:'ミッション：インポッシブル',        g:'movie',  e:'🎭',s:['amazon','hulu']},
+  {id:505,t:'アラジン（実写）',                 g:'movie',  e:'🧞',s:['disney']},
+  {id:506,t:'ライオン・キング（実写）',          g:'movie',  e:'🦁',s:['disney']},
+  {id:507,t:'ズートピア',                      g:'movie',  e:'🦊',s:['disney']},
+  {id:508,t:'もののけ姫',                       g:'movie',  e:'🌲',s:['netflix','amazon']},
+  {id:509,t:'天空の城ラピュタ',                 g:'movie',  e:'✈️',s:['netflix','amazon']},
+  {id:510,t:'魔女の宅急便',                    g:'movie',  e:'🧹',s:['netflix','amazon']},
+  {id:511,t:'となりのトトロ',                   g:'movie',  e:'🍁',s:['netflix','amazon']},
+  {id:512,t:'パラサイト 半地下の家族',          g:'movie',  e:'🪜',s:['amazon','unext']},
+  {id:513,t:'グリーンブック',                   g:'movie',  e:'🎹',s:['amazon','unext']},
+  {id:514,t:'ドライブ・マイ・カー',             g:'movie',  e:'🚗',s:['amazon','unext']},
+  {id:515,t:'花束みたいな恋をした',             g:'movie',  e:'💐',s:['amazon','netflix']},
+  {id:516,t:'ワイルド・スピード シリーズ',        g:'movie',  e:'🏎️',s:['amazon','hulu']},
+  {id:517,t:'ドクター・ストレンジ',             g:'movie',  e:'🔮',s:['disney']},
+  {id:518,t:'ガーディアンズ・オブ・ギャラクシー',g:'movie',  e:'🌌',s:['disney']},
+  {id:519,t:'ブラック・パンサー',               g:'movie',  e:'🐾',s:['disney']},
+  {id:520,t:'アントマン',                       g:'movie',  e:'🐜',s:['disney']},
+  {id:521,t:'風の谷のナウシカ',                 g:'movie',  e:'🦅',s:['netflix','amazon']},
+  {id:522,t:'紅の豚',                          g:'movie',  e:'🐷',s:['netflix','amazon']},
+  {id:523,t:'崖の上のポニョ',                   g:'movie',  e:'🐟',s:['netflix','amazon']},
+  {id:524,t:'借りぐらしのアリエッティ',          g:'movie',  e:'🌿',s:['netflix','amazon']},
+  {id:525,t:'かぐや姫の物語',                   g:'movie',  e:'🌸',s:['netflix','amazon']},
+  // ─── 追加韓国ドラマ ───
+  {id:541,t:'椿の花咲く頃',                    g:'kdrama', e:'🌺',s:['netflix','unext']},
+  {id:542,t:'賢い医師生活',                    g:'kdrama', e:'🏥',s:['netflix','unext']},
+  {id:543,t:'模範タクシー',                    g:'kdrama', e:'🚕',s:['netflix']},
+  {id:544,t:'二十五、二十一',                   g:'kdrama', e:'🤸',s:['netflix']},
+  {id:545,t:'少年判事',                        g:'kdrama', e:'⚖️',s:['netflix']},
+  {id:546,t:'私の解放日誌',                    g:'kdrama', e:'📓',s:['netflix']},
+  {id:547,t:'財閥家の末息子',                  g:'kdrama', e:'💰',s:['amazon','unext']},
+  {id:548,t:'ホテルデルーナ',                  g:'kdrama', e:'🌙',s:['netflix','unext']},
+  {id:549,t:'マスク・ガール',                   g:'kdrama', e:'😷',s:['netflix']},
+  {id:550,t:'D.P. 脱走兵追跡官',              g:'kdrama', e:'🏃',s:['netflix']},
+  {id:551,t:'地獄が呼んでいる',                g:'kdrama', e:'👹',s:['netflix']},
+  {id:552,t:'わかっていても',                  g:'kdrama', e:'💔',s:['netflix']},
+  {id:553,t:'三十九',                          g:'kdrama', e:'🌿',s:['netflix']},
+  {id:554,t:'ミセン -未生-',                   g:'kdrama', e:'♟️',s:['netflix','unext']},
+  {id:555,t:'青春の記録',                      g:'kdrama', e:'📷',s:['netflix']},
+  {id:556,t:'パチンコ',                        g:'kdrama', e:'🎰',s:['apple']},
+  {id:557,t:'マイ・ネーム：偽りと復讐',        g:'kdrama', e:'👊',s:['netflix']},
+  {id:558,t:'コネクト',                        g:'kdrama', e:'🔗',s:['disney']},
+  {id:559,t:'ビッグマウス',                    g:'kdrama', e:'👄',s:['disney','hulu']},
+  {id:560,t:'ビューティー・インサイド',         g:'kdrama', e:'🪞',s:['netflix']},
+  // ─── 追加日本ドラマ ───
+  {id:571,t:'半沢直樹',                        g:'jdrama', e:'💼',s:['amazon','hulu']},
+  {id:572,t:'相棒',                            g:'jdrama', e:'🔍',s:['amazon','hulu']},
+  {id:573,t:'孤独のグルメ',                    g:'jdrama', e:'🍜',s:['amazon','hulu']},
+  {id:574,t:'逃げるは恥だが役に立つ',           g:'jdrama', e:'💃',s:['netflix','amazon']},
+  {id:575,t:'ミステリと言う勿れ',               g:'jdrama', e:'🔮',s:['hulu','amazon']},
+  {id:576,t:'ドクターX',                       g:'jdrama', e:'🏥',s:['amazon','hulu']},
+  {id:577,t:'おっさんずラブ',                  g:'jdrama', e:'💕',s:['amazon','hulu']},
+  {id:578,t:'凪のお暇',                        g:'jdrama', e:'🌊',s:['amazon','hulu']},
+  {id:579,t:'カルテット',                       g:'jdrama', e:'🎻',s:['amazon','unext']},
+  {id:580,t:'アンナチュラル',                   g:'jdrama', e:'🔬',s:['amazon']},
+  {id:581,t:'重版出来！',                       g:'jdrama', e:'📚',s:['netflix','amazon']},
+  {id:582,t:'俺の家の話',                       g:'jdrama', e:'🏠',s:['amazon','hulu']},
+  {id:583,t:'ドラゴン桜',                       g:'jdrama', e:'📖',s:['amazon','hulu']},
+  {id:584,t:'JIN-仁-',                         g:'jdrama', e:'⚕️',s:['hulu','unext']},
+  {id:585,t:'義母と娘のブルース',               g:'jdrama', e:'👩‍👧',s:['amazon','hulu']},
+  {id:586,t:'罠の戦争',                        g:'jdrama', e:'⚔️',s:['hulu','amazon']},
+  {id:587,t:'家政夫のミタゾノ',                g:'jdrama', e:'👔',s:['hulu','amazon']},
+  {id:588,t:'わたし、定時で帰ります。',          g:'jdrama', e:'⏰',s:['netflix','amazon']},
+  {id:589,t:'恋は続くよどこまでも',             g:'jdrama', e:'💓',s:['hulu','amazon']},
+  {id:590,t:'TOKYO MER～走る緊急救命室～',     g:'jdrama', e:'🚑',s:['amazon','unext']},
+  // ─── 追加バラエティ ───
+  {id:621,t:'マツコの知らない世界',            g:'variety', e:'🌍',s:['amazon','hulu']},
+  {id:622,t:'ブラタモリ',                      g:'variety', e:'🗾',s:['amazon']},
+  {id:623,t:'行列のできる相談所',              g:'variety', e:'⚖️',s:['hulu']},
+  {id:624,t:'バナナマンのせっかくグルメ!!',     g:'variety', e:'🍽️',s:['hulu']},
+  {id:625,t:'出川哲朗の充電させてもらえませんか？',g:'variety',e:'🔋',s:['hulu']},
+  {id:626,t:'芸能人格付けチェック',             g:'variety', e:'🎭',s:['hulu']},
+  {id:627,t:'ドキュメンタル',                  g:'variety', e:'😱',s:['amazon']},
+  {id:628,t:'バチェラー・ジャパン',            g:'variety', e:'🌹',s:['amazon']},
+  {id:629,t:'ロンドンハーツ',                  g:'variety', e:'❤️',s:['hulu']},
+  {id:630,t:'IPPONグランプリ',                 g:'variety', e:'🎤',s:['hulu','amazon']},
+  {id:631,t:'千鳥のクセがスゴいネタGP',        g:'variety', e:'😂',s:['hulu']},
+  {id:632,t:'タモリ倶楽部',                    g:'variety', e:'🏛️',s:['amazon']},
+  {id:633,t:'ぴったんこカン★カン',             g:'variety', e:'🌟',s:['amazon']},
+  {id:634,t:'人生最高レストラン',               g:'variety', e:'🍽️',s:['hulu']},
+  {id:635,t:'100分de名著',                     g:'variety', e:'📖',s:['amazon']},
+  {id:636,t:'世界の果てまでイッテQ！',          g:'variety', e:'🌏',s:['hulu']},
 ];
 
 // ─────────────────────────────────────────────────────
@@ -1161,6 +1418,12 @@ function removeItem(id) {
 function syncUI() {
   document.getElementById('calcBtn').disabled = selected.size === 0;
   document.getElementById('countBadge').textContent = selected.size;
+  const badge = document.getElementById('mSelBadge');
+  if (badge) {
+    badge.textContent = selected.size || '';
+    badge.classList.toggle('show', selected.size > 0);
+  }
+  cloudSaveDebounced();
 }
 
 function renderSelList() {
@@ -1452,7 +1715,11 @@ function calculate() {
   const withinBudget = budget ? valid.filter(p => p.cost <= budget) : valid;
   const overBudget   = budget && withinBudget.length === 0;
   renderResults((overBudget ? valid : withinBudget).slice(0, 3), items, uncoverable, overBudget);
-  setTimeout(() => document.getElementById('resultArea').scrollIntoView({ behavior:'smooth', block:'nearest' }), 60);
+  if (window.innerWidth <= 768) {
+    setTimeout(() => mobileOpenSheet('results'), 60);
+  } else {
+    setTimeout(() => document.getElementById('resultArea').scrollIntoView({ behavior:'smooth', block:'nearest' }), 60);
+  }
 }
 
 // ─────────────────────────────────────────────────────
@@ -1556,6 +1823,286 @@ function hlText(text, q) {
   if (i < 0) return esc(text);
   return esc(text.slice(0,i)) + `<mark>${esc(text.slice(i,i+q.length))}</mark>` + esc(text.slice(i+q.length));
 }
+
+// ─────────────────────────────────────────────────────
+// モバイルナビゲーション
+// ─────────────────────────────────────────────────────
+let mobileSheetView = null;
+
+function mobileGoGrid() {
+  closeMobileSheet();
+  document.querySelectorAll('.mobile-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('mTabGrid').classList.add('active');
+}
+
+function mobileOpenSheet(view) {
+  mobileSheetView = view;
+  document.querySelectorAll('.mobile-tab').forEach(t => t.classList.remove('active'));
+  const map = { selected:'mTabSel', results:'mTabCalc', more:'mTabMore' };
+  const tabEl = document.getElementById(map[view]);
+  if (tabEl) tabEl.classList.add('active');
+
+  const sheet = document.getElementById('mobileSheet');
+  const content = document.getElementById('mobileSheetContent');
+  sheet.classList.add('open');
+
+  if (view === 'selected') {
+    content.innerHTML = buildMobileSelectedHTML();
+  } else if (view === 'results') {
+    const resultArea = document.getElementById('resultArea');
+    content.innerHTML = `<div class="mobile-sheet-ttl">最安計算結果</div><div class="mob-result-area">${resultArea.innerHTML || '<div class="no-result-box">📊 計算結果がありません</div>'}</div>`;
+  } else if (view === 'more') {
+    content.innerHTML = buildMobileMoreHTML();
+  }
+}
+
+function closeMobileSheet() {
+  document.getElementById('mobileSheet').classList.remove('open');
+  mobileSheetView = null;
+  document.querySelectorAll('.mobile-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('mTabGrid').classList.add('active');
+}
+
+function mobileCalc() {
+  if (selected.size === 0) {
+    mobileOpenSheet('selected');
+    return;
+  }
+  calculate();
+}
+
+function buildMobileSelectedHTML() {
+  const selItems = allItems().filter(c => selected.has(c.id));
+  let html = `<div class="mobile-sheet-ttl">選択中の作品</div>`;
+  if (!selItems.length) {
+    html += `<div class="sel-empty" style="padding:40px 0">作品をタップして選択してください</div>`;
+  } else {
+    html += `<ul class="sel-list" style="max-height:none;margin-bottom:0">` +
+      selItems.map(it => `<li class="sel-item">
+        <span class="sel-em">${it.e}</span>
+        <span class="sel-name">${esc(it.t)}</span>
+        <button class="sel-rm" onclick="removeItemMobile(${it.id})">✕</button>
+      </li>`).join('') + `</ul>`;
+  }
+  const bv = budget;
+  html += `<div class="budget-wrap" style="margin:20px 0">
+    <div class="budget-label">
+      <span>月額予算上限</span>
+      <span class="budget-val" id="mBudgetDisp">${bv ? '¥'+bv.toLocaleString()+'/月' : '上限なし'}</span>
+    </div>
+    <input type="range" class="budget-slider" min="0" max="15000" step="500" value="${bv}"
+      oninput="budget=parseInt(this.value)||0;document.getElementById('mBudgetDisp').textContent=budget?'¥'+budget.toLocaleString()+'/月':'上限なし';document.getElementById('budgetVal').textContent=budget?'¥'+budget.toLocaleString()+'/月':'上限なし';document.getElementById('budgetSlider').value=budget">
+  </div>
+  <button class="calc-btn" ${!selItems.length?'disabled':''} onclick="closeMobileSheet();mobileCalc()">最安プランを計算する →</button>`;
+  return html;
+}
+
+function removeItemMobile(id) {
+  removeItem(id);
+  if (mobileSheetView === 'selected') {
+    document.getElementById('mobileSheetContent').innerHTML = buildMobileSelectedHTML();
+  }
+}
+
+let moreCurrentTab = 'rank';
+function buildMobileMoreHTML() {
+  moreCurrentTab = 'rank';
+  return `<div class="mobile-sheet-ttl">設定 / ランキング</div>
+    <div class="mob-inner-tabs">
+      <button class="mob-inner-tab active" id="miTabRank" onclick="switchMoreTab('rank')">🏆 ランキング</button>
+      <button class="mob-inner-tab" id="miTabSched" onclick="switchMoreTab('sched')">📅 解約管理</button>
+      <button class="mob-inner-tab" id="miTabAdd" onclick="switchMoreTab('add')">➕ 作品追加</button>
+    </div>
+    <div id="moreTabContent">${buildMobileRankHTML()}</div>`;
+}
+
+function switchMoreTab(tab) {
+  moreCurrentTab = tab;
+  document.querySelectorAll('.mob-inner-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('miTab'+tab.charAt(0).toUpperCase()+tab.slice(1)).classList.add('active');
+  const c = document.getElementById('moreTabContent');
+  if (tab === 'rank') c.innerHTML = buildMobileRankHTML();
+  else if (tab === 'sched') c.innerHTML = buildMobileSchedHTML();
+  else if (tab === 'add') c.innerHTML = buildMobileAddHTML();
+}
+
+function buildMobileRankHTML() {
+  const selItems = allItems().filter(c => selected.has(c.id));
+  const ranked = computeScores(currentMetric, selItems);
+  const maxScore = Math.max(...ranked.map(r => r.score), 1);
+  const numLabel = ['gold','silver','bronze'];
+  const annSave = v => v.annual ? Math.round((v.price*12-v.annual)/12) : 0;
+  const m = METRICS.find(x => x.key === currentMetric);
+  return `<div class="metric-tabs">${METRICS.map(me =>
+    `<button class="metric-tab${currentMetric===me.key?' active':''}" onclick="currentMetric='${me.key}';document.getElementById('moreTabContent').innerHTML=buildMobileRankHTML()">${me.label}</button>`
+  ).join('')}</div>
+  <div class="rank-metric" style="margin-bottom:12px">${m.desc}</div>
+  <div class="rank-list-wrap">${ranked.map((r,i) => `
+    <div class="rank-item">
+      <span class="rank-num${i<3?' '+numLabel[i]:''}">${i+1}</span>
+      <span class="rank-dot" style="background:${r.svc.color}"></span>
+      <div class="rank-info">
+        <div class="rank-name">${r.svc.name}</div>
+        <div class="rank-bar-bg"><div class="rank-bar" style="width:${Math.round(r.score/maxScore*100)}%;background:${r.svc.color}"></div></div>
+        <div class="rank-badges">
+          ${r.svc.trial?`<span class="badge-trial">🎁${r.svc.trial}日無料</span>`:''}
+          ${r.svc.annual?`<span class="badge-annual">📅月${annSave(r.svc).toLocaleString()}円節約</span>`:''}
+        </div>
+      </div>
+      <span class="rank-score">${r.display}</span>
+    </div>`).join('')}</div>`;
+}
+
+function buildMobileSchedHTML() {
+  return `<div class="sub-add-row">
+    <select class="sub-select" id="mSubSel">${Object.entries(SVC).map(([k,v])=>`<option value="${k}">${v.name}</option>`).join('')}</select>
+    <input type="date" class="sub-date" id="mSubDate">
+    <button class="sub-add-btn" onclick="addSubMobile()">追加</button>
+  </div>
+  <label class="sub-trial-chk"><input type="checkbox" id="mSubTrial"> 無料トライアル中</label>
+  <div id="mSubListWrap">${buildSubListHTML()}</div>
+  <button class="sub-notif-btn" onclick="requestNotifPermission()">🔔 通知を有効にする</button>`;
+}
+
+function addSubMobile() {
+  const svcKey = document.getElementById('mSubSel').value;
+  const startRaw = document.getElementById('mSubDate').value;
+  const isTrial = document.getElementById('mSubTrial').checked;
+  if (!startRaw) { alert('開始日を選択してください'); return; }
+  mySubs.push({ id:'sub'+(subSeq++), svcKey, startDate:startRaw, isTrial });
+  saveSubs(); renderSubList();
+  document.getElementById('mSubListWrap').innerHTML = buildSubListHTML();
+}
+
+function buildSubListHTML() {
+  if (!mySubs.length) return '<div class="sub-empty">登録中のサブスクはありません</div>';
+  return mySubs.map(sub => {
+    const svc = SVC[sub.svcKey], info = getDeadlineInfo(sub);
+    const dc = daysClass(info.daysLeft), uc = urgencyClass(info.daysLeft);
+    const dt = info.daysLeft < 0 ? `<span class="${dc}">⚠️ 期限切れ</span>` : `<span class="${dc}">あと${info.daysLeft}日</span>`;
+    return `<div class="sub-item ${uc}">
+      <div class="sub-item-head">
+        <span class="sub-dot" style="background:${svc.color}"></span>
+        <span class="sub-name">${svc.name}${sub.isTrial?' 🎁':''}</span>
+        <button class="sub-rm" onclick="removeSub('${sub.id}');document.getElementById('mSubListWrap').innerHTML=buildSubListHTML()">✕</button>
+      </div>
+      <div class="sub-deadline">${info.label} — ${dt}</div>
+      <div class="sub-actions">
+        <a href="${svc.url}" target="_blank" rel="noopener" class="sub-action-btn cancel">解約ページへ →</a>
+        <button class="sub-action-btn ical" onclick="exportICS(mySubs.find(s=>s.id==='${sub.id}'))">📅 カレンダー</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function buildMobileAddHTML() {
+  return `<div style="font-size:12px;color:var(--tx2);line-height:1.8;padding:12px;background:rgba(124,111,245,.06);border-radius:var(--r2);">
+    作品追加は <strong style="color:var(--tx)">横画面</strong> またはPCブラウザから利用できます。<br>
+    タブレットや大きい画面では通常のUIが表示されます。
+  </div>`;
+}
+
+// ─────────────────────────────────────────────────────
+// Supabase ログイン
+// ─────────────────────────────────────────────────────
+let sbClient = null;
+let currentUser = null;
+let saveTimer = null;
+
+async function initSupabase() {
+  try {
+    const r = await fetch('/api/supabase-config');
+    if (!r.ok) return;
+    const { url, key } = await r.json();
+    if (!url || !key) return;
+    sbClient = window.supabase.createClient(url, key);
+    const { data: { session } } = await sbClient.auth.getSession();
+    if (session) {
+      currentUser = session.user;
+      renderAuthUI();
+      await loadCloudData();
+    } else {
+      renderAuthUI();
+    }
+    sbClient.auth.onAuthStateChange(async (event, session) => {
+      currentUser = session?.user || null;
+      renderAuthUI();
+      if (event === 'SIGNED_IN') await loadCloudData();
+    });
+  } catch (e) { /* Supabase未設定はサイレントにスキップ */ }
+}
+
+function renderAuthUI() {
+  const area = document.getElementById('authArea');
+  if (!area) return;
+  if (!sbClient) { area.innerHTML = ''; return; }
+  if (currentUser) {
+    const name = currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'User';
+    const avatar = currentUser.user_metadata?.avatar_url || '';
+    area.innerHTML = `<div class="user-menu">
+      <span class="sync-dot" title="クラウド同期中"></span>
+      ${avatar ? `<img class="user-avatar" src="${avatar}" alt="">` : ''}
+      <span class="user-name">${esc(name)}</span>
+      <button class="logout-btn" onclick="signOut()">ログアウト</button>
+    </div>`;
+  } else {
+    area.innerHTML = `<button class="login-btn" onclick="signIn()">🔑 Googleでログイン</button>`;
+  }
+}
+
+async function signIn() {
+  if (!sbClient) return;
+  await sbClient.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: location.origin }
+  });
+}
+
+async function signOut() {
+  if (!sbClient) return;
+  await sbClient.auth.signOut();
+  currentUser = null;
+  renderAuthUI();
+}
+
+async function loadCloudData() {
+  if (!sbClient || !currentUser) return;
+  try {
+    const { data } = await sbClient
+      .from('user_selections')
+      .select('selected_ids, custom_items, budget')
+      .eq('user_id', currentUser.id)
+      .single();
+    if (!data) return;
+    selected = new Set((data.selected_ids || []).map(Number));
+    customItems = data.custom_items || [];
+    budget = data.budget || 0;
+    document.getElementById('budgetSlider').value = budget;
+    onBudgetChange(budget);
+    renderGrid(); renderSelList(); syncUI(); renderRanking();
+  } catch {}
+}
+
+async function saveCloudData() {
+  if (!sbClient || !currentUser) return;
+  try {
+    await sbClient.from('user_selections').upsert({
+      user_id: currentUser.id,
+      selected_ids: [...selected],
+      custom_items: customItems,
+      budget,
+      updated_at: new Date().toISOString(),
+    });
+  } catch {}
+}
+
+function cloudSaveDebounced() {
+  if (!currentUser) return;
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveCloudData, 2000);
+}
+
+initSupabase();
 </script>
 </body>
 </html>
