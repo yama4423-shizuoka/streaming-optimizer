@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Codeを使いこなすための概念マップ</title>
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --bg:#07070f; --s1:#0d0d1a; --s2:#12121e; --s3:#1a1a2a;
+      --bd:#22223a; --tx:#f0f0fa; --tx2:#6868a0; --tx3:#9090c0;
+      --acc:#7c6ff5; --acc2:#a89cf7; --green:#34d399; --yellow:#fbbf24;
+      --red:#f87171; --blue:#60a5fa; --r:14px; --r2:10px;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI',sans-serif; background:var(--bg); color:var(--tx); min-height:100vh; line-height:1.7; overflow-x:hidden; }
+    body::before { content:''; position:fixed; inset:0; pointer-events:none; z-index:0; background: radial-gradient(ellipse 80% 50% at 20% 10%, rgba(124,111,245,.06) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 80% 90%, rgba(99,102,241,.04) 0%, transparent 60%); }
+
+    /* NAV */
+    nav { position:sticky; top:0; z-index:100; background:rgba(7,7,15,.9); backdrop-filter:blur(20px); border-bottom:1px solid rgba(124,111,245,.1); padding:14px 32px; display:flex; align-items:center; gap:20px; }
+    .nav-logo { font-size:15px; font-weight:800; background:linear-gradient(135deg,#a89cf7,#e0d9ff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; white-space:nowrap; }
+    .nav-links { display:flex; gap:4px; flex-wrap:wrap; margin-left:auto; }
+    .nav-link { padding:5px 12px; border-radius:20px; font-size:12px; color:var(--tx2); text-decoration:none; border:1px solid transparent; transition:all .2s; cursor:pointer; }
+    .nav-link:hover { color:var(--tx); border-color:var(--bd); background:rgba(255,255,255,.04); }
+
+    /* HERO */
+    .hero { position:relative; z-index:1; max-width:860px; margin:0 auto; padding:80px 32px 60px; text-align:center; }
+    .hero-tag { display:inline-block; padding:5px 16px; border:1px solid rgba(124,111,245,.4); border-radius:20px; font-size:12px; color:var(--acc2); margin-bottom:24px; letter-spacing:.5px; }
+    .hero h1 { font-size:clamp(26px,5vw,46px); font-weight:800; line-height:1.25; letter-spacing:-.5px; margin-bottom:16px; }
+    .hero h1 span { background:linear-gradient(135deg,#7c6ff5,#a89cf7,#c4b5fd); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .hero p { font-size:16px; color:var(--tx3); max-width:540px; margin:0 auto 40px; }
+    .progress-bar { background:var(--s2); border:1px solid var(--bd); border-radius:var(--r); padding:16px 20px; display:flex; align-items:center; gap:12px; max-width:500px; margin:0 auto; }
+    .progress-label { font-size:13px; color:var(--tx2); white-space:nowrap; }
+    .bar-track { flex:1; height:6px; background:var(--s3); border-radius:4px; overflow:hidden; }
+    .bar-fill { height:100%; background:linear-gradient(90deg,#7c6ff5,#a89cf7); border-radius:4px; transition:width .6s ease; width:0%; }
+    .progress-pct { font-size:13px; font-weight:700; color:var(--acc2); min-width:36px; text-align:right; }
+
+    /* CHAPTER NAV */
+    .chapter-nav { position:relative; z-index:1; max-width:860px; margin:0 auto 20px; padding:0 32px; display:flex; gap:8px; flex-wrap:wrap; }
+    .ch-btn { padding:6px 16px; border-radius:20px; border:1px solid var(--bd); background:transparent; color:var(--tx2); font-size:12px; cursor:pointer; transition:all .2s; font-family:inherit; display:flex; align-items:center; gap:6px; }
+    .ch-btn:hover { border-color:rgba(124,111,245,.4); color:var(--tx); }
+    .ch-btn.done { border-color:rgba(52,211,153,.3); color:var(--green); background:rgba(52,211,153,.06); }
+    .ch-dot { width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+    /* MAIN */
+    main { position:relative; z-index:1; max-width:860px; margin:0 auto; padding:0 32px 80px; }
+
+    /* SECTION */
+    .section { margin-bottom:48px; scroll-margin-top:80px; }
+    .section-header { display:flex; align-items:flex-start; gap:16px; margin-bottom:24px; }
+    .section-num { width:42px; height:42px; border-radius:12px; background:linear-gradient(135deg,rgba(124,111,245,.2),rgba(168,156,247,.1)); border:1px solid rgba(124,111,245,.3); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:800; color:var(--acc2); flex-shrink:0; }
+    .section-num.done-num { background:linear-gradient(135deg,rgba(52,211,153,.2),rgba(52,211,153,.05)); border-color:rgba(52,211,153,.3); color:var(--green); }
+    .section-title { font-size:22px; font-weight:800; letter-spacing:-.3px; margin-bottom:4px; }
+    .section-subtitle { font-size:14px; color:var(--tx2); }
+
+    /* CARD */
+    .card { background:var(--s1); border:1px solid var(--bd); border-radius:var(--r); padding:24px; margin-bottom:16px; }
+    .card-title { font-size:14px; font-weight:700; color:var(--acc2); margin-bottom:10px; letter-spacing:.3px; text-transform:uppercase; font-size:11px; }
+    .card p { font-size:15px; color:var(--tx3); line-height:1.8; }
+
+    /* DIAGRAM */
+    .diagram { background:var(--s2); border:1px solid var(--bd); border-radius:var(--r); padding:28px 24px; margin-bottom:16px; overflow-x:auto; }
+    .diagram-title { font-size:12px; color:var(--tx2); margin-bottom:20px; text-align:center; letter-spacing:.5px; }
+
+    /* FILE TREE */
+    .file-tree { font-family:'SF Mono',Menlo,monospace; font-size:13px; line-height:2; }
+    .file-tree .dir { color:var(--blue); font-weight:600; }
+    .file-tree .file { color:var(--tx3); }
+    .file-tree .comment { color:var(--tx2); font-style:italic; }
+    .file-tree .hl { color:var(--yellow); font-weight:700; }
+    .indent1 { padding-left:20px; }
+    .indent2 { padding-left:40px; }
+    .indent3 { padding-left:60px; }
+
+    /* FLOW */
+    .flow { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:12px 0; }
+    .flow-box { padding:8px 16px; border-radius:var(--r2); font-size:13px; font-weight:600; text-align:center; white-space:nowrap; }
+    .flow-browser { background:rgba(96,165,250,.15); border:1px solid rgba(96,165,250,.3); color:var(--blue); }
+    .flow-net { background:rgba(124,111,245,.1); border:1px solid rgba(124,111,245,.2); color:var(--acc2); }
+    .flow-server { background:rgba(52,211,153,.12); border:1px solid rgba(52,211,153,.25); color:var(--green); }
+    .flow-db { background:rgba(251,191,36,.1); border:1px solid rgba(251,191,36,.2); color:var(--yellow); }
+    .flow-arrow { color:var(--tx2); font-size:18px; }
+    .flow-label { font-size:11px; color:var(--tx2); text-align:center; margin-top:4px; }
+
+    /* CODE */
+    .code-block { background:var(--s3); border:1px solid var(--bd); border-radius:var(--r2); padding:16px 20px; font-family:'SF Mono',Menlo,monospace; font-size:13px; line-height:1.8; overflow-x:auto; margin:12px 0; }
+    .code-block .kw { color:var(--acc2); }
+    .code-block .str { color:var(--green); }
+    .code-block .num { color:var(--yellow); }
+    .code-block .cm { color:var(--tx2); }
+    .code-block .err { color:var(--red); font-weight:700; }
+    .code-block .ok { color:var(--green); font-weight:700; }
+
+    /* ERROR ANATOMY */
+    .error-box { background:rgba(248,113,113,.06); border:1px solid rgba(248,113,113,.2); border-radius:var(--r2); padding:20px; font-family:'SF Mono',Menlo,monospace; font-size:13px; line-height:2; margin:12px 0; }
+    .err-line { display:flex; align-items:flex-start; gap:12px; }
+    .err-badge { padding:2px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; flex-shrink:0; margin-top:3px; }
+    .badge-type { background:rgba(248,113,113,.2); color:var(--red); border:1px solid rgba(248,113,113,.3); }
+    .badge-where { background:rgba(96,165,250,.15); color:var(--blue); border:1px solid rgba(96,165,250,.25); }
+    .badge-msg { background:rgba(251,191,36,.1); color:var(--yellow); border:1px solid rgba(251,191,36,.2); }
+    .err-text { color:var(--tx3); }
+    .err-highlight { color:var(--red); }
+
+    /* QUIZ */
+    .quiz { background:var(--s1); border:1px solid rgba(124,111,245,.2); border-radius:var(--r); padding:24px; margin-top:20px; }
+    .quiz-q { font-size:15px; font-weight:700; margin-bottom:16px; }
+    .quiz-options { display:flex; flex-direction:column; gap:8px; }
+    .quiz-opt { padding:12px 16px; border-radius:var(--r2); border:1px solid var(--bd); background:transparent; color:var(--tx3); font-size:14px; cursor:pointer; transition:all .2s; text-align:left; font-family:inherit; }
+    .quiz-opt:hover:not(:disabled) { border-color:rgba(124,111,245,.4); color:var(--tx); background:rgba(124,111,245,.06); }
+    .quiz-opt.correct { border-color:rgba(52,211,153,.5); background:rgba(52,211,153,.1); color:var(--green); }
+    .quiz-opt.wrong { border-color:rgba(248,113,113,.4); background:rgba(248,113,113,.06); color:var(--red); }
+    .quiz-feedback { margin-top:14px; padding:14px 16px; border-radius:var(--r2); font-size:14px; display:none; }
+    .quiz-feedback.show { display:block; }
+    .quiz-feedback.ok-fb { background:rgba(52,211,153,.08); border:1px solid rgba(52,211,153,.2); color:var(--green); }
+    .quiz-feedback.ng-fb { background:rgba(248,113,113,.06); border:1px solid rgba(248,113,113,.2); color:var(--red); }
+
+    /* TAG */
+    .tag { display:inline-block; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; }
+    .tag-front { background:rgba(96,165,250,.12); border:1px solid rgba(96,165,250,.25); color:var(--blue); }
+    .tag-back { background:rgba(52,211,153,.1); border:1px solid rgba(52,211,153,.2); color:var(--green); }
+    .tag-both { background:rgba(124,111,245,.1); border:1px solid rgba(124,111,245,.2); color:var(--acc2); }
+
+    /* COMPARE TABLE */
+    .compare { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:12px 0; }
+    @media(max-width:600px){ .compare { grid-template-columns:1fr; } }
+    .cmp-col { background:var(--s2); border:1px solid var(--bd); border-radius:var(--r2); padding:16px; }
+    .cmp-head { font-size:12px; font-weight:700; letter-spacing:.3px; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid var(--bd); }
+    .cmp-head.front { color:var(--blue); }
+    .cmp-head.back { color:var(--green); }
+    .cmp-item { font-size:13px; color:var(--tx3); padding:4px 0; border-bottom:1px solid rgba(255,255,255,.03); }
+    .cmp-item:last-child { border-bottom:none; }
+    .cmp-item::before { content:"• "; color:var(--tx2); }
+
+    /* TIP */
+    .tip { background:rgba(124,111,245,.06); border-left:3px solid var(--acc); border-radius:0 var(--r2) var(--r2) 0; padding:14px 16px; margin:12px 0; font-size:14px; color:var(--tx3); }
+    .tip strong { color:var(--acc2); }
+
+    /* DIVIDER */
+    .divider { height:1px; background:linear-gradient(90deg,transparent,var(--bd),transparent); margin:20px 0; }
+
+    /* COMPLETE BTN */
+    .complete-btn { width:100%; padding:12px; border-radius:var(--r2); border:1px solid rgba(124,111,245,.3); background:rgba(124,111,245,.08); color:var(--acc2); font-size:14px; font-weight:600; cursor:pointer; transition:all .2s; font-family:inherit; margin-top:16px; }
+    .complete-btn:hover { background:rgba(124,111,245,.15); border-color:rgba(124,111,245,.5); }
+    .complete-btn.done-btn { border-color:rgba(52,211,153,.3); background:rgba(52,211,153,.08); color:var(--green); cursor:default; }
+
+    /* FINISH */
+    .finish { text-align:center; padding:48px 24px; background:var(--s1); border:1px solid rgba(124,111,245,.2); border-radius:var(--r); display:none; }
+    .finish.show { display:block; }
+    .finish-icon { font-size:48px; margin-bottom:16px; }
+    .finish h2 { font-size:24px; font-weight:800; margin-bottom:8px; }
+    .finish p { color:var(--tx2); font-size:15px; }
+
+    /* TOOLTIP */
+    .has-tip { border-bottom:1px dashed var(--acc2); cursor:help; color:var(--acc2); }
+
+    @media(max-width:600px){ nav { padding:12px 16px; } .hero,main,section { padding-left:16px; padding-right:16px; } .chapter-nav { padding:0 16px; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">⚡ Claude Code 概念マップ</div>
+  <div class="nav-links">
+    <span class="nav-link" onclick="scrollTo(1)">ファイル</span>
+    <span class="nav-link" onclick="scrollTo(2)">クライアント/サーバー</span>
+    <span class="nav-link" onclick="scrollTo(3)">フロント/バック</span>
+    <span class="nav-link" onclick="scrollTo(4)">API</span>
+    <span class="nav-link" onclick="scrollTo(5)">エラー</span>
+    <span class="nav-link" onclick="scrollTo(6)">ターミナル</span>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">Claude Code 完全活用ガイド</div>
+  <h1>プログラミングより先に知るべき<br><span>「システムの動き方」</span></h1>
+  <p>コードを書く力より、<strong>何が起きているかを想像する力</strong>が大事。6つの概念を学ぼう。</p>
+  <div class="progress-bar">
+    <span class="progress-label">進捗</span>
+    <div class="bar-track"><div class="bar-fill" id="progressBar"></div></div>
+    <span class="progress-pct" id="progressPct">0%</span>
+  </div>
+</div>
+
+<div class="chapter-nav" id="chapterNav">
+  <button class="ch-btn" id="ch1" onclick="scrollTo(1)"><span class="ch-dot"></span>1. ファイルとディレクトリ</button>
+  <button class="ch-btn" id="ch2" onclick="scrollTo(2)"><span class="ch-dot"></span>2. クライアントとサーバー</button>
+  <button class="ch-btn" id="ch3" onclick="scrollTo(3)"><span class="ch-dot"></span>3. フロントエンドとバックエンド</button>
+  <button class="ch-btn" id="ch4" onclick="scrollTo(4)"><span class="ch-dot"></span>4. APIとは何か</button>
+  <button class="ch-btn" id="ch5" onclick="scrollTo(5)"><span class="ch-dot"></span>5. エラーメッセージを読む</button>
+  <button class="ch-btn" id="ch6" onclick="scrollTo(6)"><span class="ch-dot"></span>6. ターミナルの基礎</button>
+</div>
+
+<main>
+
+  <!-- ==================== SECTION 1 ==================== -->
+  <div class="section" id="sec1">
+    <div class="section-header">
+      <div class="section-num" id="num1">1</div>
+      <div>
+        <div class="section-title">ファイルとディレクトリ</div>
+        <div class="section-subtitle">コードは「箱の中の箱」に整理されている</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">核心</div>
+      <p>プログラムは<strong>ファイル</strong>（書類）と<strong>ディレクトリ＝フォルダ</strong>（箱）で構成されています。Claude Codeに「〜を直して」と頼む時、どのファイルが何をしているかを知ると指示が格段に的確になります。</p>
+    </div>
+
+    <div class="diagram">
+      <div class="diagram-title">典型的なウェブプロジェクトの構造</div>
+      <div class="file-tree">
+        <div class="dir">📁 my-project/</div>
+        <div class="indent1 file">📄 <span class="hl">index.html</span> <span class="comment">← ユーザーが最初に見るページ</span></div>
+        <div class="indent1 dir">📁 css/</div>
+        <div class="indent2 file">📄 style.css <span class="comment">← 見た目の定義</span></div>
+        <div class="indent1 dir">📁 js/</div>
+        <div class="indent2 file">📄 app.js <span class="comment">← 動作の定義</span></div>
+        <div class="indent1 dir">📁 api/ <span class="comment">← サーバー側の処理</span></div>
+        <div class="indent2 file">📄 data.js</div>
+        <div class="indent1 file">📄 package.json <span class="comment">← 「材料リスト」設定ファイル</span></div>
+        <div class="indent1 dir">📁 node_modules/ <span class="comment">← 自動生成（触らない）</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">パス（住所）の読み方</div>
+      <div class="code-block">
+<span class="cm">// これはファイルの「住所」= パス</span>
+/Users/yamada/my-project/js/app.js
+<span class="cm">            ↑          ↑   ↑</span>
+<span class="cm">         プロジェクト  フォルダ  ファイル</span>
+
+<span class="cm">// 相対パス（今いる場所からの距離）</span>
+./js/app.js     <span class="cm">← 今と同じ場所のjsフォルダの中</span>
+../images/a.png <span class="cm">← 一つ上のフォルダのimages</span>
+      </div>
+    </div>
+
+    <div class="tip"><strong>Claude Codeへの応用：</strong>「index.htmlのボタンを直して」より「index.htmlの84行目にあるsubmitボタンのクリック処理を直して」のほうが圧倒的に速く・正確に直せます。</div>
+
+    <div class="quiz">
+      <div class="quiz-q">Q. 「./css/style.css」というパスは何を意味しますか？</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="answer(this, false, 1)">インターネット上のcssファイル</button>
+        <button class="quiz-opt" onclick="answer(this, true, 1)">今いるフォルダの中にある「css」フォルダの「style.css」</button>
+        <button class="quiz-opt" onclick="answer(this, false, 1)">一つ上の階層にあるcssファイル</button>
+      </div>
+      <div class="quiz-feedback" id="fb1"></div>
+    </div>
+    <button class="complete-btn" id="cbtn1" onclick="complete(1)">このセクションを完了する ✓</button>
+  </div>
+
+  <!-- ==================== SECTION 2 ==================== -->
+  <div class="section" id="sec2">
+    <div class="section-header">
+      <div class="section-num" id="num2">2</div>
+      <div>
+        <div class="section-title">クライアントとサーバー</div>
+        <div class="section-subtitle">インターネットは「注文」と「配達」で成り立っている</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">核心</div>
+      <p><strong>クライアント</strong>（あなたのブラウザ）が「これを見せて」とリクエストし、<strong>サーバー</strong>（どこかのコンピュータ）が応答します。このやりとりがWebのすべての基本です。</p>
+    </div>
+
+    <div class="diagram">
+      <div class="diagram-title">URLを打ってページが表示されるまで</div>
+      <div class="flow">
+        <div>
+          <div class="flow-box flow-browser">🖥️ ブラウザ<br><small>(あなた)</small></div>
+        </div>
+        <div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-label">リクエスト<br>「このページ見せて」</div>
+        </div>
+        <div>
+          <div class="flow-box flow-net">🌐 インターネット</div>
+        </div>
+        <div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-label">到達</div>
+        </div>
+        <div>
+          <div class="flow-box flow-server">⚙️ サーバー<br><small>(どこかのPC)</small></div>
+        </div>
+      </div>
+      <div style="text-align:center;color:var(--tx2);font-size:13px;margin:8px 0">↓ &nbsp;レスポンス（HTML・CSS・JSファイルを返す）</div>
+      <div class="flow" style="justify-content:center">
+        <div class="flow-box flow-browser">🖥️ ブラウザが受け取り<br><small>画面に表示する</small></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">重要な概念：HTTPステータスコード</div>
+      <div class="code-block">
+<span class="ok">200 OK</span>          <span class="cm">← 成功！普通に返ってきた</span>
+<span class="num">301 Redirect</span>    <span class="cm">← 移転（別URLに案内）</span>
+<span class="err">404 Not Found</span>   <span class="cm">← そのページは存在しない</span>
+<span class="err">403 Forbidden</span>   <span class="cm">← 権限がない（見られない）</span>
+<span class="err">500 Server Error</span> <span class="cm">← サーバー側でエラーが起きた</span>
+      </div>
+    </div>
+
+    <div class="tip"><strong>Claude Codeへの応用：</strong>「エラーが出た」ではなく「コンソールに404エラーが出た」と伝えるだけで、問題の場所が大幅に絞り込まれます。</div>
+
+    <div class="quiz">
+      <div class="quiz-q">Q. ブラウザで「500 Internal Server Error」が表示されました。問題はどこにありますか？</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="answer(this, false, 2)">あなたのインターネット接続</button>
+        <button class="quiz-opt" onclick="answer(this, false, 2)">URLの打ち間違い</button>
+        <button class="quiz-opt" onclick="answer(this, true, 2)">サーバー側のプログラム</button>
+      </div>
+      <div class="quiz-feedback" id="fb2"></div>
+    </div>
+    <button class="complete-btn" id="cbtn2" onclick="complete(2)">このセクションを完了する ✓</button>
+  </div>
+
+  <!-- ==================== SECTION 3 ==================== -->
+  <div class="section" id="sec3">
+    <div class="section-header">
+      <div class="section-num" id="num3">3</div>
+      <div>
+        <div class="section-title">フロントエンドとバックエンド</div>
+        <div class="section-subtitle">「見える部分」と「見えない部分」の分業</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">核心</div>
+      <p>Webアプリは<strong>フロントエンド</strong>（ブラウザで動く、目に見える部分）と<strong>バックエンド</strong>（サーバーで動く、データを扱う部分）に分かれています。どちらの問題かを区別できると、Claude Codeへの指示が的確になります。</p>
+    </div>
+
+    <div class="compare">
+      <div class="cmp-col">
+        <div class="cmp-head front">フロントエンド（見える側）</div>
+        <div class="cmp-item">HTML・CSS・JavaScript</div>
+        <div class="cmp-item">ブラウザの中で動く</div>
+        <div class="cmp-item">ボタン・レイアウト・アニメーション</div>
+        <div class="cmp-item">ユーザーの操作を受け取る</div>
+        <div class="cmp-item">DevToolsで中身を見られる</div>
+      </div>
+      <div class="cmp-col">
+        <div class="cmp-head back">バックエンド（見えない側）</div>
+        <div class="cmp-item">Python・Node.js・Goなど</div>
+        <div class="cmp-item">サーバーのPC上で動く</div>
+        <div class="cmp-item">データの保存・認証・計算</div>
+        <div class="cmp-item">データベースと会話する</div>
+        <div class="cmp-item">ソースコードは見られない</div>
+      </div>
+    </div>
+
+    <div class="diagram">
+      <div class="diagram-title">ログイン処理の例</div>
+      <div class="code-block">
+<span class="cm">【フロント】入力フォームを表示・バリデーション</span>
+ユーザーが「test@mail.com」「pass123」を入力
+        ↓
+<span class="cm">【通信】バックエンドに送信</span>
+POST /api/login  { email, password }
+        ↓
+<span class="cm">【バック】パスワードを検証・セッションを発行</span>
+DBで照合 → 一致したら token を返す
+        ↓
+<span class="cm">【フロント】tokenを受け取りページ遷移</span>
+      </div>
+    </div>
+
+    <div style="margin:12px 0">
+      <span class="tag tag-front">フロント</span>&nbsp;「ボタンの色がおかしい」「アニメーションが動かない」
+      <br><br>
+      <span class="tag tag-back">バック</span>&nbsp;「ログインできない」「データが保存されない」「遅い」
+      <br><br>
+      <span class="tag tag-both">どちらも</span>&nbsp;「フォームを送信したが何も起きない」
+    </div>
+
+    <div class="tip"><strong>Claude Codeへの応用：</strong>「ログインボタンを押しても何も起きない」と言うより「フロントのsubmit関数は動いているがAPIへのPOSTが返ってこない」と言うほうが、解決速度が3倍は違います。</div>
+
+    <div class="quiz">
+      <div class="quiz-q">Q. 「ページのタイトルの文字を大きくしたい」は、フロントエンドとバックエンドどちらの作業ですか？</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="answer(this, true, 3)">フロントエンド（CSS・HTML）</button>
+        <button class="quiz-opt" onclick="answer(this, false, 3)">バックエンド</button>
+        <button class="quiz-opt" onclick="answer(this, false, 3)">どちらでもない</button>
+      </div>
+      <div class="quiz-feedback" id="fb3"></div>
+    </div>
+    <button class="complete-btn" id="cbtn3" onclick="complete(3)">このセクションを完了する ✓</button>
+  </div>
+
+  <!-- ==================== SECTION 4 ==================== -->
+  <div class="section" id="sec4">
+    <div class="section-header">
+      <div class="section-num" id="num4">4</div>
+      <div>
+        <div class="section-title">APIとは何か</div>
+        <div class="section-subtitle">プログラム同士が会話する「窓口」</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">核心</div>
+      <p><strong>API（Application Programming Interface）</strong>とは、異なるプログラムが決まった形式でデータをやりとりするための「窓口」です。飲食店の注文カウンターに例えると、メニューから選んで（リクエスト）、料理が来る（レスポンス）仕組みです。</p>
+    </div>
+
+    <div class="diagram">
+      <div class="diagram-title">天気アプリのAPI通信の流れ</div>
+      <div class="flow">
+        <div>
+          <div class="flow-box flow-browser">📱 あなたのアプリ</div>
+        </div>
+        <div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-label">「東京の天気を教えて」<br>GET /weather?city=Tokyo</div>
+        </div>
+        <div>
+          <div class="flow-box flow-server">🌦️ 気象API</div>
+        </div>
+      </div>
+      <div style="text-align:center;color:var(--tx2);font-size:13px;margin:6px 0">↓ &nbsp;JSON形式で返ってくる</div>
+      <div class="code-block">
+{
+  <span class="kw">"city"</span>: <span class="str">"Tokyo"</span>,
+  <span class="kw">"temp"</span>: <span class="num">24</span>,
+  <span class="kw">"weather"</span>: <span class="str">"晴れ"</span>
+}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">HTTPメソッドの意味</div>
+      <div class="code-block">
+<span class="ok">GET</span>    /users/123    <span class="cm">← 取得（読む）</span>
+<span class="num">POST</span>   /users        <span class="cm">← 作成（新しく送る）</span>
+<span class="kw">PUT</span>    /users/123    <span class="cm">← 更新（全部書き換え）</span>
+<span class="kw">PATCH</span>  /users/123    <span class="cm">← 更新（一部だけ）</span>
+<span class="err">DELETE</span> /users/123    <span class="cm">← 削除</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">APIキーとは？</div>
+      <p>APIを使う「合言葉」です。「誰が何回使ったか」を管理するために使います。<strong>絶対に公開しない</strong>（GitHubに上げない）のが鉄則です。Claude Codeが「.envファイルに書いて」と言うのはこのためです。</p>
+    </div>
+
+    <div class="tip"><strong>Claude Codeへの応用：</strong>エラーに「401 Unauthorized」が含まれていたらAPIキーの問題。「429 Too Many Requests」なら使いすぎです。これを知っているだけでClaudeへの説明が変わります。</div>
+
+    <div class="quiz">
+      <div class="quiz-q">Q. APIのGETリクエストは何をするためのものですか？</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="answer(this, false, 4)">データを削除する</button>
+        <button class="quiz-opt" onclick="answer(this, true, 4)">データを取得（読み込む）する</button>
+        <button class="quiz-opt" onclick="answer(this, false, 4)">新しいデータを作成する</button>
+      </div>
+      <div class="quiz-feedback" id="fb4"></div>
+    </div>
+    <button class="complete-btn" id="cbtn4" onclick="complete(4)">このセクションを完了する ✓</button>
+  </div>
+
+  <!-- ==================== SECTION 5 ==================== -->
+  <div class="section" id="sec5">
+    <div class="section-header">
+      <div class="section-num" id="num5">5</div>
+      <div>
+        <div class="section-title">エラーメッセージを読む</div>
+        <div class="section-subtitle">エラーは「問題の場所と種類を教えてくれる地図」</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">核心</div>
+      <p>エラーメッセージを怖がる必要はありません。エラーは「どこで」「何が」「なぜ」壊れているかを教えてくれる<strong>最も正確な情報源</strong>です。Claude Codeにそのままコピペするだけで解決の8割は終わります。</p>
+    </div>
+
+    <div class="diagram">
+      <div class="diagram-title">エラーメッセージの解剖</div>
+      <div class="error-box">
+        <div style="margin-bottom:8px;color:var(--red);font-weight:700">TypeError: Cannot read properties of undefined (reading 'map')</div>
+        <div style="color:var(--tx2);font-size:12px;margin-bottom:12px">at App.js:42:18</div>
+        <div class="divider"></div>
+        <div style="margin-top:12px;display:flex;flex-direction:column;gap:10px">
+          <div class="err-line">
+            <span class="err-badge badge-type">エラー種類</span>
+            <span class="err-text">TypeError = <strong>「型」が間違っている</strong>。undefinedなのにmapしようとした</span>
+          </div>
+          <div class="err-line">
+            <span class="err-badge badge-msg">メッセージ</span>
+            <span class="err-text">undefinedの.mapを呼んだ = <strong>データがまだ来ていない</strong>のに使おうとした</span>
+          </div>
+          <div class="err-line">
+            <span class="err-badge badge-where">場所</span>
+            <span class="err-text">App.js の <strong>42行目、18文字目</strong> → ここを直せばいい</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">よく出るエラー早見表</div>
+      <div class="code-block">
+<span class="err">SyntaxError</span>      <span class="cm">← 文法ミス。カッコや引用符の閉じ忘れ</span>
+<span class="err">ReferenceError</span>   <span class="cm">← 存在しない変数を使った</span>
+<span class="err">TypeError</span>        <span class="cm">← 型が違う（nullにメソッドを呼んだ等）</span>
+<span class="err">NetworkError</span>     <span class="cm">← 通信失敗。URLかネットの問題</span>
+<span class="err">CORS Error</span>       <span class="cm">← サーバーが別ドメインからのアクセスを拒否</span>
+<span class="err">Module not found</span> <span class="cm">← ファイルパスかパッケージ名が間違い</span>
+      </div>
+    </div>
+
+    <div class="tip"><strong>Claude Codeへの応用：</strong>エラー文を「なんかエラーが出ました」ではなく<strong>そのままコピペ</strong>してください。それだけで解決策が格段に変わります。ブラウザのDevTools（F12）→ Consoleタブで確認できます。</div>
+
+    <div class="quiz">
+      <div class="quiz-q">Q. 「Module not found: Error: Can't resolve './components/Button'」というエラーが出ました。何が原因だと考えられますか？</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="answer(this, false, 5)">インターネットが切れている</button>
+        <button class="quiz-opt" onclick="answer(this, true, 5)">Buttonファイルが存在しないか、パスが間違っている</button>
+        <button class="quiz-opt" onclick="answer(this, false, 5)">サーバーがダウンしている</button>
+      </div>
+      <div class="quiz-feedback" id="fb5"></div>
+    </div>
+    <button class="complete-btn" id="cbtn5" onclick="complete(5)">このセクションを完了する ✓</button>
+  </div>
+
+  <!-- ==================== SECTION 6 ==================== -->
+  <div class="section" id="sec6">
+    <div class="section-header">
+      <div class="section-num" id="num6">6</div>
+      <div>
+        <div class="section-title">ターミナルの基礎</div>
+        <div class="section-subtitle">Claude Codeが一番活躍する「黒い画面」への慣れ方</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">核心</div>
+      <p>ターミナル（コマンドライン）はGUIのないコンピュータへの<strong>テキスト指示インターフェース</strong>です。Claude Codeはここで動きます。仕組みを知ると出力の読み方がわかり、「何が起きているか」を把握できます。</p>
+    </div>
+
+    <div class="diagram">
+      <div class="diagram-title">よく使うコマンドの意味</div>
+      <div class="code-block">
+<span class="kw">ls</span>              <span class="cm">← 今いるフォルダの中身を表示</span>
+<span class="kw">cd</span> フォルダ名    <span class="cm">← そのフォルダに移動</span>
+<span class="kw">cd</span> ..           <span class="cm">← 一つ上のフォルダに戻る</span>
+<span class="kw">pwd</span>             <span class="cm">← 今どこにいるか表示</span>
+
+<span class="kw">npm install</span>     <span class="cm">← package.jsonの材料を全部インストール</span>
+<span class="kw">npm run dev</span>     <span class="cm">← 開発サーバーを起動</span>
+<span class="kw">npm run build</span>   <span class="cm">← 本番用に最適化したファイルを生成</span>
+
+<span class="kw">git status</span>      <span class="cm">← 何が変更されたか確認</span>
+<span class="kw">git add .</span>       <span class="cm">← 全変更をステージング（保存準備）</span>
+<span class="kw">git commit -m</span> <span class="str">"説明"</span>  <span class="cm">← 保存</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">プロセスとは</div>
+      <p>コマンドを実行すると<strong>プロセス</strong>（動いているプログラムの単位）が生まれます。<code style="background:var(--s3);padding:2px 6px;border-radius:4px;font-size:12px">npm run dev</code>は終わらない（サーバーがずっと動く）プロセスです。<strong>Ctrl+C</strong>で止めます。止めずに別コマンドを実行したい時は新しいターミナルタブを開きます。</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">環境変数（.envファイル）</div>
+      <p>プログラムに渡す<strong>秘密の設定値</strong>です。APIキーやデータベースのパスワードを入れます。<code style="background:var(--s3);padding:2px 6px;border-radius:4px;font-size:12px">.env</code>ファイルはGitに含めません（<code style="background:var(--s3);padding:2px 6px;border-radius:4px;font-size:12px">.gitignore</code>で除外）。</p>
+      <div class="code-block">
+<span class="cm"># .envファイルの中身の例</span>
+<span class="kw">SUPABASE_KEY</span>=<span class="str">eyJhbGciOiJIUzI1NiIsInR5c...</span>
+<span class="kw">API_SECRET</span>=<span class="str">sk-proj-xxxxxxxxxxxx</span>
+<span class="kw">DATABASE_URL</span>=<span class="str">postgresql://user:pass@host/db</span>
+      </div>
+    </div>
+
+    <div class="tip"><strong>Claude Codeへの応用：</strong>「npm installしたらエラーが出た」と言う場合、エラーの最後の数行が最重要です。「WARN」は無視していいことが多く、「ERR!」から始まる行が本当の問題です。</div>
+
+    <div class="quiz">
+      <div class="quiz-q">Q. ターミナルで開発サーバーを起動中に、別のコマンドも実行したい場合はどうすればよいですか？</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="answer(this, false, 6)">Ctrl+Cでサーバーを止めてから実行する</button>
+        <button class="quiz-opt" onclick="answer(this, true, 6)">新しいターミナルタブを開いて実行する</button>
+        <button class="quiz-opt" onclick="answer(this, false, 6)">そのまま入力すれば実行できる</button>
+      </div>
+      <div class="quiz-feedback" id="fb6"></div>
+    </div>
+    <button class="complete-btn" id="cbtn6" onclick="complete(6)">このセクションを完了する ✓</button>
+  </div>
+
+  <!-- FINISH -->
+  <div class="finish" id="finishBox">
+    <div class="finish-icon">🎉</div>
+    <h2>6つの概念、完了！</h2>
+    <p style="margin-top:8px">あとはClaude Codeに指示するたびに、これらの概念が自然と使えるようになります。<br>「どこで何が起きているか」を意識するだけで、指示の質が10倍上がります。</p>
+  </div>
+
+</main>
+
+<script>
+  const completed = new Set();
+  const total = 6;
+
+  const answers = {
+    1: { correct: 1, explanation: "「./」は「今いるフォルダ」を意味します。./css/style.css = 今のフォルダにあるcssフォルダの中のstyle.cssです。" },
+    2: { correct: 2, explanation: "500番台のエラーはすべてサーバー側の問題です。あなたのブラウザやURLは関係ありません。「Claude、サーバー側でエラーが出ています」と伝えましょう。" },
+    3: { correct: 0, explanation: "文字サイズはCSSで定義され、ブラウザで表示される = フロントエンドの仕事です。「style.cssのh1のfont-sizeを変更して」と指示できます。" },
+    4: { correct: 1, explanation: "GETはデータを「取得（読む）」ためのメソッドです。GET = 取る、POST = 送る・作る、DELETE = 消す、と覚えましょう。" },
+    5: { correct: 1, explanation: "「Module not found」はファイルが見つからないエラーです。パスが間違っているか、ファイルが削除・リネームされています。" },
+    6: { correct: 1, explanation: "開発サーバーは止めずに、新しいタブで別作業をするのが基本です。Ctrl+Cで止めると、サーバーへのアクセスもできなくなります。" }
+  };
+
+  function answer(btn, isCorrect, secNum) {
+    const opts = btn.parentElement.querySelectorAll('.quiz-opt');
+    opts.forEach(o => o.disabled = true);
+    const fb = document.getElementById('fb' + secNum);
+    const info = answers[secNum];
+
+    // mark correct answer
+    opts[info.correct].classList.add('correct');
+    if (!isCorrect) btn.classList.add('wrong');
+
+    fb.textContent = (isCorrect ? '✓ 正解！ ' : '× 不正解。') + info.explanation;
+    fb.className = 'quiz-feedback show ' + (isCorrect ? 'ok-fb' : 'ng-fb');
+  }
+
+  function complete(num) {
+    if (completed.has(num)) return;
+    completed.add(num);
+
+    const btn = document.getElementById('cbtn' + num);
+    btn.textContent = '完了 ✓';
+    btn.classList.add('done-btn');
+
+    const numEl = document.getElementById('num' + num);
+    numEl.classList.add('done-num');
+    numEl.textContent = '✓';
+
+    const chBtn = document.getElementById('ch' + num);
+    chBtn.classList.add('done');
+
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const pct = Math.round((completed.size / total) * 100);
+    document.getElementById('progressBar').style.width = pct + '%';
+    document.getElementById('progressPct').textContent = pct + '%';
+    if (completed.size === total) {
+      document.getElementById('finishBox').classList.add('show');
+      document.getElementById('finishBox').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+
+  function scrollTo(num) {
+    document.getElementById('sec' + num).scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+</script>
+</body>
+</html>
