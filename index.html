@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>サブスク診断 | 観たい作品で最安プランを自動計算</title>
   <meta name="description" content="観たい作品を選ぶだけで、動画サブスクの最安プラン組み合わせを自動計算。どのサービスに入るべきか一目でわかるサブスク診断ツール。">
-  <meta property="og:title" content="🎬 サブスク診断 | 観たい作品で最安プランを自動計算">
+  <meta property="og:title" content="サブスク診断 | 観たい作品で最安プランを自動計算">
   <meta property="og:description" content="観たい作品を選ぶだけで、動画サブスクの最安プラン組み合わせを自動計算。どのサービスに入るべきか一目でわかる。">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://streaming-optimizer-sigma.vercel.app/">
@@ -15,7 +15,7 @@
   <meta property="og:site_name" content="サブスク診断">
   <meta property="og:locale" content="ja_JP">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="🎬 サブスク診断 | 観たい作品で最安プランを自動計算">
+  <meta name="twitter:title" content="サブスク診断 | 観たい作品で最安プランを自動計算">
   <meta name="twitter:description" content="観たい作品を選ぶだけで、動画サブスクの最安プラン組み合わせを自動計算。">
   <meta name="twitter:image" content="https://streaming-optimizer-sigma.vercel.app/subscription-ogp.svg">
   <script defer src="/_vercel/insights/script.js"></script>
@@ -424,7 +424,7 @@
 <header class="header">
   <div class="header-inner">
     <div class="logo">
-      <div class="logo-icon">📺</div>
+      <div class="logo-icon"></div>
       <div class="logo-text">
         <div class="logo-title">サブスク診断</div>
         <span class="logo-sub">観たい作品 → 最安プランを自動計算</span>
@@ -506,7 +506,7 @@
         <input type="checkbox" id="subIsTrial"> 無料トライアル中
       </label>
       <div class="sub-list" id="subList"></div>
-      <button class="sub-notif-btn" id="subNotifBtn" onclick="requestNotifPermission()">🔔 ブラウザ通知を有効にする</button>
+      <button class="sub-notif-btn" id="subNotifBtn" onclick="requestNotifPermission()"> ブラウザ通知を有効にする</button>
     </div>
 
     <div class="panel">
@@ -527,7 +527,7 @@
 
       <!-- TMDb 未設定時 -->
       <div id="tmdbSetup" class="tmdb-setup">
-        <div class="tmdb-setup-title">🔑 配信サービスを自動検索するには</div>
+        <div class="tmdb-setup-title"> 配信サービスを自動検索するには</div>
         <div class="tmdb-setup-steps">
           1. <a href="https://www.themoviedb.org/" target="_blank">themoviedb.org</a> で無料アカウント作成<br>
           2. 設定 → API → 「APIキーをリクエスト」<br>
@@ -547,8 +547,8 @@
       </div>
 
       <div class="search-mode">
-        <button class="mode-btn active" id="modeTitle" onclick="setSearchMode('title')">🎬 作品名</button>
-        <button class="mode-btn" id="modePerson" onclick="setSearchMode('person')">🧑 出演者</button>
+        <button class="mode-btn active" id="modeTitle" onclick="setSearchMode('title')"> 作品名</button>
+        <button class="mode-btn" id="modePerson" onclick="setSearchMode('person')"> 出演者</button>
       </div>
       <div class="add-wrap">
         <input class="add-input" id="addInput" type="text" placeholder="作品名を入力（日本語・英語）" autocomplete="off" spellcheck="false">
@@ -559,7 +559,7 @@
         <div class="add-manual-msg">自動検索で見つかりませんでした。<br>配信サービスを手動で選択してください：</div>
         <div class="add-manual-name" id="addManualName"></div>
         <div class="svc-check-grid" id="svcCheckGrid"></div>
-        <div class="add-row"><label>絵文字</label><input class="emoji-inp" id="addEmoji" type="text" value="🎬" maxlength="4"></div>
+        <div class="add-row" style="display:none"><label>絵文字</label><input class="emoji-inp" id="addEmoji" type="text" value="" maxlength="4"></div>
         <button class="add-confirm" onclick="addCustomManual()">この作品を追加する</button>
       </div>
     </div>
@@ -576,20 +576,20 @@
 <!-- モバイル ボトムナビ -->
 <nav class="mobile-tabbar" id="mobileTabbar">
   <button class="mobile-tab active" id="mTabGrid" onclick="mobileGoGrid()">
-    <span class="mobile-tab-icon">📺</span>
+    <span class="mobile-tab-icon"></span>
     作品
   </button>
   <button class="mobile-tab" id="mTabSel" onclick="mobileOpenSheet('selected')">
-    <span class="mobile-tab-icon">✅</span>
+    <span class="mobile-tab-icon"></span>
     <span class="mobile-tab-badge" id="mSelBadge"></span>
     選択中
   </button>
   <button class="mobile-tab" id="mTabCalc" onclick="mobileCalc()">
-    <span class="mobile-tab-icon">💡</span>
+    <span class="mobile-tab-icon"></span>
     最安計算
   </button>
   <button class="mobile-tab" id="mTabMore" onclick="mobileOpenSheet('more')">
-    <span class="mobile-tab-icon">⚙️</span>
+    <span class="mobile-tab-icon"></span>
     設定
   </button>
 </nav>
@@ -631,304 +631,304 @@ const SVC = {
 // ─────────────────────────────────────────────────────
 const DB = [
   // 海外ドラマ
-  {id:1,  t:'ストレンジャー・シングス',       g:'foreign',e:'🔦',s:['netflix']},
-  {id:2,  t:'ウェンズデー',                  g:'foreign',e:'🖤',s:['netflix']},
-  {id:3,  t:'イカゲーム',                    g:'foreign',e:'🦑',s:['netflix']},
-  {id:4,  t:'ブレイキング・バッド',            g:'foreign',e:'⚗️',s:['netflix']},
-  {id:5,  t:'ペーパー・ハウス',               g:'foreign',e:'🎭',s:['netflix']},
-  {id:6,  t:'エミリー、パリへ行く',            g:'foreign',e:'🗼',s:['netflix']},
-  {id:7,  t:'ブリジャートン家',               g:'foreign',e:'👑',s:['netflix']},
-  {id:8,  t:'ザ・クラウン',                  g:'foreign',e:'👸',s:['netflix']},
-  {id:9,  t:'ダーク',                        g:'foreign',e:'🌀',s:['netflix']},
-  {id:10, t:'ブラック・ミラー',               g:'foreign',e:'📱',s:['netflix']},
-  {id:11, t:'オザーク',                      g:'foreign',e:'🌊',s:['netflix']},
-  {id:12, t:'ナルコス',                      g:'foreign',e:'🌿',s:['netflix']},
-  {id:13, t:'ザ・ボーイズ',                  g:'foreign',e:'💥',s:['amazon']},
-  {id:14, t:'フォールアウト',                g:'foreign',e:'☢️',s:['amazon']},
-  {id:15, t:'リーチャー',                    g:'foreign',e:'💪',s:['amazon']},
-  {id:16, t:'インビンシブル',                g:'foreign',e:'🦸',s:['amazon']},
-  {id:17, t:'リングス・オブ・パワー',         g:'foreign',e:'💍',s:['amazon']},
-  {id:18, t:'マーベラス・ミセス・メイゼル',   g:'foreign',e:'🎤',s:['amazon']},
-  {id:19, t:'ジャック・ライアン',             g:'foreign',e:'🕵️',s:['amazon']},
-  {id:20, t:'ゲーム・オブ・スローンズ',       g:'foreign',e:'🐉',s:['unext']},
-  {id:21, t:'ハウス・オブ・ザ・ドラゴン',     g:'foreign',e:'🔥',s:['unext']},
-  {id:22, t:'サクセッション',                g:'foreign',e:'💼',s:['unext']},
-  {id:23, t:'ザ・ラスト・オブ・アス',         g:'foreign',e:'🍄',s:['unext']},
-  {id:24, t:'ホワイト・ロータス',             g:'foreign',e:'🌺',s:['unext']},
-  {id:25, t:'ウエストワールド',               g:'foreign',e:'🤖',s:['unext']},
-  {id:26, t:'ザ・ソプラノズ',                g:'foreign',e:'🔫',s:['unext']},
-  {id:27, t:'トゥルー・ディテクティブ',       g:'foreign',e:'🔎',s:['unext']},
-  {id:28, t:'バンド・オブ・ブラザーズ',       g:'foreign',e:'🎖️',s:['unext']},
-  {id:29, t:'ザ・マンダロリアン',             g:'foreign',e:'🚀',s:['disney']},
-  {id:30, t:'ロキ',                          g:'foreign',e:'🔱',s:['disney']},
-  {id:31, t:'アンドー',                      g:'foreign',e:'⭐',s:['disney']},
-  {id:32, t:'ワンダヴィジョン',               g:'foreign',e:'📺',s:['disney']},
-  {id:33, t:'ムーン・ナイト',                g:'foreign',e:'🌙',s:['disney']},
-  {id:34, t:'グレイズ・アナトミー',           g:'foreign',e:'👨‍⚕️',s:['hulu','disney']},
-  {id:35, t:'クリミナル・マインズ',           g:'foreign',e:'🧩',s:['hulu','disney']},
-  {id:36, t:'プリズン・ブレイク',             g:'foreign',e:'🔓',s:['hulu']},
-  {id:37, t:'ハウス（HOUSE）',               g:'foreign',e:'🏥',s:['hulu']},
-  {id:38, t:'24 -TWENTY FOUR-',             g:'foreign',e:'⏰',s:['hulu']},
-  {id:39, t:'ロスト',                        g:'foreign',e:'🏝️',s:['hulu']},
-  {id:40, t:'ハンドメイズ・テイル',           g:'foreign',e:'🔴',s:['hulu']},
-  {id:41, t:'ホームランド',                  g:'foreign',e:'🌍',s:['hulu']},
-  {id:42, t:'テッド・ラッソ',                g:'foreign',e:'⚽',s:['apple']},
-  {id:43, t:'セバーランス',                  g:'foreign',e:'🧠',s:['apple']},
-  {id:44, t:'ザ・モーニングショー',           g:'foreign',e:'🎙️',s:['apple']},
-  {id:45, t:'スロー・ホーシズ',              g:'foreign',e:'🐎',s:['apple']},
-  {id:46, t:'シュリンキング',                g:'foreign',e:'🌻',s:['apple']},
-  {id:47, t:'サイロ',                        g:'foreign',e:'🏚️',s:['apple']},
+  {id:1,  t:'ストレンジャー・シングス',       g:'foreign',e:'',s:['netflix']},
+  {id:2,  t:'ウェンズデー',                  g:'foreign',e:'',s:['netflix']},
+  {id:3,  t:'イカゲーム',                    g:'foreign',e:'',s:['netflix']},
+  {id:4,  t:'ブレイキング・バッド',            g:'foreign',e:'',s:['netflix']},
+  {id:5,  t:'ペーパー・ハウス',               g:'foreign',e:'',s:['netflix']},
+  {id:6,  t:'エミリー、パリへ行く',            g:'foreign',e:'',s:['netflix']},
+  {id:7,  t:'ブリジャートン家',               g:'foreign',e:'',s:['netflix']},
+  {id:8,  t:'ザ・クラウン',                  g:'foreign',e:'',s:['netflix']},
+  {id:9,  t:'ダーク',                        g:'foreign',e:'',s:['netflix']},
+  {id:10, t:'ブラック・ミラー',               g:'foreign',e:'',s:['netflix']},
+  {id:11, t:'オザーク',                      g:'foreign',e:'',s:['netflix']},
+  {id:12, t:'ナルコス',                      g:'foreign',e:'',s:['netflix']},
+  {id:13, t:'ザ・ボーイズ',                  g:'foreign',e:'',s:['amazon']},
+  {id:14, t:'フォールアウト',                g:'foreign',e:'',s:['amazon']},
+  {id:15, t:'リーチャー',                    g:'foreign',e:'',s:['amazon']},
+  {id:16, t:'インビンシブル',                g:'foreign',e:'',s:['amazon']},
+  {id:17, t:'リングス・オブ・パワー',         g:'foreign',e:'',s:['amazon']},
+  {id:18, t:'マーベラス・ミセス・メイゼル',   g:'foreign',e:'',s:['amazon']},
+  {id:19, t:'ジャック・ライアン',             g:'foreign',e:'',s:['amazon']},
+  {id:20, t:'ゲーム・オブ・スローンズ',       g:'foreign',e:'',s:['unext']},
+  {id:21, t:'ハウス・オブ・ザ・ドラゴン',     g:'foreign',e:'',s:['unext']},
+  {id:22, t:'サクセッション',                g:'foreign',e:'',s:['unext']},
+  {id:23, t:'ザ・ラスト・オブ・アス',         g:'foreign',e:'',s:['unext']},
+  {id:24, t:'ホワイト・ロータス',             g:'foreign',e:'',s:['unext']},
+  {id:25, t:'ウエストワールド',               g:'foreign',e:'',s:['unext']},
+  {id:26, t:'ザ・ソプラノズ',                g:'foreign',e:'',s:['unext']},
+  {id:27, t:'トゥルー・ディテクティブ',       g:'foreign',e:'',s:['unext']},
+  {id:28, t:'バンド・オブ・ブラザーズ',       g:'foreign',e:'',s:['unext']},
+  {id:29, t:'ザ・マンダロリアン',             g:'foreign',e:'',s:['disney']},
+  {id:30, t:'ロキ',                          g:'foreign',e:'',s:['disney']},
+  {id:31, t:'アンドー',                      g:'foreign',e:'',s:['disney']},
+  {id:32, t:'ワンダヴィジョン',               g:'foreign',e:'',s:['disney']},
+  {id:33, t:'ムーン・ナイト',                g:'foreign',e:'',s:['disney']},
+  {id:34, t:'グレイズ・アナトミー',           g:'foreign',e:'',s:['hulu','disney']},
+  {id:35, t:'クリミナル・マインズ',           g:'foreign',e:'',s:['hulu','disney']},
+  {id:36, t:'プリズン・ブレイク',             g:'foreign',e:'',s:['hulu']},
+  {id:37, t:'ハウス（HOUSE）',               g:'foreign',e:'',s:['hulu']},
+  {id:38, t:'24 -TWENTY FOUR-',             g:'foreign',e:'',s:['hulu']},
+  {id:39, t:'ロスト',                        g:'foreign',e:'',s:['hulu']},
+  {id:40, t:'ハンドメイズ・テイル',           g:'foreign',e:'',s:['hulu']},
+  {id:41, t:'ホームランド',                  g:'foreign',e:'',s:['hulu']},
+  {id:42, t:'テッド・ラッソ',                g:'foreign',e:'',s:['apple']},
+  {id:43, t:'セバーランス',                  g:'foreign',e:'',s:['apple']},
+  {id:44, t:'ザ・モーニングショー',           g:'foreign',e:'',s:['apple']},
+  {id:45, t:'スロー・ホーシズ',              g:'foreign',e:'',s:['apple']},
+  {id:46, t:'シュリンキング',                g:'foreign',e:'',s:['apple']},
+  {id:47, t:'サイロ',                        g:'foreign',e:'',s:['apple']},
   // アニメ
-  {id:50, t:'進撃の巨人',                    g:'anime',e:'⚔️',s:['netflix','amazon','hulu','unext']},
-  {id:51, t:'鬼滅の刃',                      g:'anime',e:'🌊',s:['netflix','amazon','hulu','unext']},
-  {id:52, t:'SPY×FAMILY',                   g:'anime',e:'🕵️',s:['amazon','netflix']},
-  {id:53, t:'呪術廻戦',                      g:'anime',e:'👁️',s:['netflix','amazon']},
-  {id:54, t:'推しの子',                      g:'anime',e:'⭐',s:['amazon']},
-  {id:55, t:'チェンソーマン',                g:'anime',e:'🪚',s:['amazon']},
-  {id:56, t:'葬送のフリーレン',               g:'anime',e:'🌿',s:['amazon']},
-  {id:57, t:'ダンジョン飯',                  g:'anime',e:'🍖',s:['netflix']},
-  {id:58, t:'薬屋のひとりごと',               g:'anime',e:'🌸',s:['netflix']},
-  {id:59, t:'BLUE LOCK',                    g:'anime',e:'⚽',s:['amazon']},
-  {id:60, t:'僕のヒーローアカデミア',          g:'anime',e:'🦸',s:['netflix','amazon']},
-  {id:61, t:'東京リベンジャーズ',             g:'anime',e:'🏍️',s:['netflix']},
-  {id:62, t:'ワンピース（アニメ）',            g:'anime',e:'🏴‍☠️',s:['amazon']},
-  {id:63, t:'ワンピース（実写）',              g:'anime',e:'⚓',s:['netflix']},
-  {id:64, t:'転生したらスライムだった件',      g:'anime',e:'💧',s:['netflix','amazon']},
-  {id:65, t:'鋼の錬金術師 BROTHERHOOD',      g:'anime',e:'⚙️',s:['netflix','amazon','hulu']},
-  {id:66, t:'コードギアス',                  g:'anime',e:'♟️',s:['netflix','amazon']},
-  {id:67, t:'ヴァイオレット・エヴァーガーデン', g:'anime',e:'✉️',s:['netflix']},
-  {id:68, t:'天元突破グレンラガン',            g:'anime',e:'🌀',s:['netflix','amazon']},
-  {id:69, t:'HUNTER×HUNTER',               g:'anime',e:'🎯',s:['netflix','amazon']},
-  {id:70, t:'NARUTO -ナルト-',              g:'anime',e:'🍥',s:['amazon','hulu']},
-  {id:71, t:'銀魂',                          g:'anime',e:'🗡️',s:['amazon','hulu']},
-  {id:72, t:'僕だけがいない街',               g:'anime',e:'🔄',s:['netflix','amazon']},
-  {id:73, t:'かぐや様は告らせたい',           g:'anime',e:'💌',s:['amazon']},
-  {id:74, t:'86（エイティシックス）',         g:'anime',e:'🔴',s:['netflix','amazon']},
-  {id:75, t:'リゼロ',                        g:'anime',e:'🕰️',s:['amazon','netflix']},
+  {id:50, t:'進撃の巨人',                    g:'anime',e:'',s:['netflix','amazon','hulu','unext']},
+  {id:51, t:'鬼滅の刃',                      g:'anime',e:'',s:['netflix','amazon','hulu','unext']},
+  {id:52, t:'SPY×FAMILY',                   g:'anime',e:'',s:['amazon','netflix']},
+  {id:53, t:'呪術廻戦',                      g:'anime',e:'',s:['netflix','amazon']},
+  {id:54, t:'推しの子',                      g:'anime',e:'',s:['amazon']},
+  {id:55, t:'チェンソーマン',                g:'anime',e:'',s:['amazon']},
+  {id:56, t:'葬送のフリーレン',               g:'anime',e:'',s:['amazon']},
+  {id:57, t:'ダンジョン飯',                  g:'anime',e:'',s:['netflix']},
+  {id:58, t:'薬屋のひとりごと',               g:'anime',e:'',s:['netflix']},
+  {id:59, t:'BLUE LOCK',                    g:'anime',e:'',s:['amazon']},
+  {id:60, t:'僕のヒーローアカデミア',          g:'anime',e:'',s:['netflix','amazon']},
+  {id:61, t:'東京リベンジャーズ',             g:'anime',e:'',s:['netflix']},
+  {id:62, t:'ワンピース（アニメ）',            g:'anime',e:'',s:['amazon']},
+  {id:63, t:'ワンピース（実写）',              g:'anime',e:'',s:['netflix']},
+  {id:64, t:'転生したらスライムだった件',      g:'anime',e:'',s:['netflix','amazon']},
+  {id:65, t:'鋼の錬金術師 BROTHERHOOD',      g:'anime',e:'',s:['netflix','amazon','hulu']},
+  {id:66, t:'コードギアス',                  g:'anime',e:'',s:['netflix','amazon']},
+  {id:67, t:'ヴァイオレット・エヴァーガーデン', g:'anime',e:'',s:['netflix']},
+  {id:68, t:'天元突破グレンラガン',            g:'anime',e:'',s:['netflix','amazon']},
+  {id:69, t:'HUNTER×HUNTER',               g:'anime',e:'',s:['netflix','amazon']},
+  {id:70, t:'NARUTO -ナルト-',              g:'anime',e:'',s:['amazon','hulu']},
+  {id:71, t:'銀魂',                          g:'anime',e:'',s:['amazon','hulu']},
+  {id:72, t:'僕だけがいない街',               g:'anime',e:'',s:['netflix','amazon']},
+  {id:73, t:'かぐや様は告らせたい',           g:'anime',e:'',s:['amazon']},
+  {id:74, t:'86（エイティシックス）',         g:'anime',e:'',s:['netflix','amazon']},
+  {id:75, t:'リゼロ',                        g:'anime',e:'',s:['amazon','netflix']},
   // 映画
-  {id:80, t:'アベンジャーズ エンドゲーム',    g:'movie',e:'🦸',s:['disney']},
-  {id:81, t:'スター・ウォーズシリーズ',       g:'movie',e:'⚡',s:['disney']},
-  {id:82, t:'ピクサー作品',                  g:'movie',e:'🎭',s:['disney']},
-  {id:83, t:'スパイダーマン NWH',            g:'movie',e:'🕷️',s:['disney']},
-  {id:84, t:'トップガン マーヴェリック',      g:'movie',e:'✈️',s:['netflix','amazon']},
-  {id:85, t:'バービー',                      g:'movie',e:'💖',s:['amazon','unext']},
-  {id:86, t:'オッペンハイマー',               g:'movie',e:'💣',s:['amazon','unext']},
-  {id:87, t:'ハリー・ポッターシリーズ',       g:'movie',e:'🪄',s:['hulu','unext','amazon']},
-  {id:88, t:'コーダ あいのうた',              g:'movie',e:'🎵',s:['apple']},
-  {id:89, t:'ナポレオン',                    g:'movie',e:'👑',s:['apple','amazon']},
-  {id:90, t:'インターステラー',               g:'movie',e:'🌌',s:['amazon','unext']},
-  {id:91, t:'マトリックスシリーズ',           g:'movie',e:'🟢',s:['unext','amazon']},
-  {id:92, t:'ボヘミアン・ラプソディ',         g:'movie',e:'🎸',s:['hulu','amazon']},
-  {id:93, t:'君の名は。',                    g:'movie',e:'🌠',s:['amazon','hulu','unext']},
-  {id:94, t:'千と千尋の神隠し',              g:'movie',e:'🏮',s:['netflix','amazon']},
+  {id:80, t:'アベンジャーズ エンドゲーム',    g:'movie',e:'',s:['disney']},
+  {id:81, t:'スター・ウォーズシリーズ',       g:'movie',e:'',s:['disney']},
+  {id:82, t:'ピクサー作品',                  g:'movie',e:'',s:['disney']},
+  {id:83, t:'スパイダーマン NWH',            g:'movie',e:'',s:['disney']},
+  {id:84, t:'トップガン マーヴェリック',      g:'movie',e:'',s:['netflix','amazon']},
+  {id:85, t:'バービー',                      g:'movie',e:'',s:['amazon','unext']},
+  {id:86, t:'オッペンハイマー',               g:'movie',e:'',s:['amazon','unext']},
+  {id:87, t:'ハリー・ポッターシリーズ',       g:'movie',e:'',s:['hulu','unext','amazon']},
+  {id:88, t:'コーダ あいのうた',              g:'movie',e:'',s:['apple']},
+  {id:89, t:'ナポレオン',                    g:'movie',e:'',s:['apple','amazon']},
+  {id:90, t:'インターステラー',               g:'movie',e:'',s:['amazon','unext']},
+  {id:91, t:'マトリックスシリーズ',           g:'movie',e:'',s:['unext','amazon']},
+  {id:92, t:'ボヘミアン・ラプソディ',         g:'movie',e:'',s:['hulu','amazon']},
+  {id:93, t:'君の名は。',                    g:'movie',e:'',s:['amazon','hulu','unext']},
+  {id:94, t:'千と千尋の神隠し',              g:'movie',e:'',s:['netflix','amazon']},
   // 韓国ドラマ
-  {id:100,t:'愛の不時着',                    g:'kdrama',e:'❤️',s:['netflix']},
-  {id:101,t:'梨泰院クラス',                  g:'kdrama',e:'🍺',s:['netflix']},
-  {id:102,t:'今、私たちの学校は…',            g:'kdrama',e:'🧟',s:['netflix']},
-  {id:103,t:'キングダム（韓国）',             g:'kdrama',e:'🏰',s:['netflix']},
-  {id:104,t:'ヴィンチェンツォ',               g:'kdrama',e:'🌹',s:['netflix']},
-  {id:105,t:'ムービング',                    g:'kdrama',e:'💨',s:['disney']},
-  {id:106,t:'マイ・ディア・ミスター',         g:'kdrama',e:'👔',s:['netflix','unext']},
-  {id:107,t:'ウ・ヨンウ弁護士は天才肌',      g:'kdrama',e:'🐋',s:['netflix']},
-  {id:108,t:'ミスター・サンシャイン',         g:'kdrama',e:'🌅',s:['netflix']},
-  {id:109,t:'スタートアップ：夢の扉',         g:'kdrama',e:'🚀',s:['netflix']},
+  {id:100,t:'愛の不時着',                    g:'kdrama',e:'',s:['netflix']},
+  {id:101,t:'梨泰院クラス',                  g:'kdrama',e:'',s:['netflix']},
+  {id:102,t:'今、私たちの学校は…',            g:'kdrama',e:'',s:['netflix']},
+  {id:103,t:'キングダム（韓国）',             g:'kdrama',e:'',s:['netflix']},
+  {id:104,t:'ヴィンチェンツォ',               g:'kdrama',e:'',s:['netflix']},
+  {id:105,t:'ムービング',                    g:'kdrama',e:'',s:['disney']},
+  {id:106,t:'マイ・ディア・ミスター',         g:'kdrama',e:'',s:['netflix','unext']},
+  {id:107,t:'ウ・ヨンウ弁護士は天才肌',      g:'kdrama',e:'',s:['netflix']},
+  {id:108,t:'ミスター・サンシャイン',         g:'kdrama',e:'',s:['netflix']},
+  {id:109,t:'スタートアップ：夢の扉',         g:'kdrama',e:'',s:['netflix']},
   // 日本ドラマ
-  {id:110,t:'全裸監督',                      g:'jdrama',e:'🎬',s:['netflix']},
-  {id:111,t:'サイレント',                    g:'jdrama',e:'🔇',s:['hulu']},
-  {id:112,t:'大豆田とわ子と三人の元夫',      g:'jdrama',e:'👩',s:['hulu']},
-  {id:113,t:'MIU404',                       g:'jdrama',e:'🚔',s:['amazon','unext']},
-  {id:114,t:'アンメット',                    g:'jdrama',e:'🧠',s:['unext','lemino']},
-  {id:115,t:'不適切にもほどがある！',         g:'jdrama',e:'📻',s:['unext','lemino']},
-  {id:116,t:'エルピス',                      g:'jdrama',e:'📡',s:['amazon','lemino']},
-  {id:117,t:'ハヤブサ消防団',               g:'jdrama',e:'🔥',s:['amazon','unext']},
-  {id:118,t:'だが、情熱はある',              g:'jdrama',e:'✊',s:['hulu','unext']},
-  {id:119,t:'コウノドリ',                    g:'jdrama',e:'🍼',s:['netflix','amazon']},
-  {id:120,t:'リバーサルオーケストラ',         g:'jdrama',e:'🎻',s:['hulu','unext']},
-  {id:121,t:'最高の教師',                    g:'jdrama',e:'🏫',s:['hulu']},
-  {id:122,t:'VIVANT',                       g:'jdrama',e:'🏜️',s:['unext','lemino']},
-  {id:123,t:'ブラッシュアップライフ',         g:'jdrama',e:'🔁',s:['hulu']},
+  {id:110,t:'全裸監督',                      g:'jdrama',e:'',s:['netflix']},
+  {id:111,t:'サイレント',                    g:'jdrama',e:'',s:['hulu']},
+  {id:112,t:'大豆田とわ子と三人の元夫',      g:'jdrama',e:'',s:['hulu']},
+  {id:113,t:'MIU404',                       g:'jdrama',e:'',s:['amazon','unext']},
+  {id:114,t:'アンメット',                    g:'jdrama',e:'',s:['unext','lemino']},
+  {id:115,t:'不適切にもほどがある！',         g:'jdrama',e:'',s:['unext','lemino']},
+  {id:116,t:'エルピス',                      g:'jdrama',e:'',s:['amazon','lemino']},
+  {id:117,t:'ハヤブサ消防団',               g:'jdrama',e:'',s:['amazon','unext']},
+  {id:118,t:'だが、情熱はある',              g:'jdrama',e:'',s:['hulu','unext']},
+  {id:119,t:'コウノドリ',                    g:'jdrama',e:'',s:['netflix','amazon']},
+  {id:120,t:'リバーサルオーケストラ',         g:'jdrama',e:'',s:['hulu','unext']},
+  {id:121,t:'最高の教師',                    g:'jdrama',e:'',s:['hulu']},
+  {id:122,t:'VIVANT',                       g:'jdrama',e:'',s:['unext','lemino']},
+  {id:123,t:'ブラッシュアップライフ',         g:'jdrama',e:'',s:['hulu']},
   // スポーツ
-  {id:200,t:'Jリーグ',                      g:'sports',e:'⚽',s:['dazn'],          wiki:'J1_League'},
-  {id:201,t:'プレミアリーグ',               g:'sports',e:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',s:['dazn'],          wiki:'Premier_League'},
-  {id:202,t:'ラ・リーガ（スペイン）',        g:'sports',e:'🇪🇸',s:['dazn'],          wiki:'La_Liga'},
-  {id:203,t:'セリエA（イタリア）',           g:'sports',e:'🇮🇹',s:['dazn'],          wiki:'Serie_A'},
-  {id:204,t:'ブンデスリーガ（ドイツ）',      g:'sports',e:'🇩🇪',s:['dazn'],          wiki:'Bundesliga'},
-  {id:205,t:'UEFAチャンピオンズリーグ',     g:'sports',e:'🏆',s:['dazn'],          wiki:'UEFA_Champions_League'},
-  {id:206,t:'NBA（バスケットボール）',       g:'sports',e:'🏀',s:['dazn','amazon'], wiki:'National_Basketball_Association'},
-  {id:207,t:'MLB（大リーグ）',              g:'sports',e:'⚾',s:['dazn'],          wiki:'Major_League_Baseball'},
-  {id:208,t:'プロ野球（NPB）',              g:'sports',e:'🏟️',s:['dazn','amazon'], wiki:'Nippon_Professional_Baseball'},
-  {id:209,t:'F1グランプリ',                 g:'sports',e:'🏎️',s:['dazn'],          wiki:'Formula_One'},
-  {id:210,t:'テニス グランドスラム',         g:'sports',e:'🎾',s:['dazn','amazon'], wiki:'Grand_Slam_(tennis)'},
-  {id:211,t:'ボクシング',                   g:'sports',e:'🥊',s:['dazn','amazon'], wiki:'Boxing'},
-  {id:212,t:'ゴルフ（PGAツアー等）',        g:'sports',e:'⛳',s:['dazn'],          wiki:'PGA_Tour'},
-  {id:213,t:'ラグビー（国際試合）',          g:'sports',e:'🏉',s:['dazn','abema'],  wiki:'Rugby_union'},
-  {id:214,t:'箱根駅伝',                     g:'sports',e:'🏃',s:['hulu','abema'],  wiki:'Hakone_Ekiden'},
-  {id:215,t:'大相撲',                       g:'sports',e:'🏯',s:['abema'],         wiki:'Sumo'},
-  {id:216,t:'WBC・侍ジャパン',              g:'sports',e:'🌏',s:['abema'],         wiki:'World_Baseball_Classic'},
-  {id:217,t:'Bリーグ（バスケ）',            g:'sports',e:'🏀',s:['dazn'],          wiki:'B.League_(basketball)'},
-  {id:218,t:'格闘技（RIZIN等）',            g:'sports',e:'🥋',s:['abema','amazon'],wiki:'Mixed_martial_arts'},
+  {id:200,t:'Jリーグ',                      g:'sports',e:'',s:['dazn'],          wiki:'J1_League'},
+  {id:201,t:'プレミアリーグ',               g:'sports',e:'󠁧󠁢󠁥󠁮󠁧󠁿',s:['dazn'],          wiki:'Premier_League'},
+  {id:202,t:'ラ・リーガ（スペイン）',        g:'sports',e:'',s:['dazn'],          wiki:'La_Liga'},
+  {id:203,t:'セリエA（イタリア）',           g:'sports',e:'',s:['dazn'],          wiki:'Serie_A'},
+  {id:204,t:'ブンデスリーガ（ドイツ）',      g:'sports',e:'',s:['dazn'],          wiki:'Bundesliga'},
+  {id:205,t:'UEFAチャンピオンズリーグ',     g:'sports',e:'',s:['dazn'],          wiki:'UEFA_Champions_League'},
+  {id:206,t:'NBA（バスケットボール）',       g:'sports',e:'',s:['dazn','amazon'], wiki:'National_Basketball_Association'},
+  {id:207,t:'MLB（大リーグ）',              g:'sports',e:'',s:['dazn'],          wiki:'Major_League_Baseball'},
+  {id:208,t:'プロ野球（NPB）',              g:'sports',e:'',s:['dazn','amazon'], wiki:'Nippon_Professional_Baseball'},
+  {id:209,t:'F1グランプリ',                 g:'sports',e:'',s:['dazn'],          wiki:'Formula_One'},
+  {id:210,t:'テニス グランドスラム',         g:'sports',e:'',s:['dazn','amazon'], wiki:'Grand_Slam_(tennis)'},
+  {id:211,t:'ボクシング',                   g:'sports',e:'',s:['dazn','amazon'], wiki:'Boxing'},
+  {id:212,t:'ゴルフ（PGAツアー等）',        g:'sports',e:'',s:['dazn'],          wiki:'PGA_Tour'},
+  {id:213,t:'ラグビー（国際試合）',          g:'sports',e:'',s:['dazn','abema'],  wiki:'Rugby_union'},
+  {id:214,t:'箱根駅伝',                     g:'sports',e:'',s:['hulu','abema'],  wiki:'Hakone_Ekiden'},
+  {id:215,t:'大相撲',                       g:'sports',e:'',s:['abema'],         wiki:'Sumo'},
+  {id:216,t:'WBC・侍ジャパン',              g:'sports',e:'',s:['abema'],         wiki:'World_Baseball_Classic'},
+  {id:217,t:'Bリーグ（バスケ）',            g:'sports',e:'',s:['dazn'],          wiki:'B.League_(basketball)'},
+  {id:218,t:'格闘技（RIZIN等）',            g:'sports',e:'',s:['abema','amazon'],wiki:'Mixed_martial_arts'},
   // バラエティ
-  {id:300,t:'テラスハウス',                  g:'variety',e:'🏠',s:['netflix']},
-  {id:301,t:'水曜日のダウンタウン',           g:'variety',e:'📺',s:['unext','lemino']},
-  {id:302,t:'アメトーーク！',                g:'variety',e:'🎤',s:['abema']},
-  {id:303,t:'ガキの使いやあらへんで',         g:'variety',e:'😂',s:['hulu']},
-  {id:304,t:'しゃべくり007',                 g:'variety',e:'🎙️',s:['hulu']},
-  {id:305,t:'ゴッドタン',                    g:'variety',e:'😈',s:['amazon']},
-  {id:306,t:'YOUは何しに日本へ？',           g:'variety',e:'🌏',s:['amazon','hulu']},
-  {id:307,t:'M-1グランプリ',                 g:'variety',e:'🏆',s:['abema','amazon']},
-  {id:308,t:'キングオブコント',               g:'variety',e:'👑',s:['unext','lemino']},
-  {id:309,t:'THE SECOND グランプリ',         g:'variety',e:'🎭',s:['abema']},
-  {id:310,t:'有吉の壁',                      g:'variety',e:'🧱',s:['hulu','unext']},
-  {id:311,t:'笑点',                          g:'variety',e:'👘',s:['hulu']},
-  {id:312,t:'人志松本のすべらない話',          g:'variety',e:'🍶',s:['hulu']},
-  {id:313,t:'乃木坂46 SHOW！',              g:'variety',e:'🌸',s:['amazon']},
-  {id:314,t:'クィア・アイ',                  g:'variety',e:'✨',s:['netflix']},
-  {id:315,t:'ザ・サークル',                  g:'variety',e:'🔵',s:['netflix']},
-  {id:316,t:'全力坂',                        g:'variety',e:'🏃',s:['hulu']},
-  {id:317,t:'ダウンタウンDX',                g:'variety',e:'🌟',s:['hulu']},
-  {id:318,t:'家、ついて行ってイイですか？',    g:'variety',e:'🏡',s:['amazon']},
+  {id:300,t:'テラスハウス',                  g:'variety',e:'',s:['netflix']},
+  {id:301,t:'水曜日のダウンタウン',           g:'variety',e:'',s:['unext','lemino']},
+  {id:302,t:'アメトーーク！',                g:'variety',e:'',s:['abema']},
+  {id:303,t:'ガキの使いやあらへんで',         g:'variety',e:'',s:['hulu']},
+  {id:304,t:'しゃべくり007',                 g:'variety',e:'',s:['hulu']},
+  {id:305,t:'ゴッドタン',                    g:'variety',e:'',s:['amazon']},
+  {id:306,t:'YOUは何しに日本へ？',           g:'variety',e:'',s:['amazon','hulu']},
+  {id:307,t:'M-1グランプリ',                 g:'variety',e:'',s:['abema','amazon']},
+  {id:308,t:'キングオブコント',               g:'variety',e:'',s:['unext','lemino']},
+  {id:309,t:'THE SECOND グランプリ',         g:'variety',e:'',s:['abema']},
+  {id:310,t:'有吉の壁',                      g:'variety',e:'',s:['hulu','unext']},
+  {id:311,t:'笑点',                          g:'variety',e:'',s:['hulu']},
+  {id:312,t:'人志松本のすべらない話',          g:'variety',e:'',s:['hulu']},
+  {id:313,t:'乃木坂46 SHOW！',              g:'variety',e:'',s:['amazon']},
+  {id:314,t:'クィア・アイ',                  g:'variety',e:'',s:['netflix']},
+  {id:315,t:'ザ・サークル',                  g:'variety',e:'',s:['netflix']},
+  {id:316,t:'全力坂',                        g:'variety',e:'',s:['hulu']},
+  {id:317,t:'ダウンタウンDX',                g:'variety',e:'',s:['hulu']},
+  {id:318,t:'家、ついて行ってイイですか？',    g:'variety',e:'',s:['amazon']},
   // ─── 追加アニメ ───
-  {id:401,t:'新世紀エヴァンゲリオン',          g:'anime',  e:'🤖',s:['netflix','amazon']},
-  {id:402,t:'カウボーイビバップ',             g:'anime',  e:'🚀',s:['netflix','amazon']},
-  {id:403,t:'BLEACH ブリーチ',               g:'anime',  e:'⚔️',s:['amazon','hulu']},
-  {id:404,t:'無職転生',                       g:'anime',  e:'🧙',s:['netflix','amazon']},
-  {id:405,t:'約束のネバーランド',              g:'anime',  e:'🌿',s:['netflix','amazon']},
-  {id:406,t:'盾の勇者の成り上がり',            g:'anime',  e:'🛡️',s:['amazon']},
-  {id:407,t:'ぼっち・ざ・ろっく！',            g:'anime',  e:'🎸',s:['amazon','abema']},
-  {id:408,t:'フルーツバスケット',              g:'anime',  e:'🍊',s:['hulu','amazon']},
-  {id:409,t:'機動戦士ガンダム 水星の魔女',     g:'anime',  e:'🤖',s:['netflix','amazon']},
-  {id:410,t:'Dr.STONE ドクターストーン',      g:'anime',  e:'💎',s:['netflix','amazon']},
-  {id:411,t:'七つの大罪',                     g:'anime',  e:'⚡',s:['netflix','amazon']},
-  {id:412,t:'魔法少女まどか☆マギカ',          g:'anime',  e:'💜',s:['netflix','amazon']},
-  {id:413,t:'ソードアート・オンライン',         g:'anime',  e:'⚔️',s:['amazon']},
-  {id:414,t:'俺だけレベルアップな件',          g:'anime',  e:'💎',s:['netflix','amazon','abema']},
-  {id:415,t:'ダンダダン',                     g:'anime',  e:'👻',s:['netflix']},
-  {id:416,t:'ヴィンランド・サガ',              g:'anime',  e:'🪓',s:['amazon','netflix']},
-  {id:417,t:'バキ',                           g:'anime',  e:'💪',s:['netflix']},
-  {id:418,t:'はじめの一歩',                   g:'anime',  e:'🥊',s:['amazon','hulu']},
-  {id:419,t:'THE FIRST SLAM DUNK',           g:'anime',  e:'🏀',s:['amazon']},
-  {id:420,t:'彼方のアストラ',                 g:'anime',  e:'🌌',s:['amazon']},
-  {id:421,t:'その着せ替え人形は恋をする',       g:'anime',  e:'👘',s:['amazon']},
-  {id:422,t:'シャングリラ・フロンティア',        g:'anime',  e:'🎮',s:['amazon']},
-  {id:423,t:'烏は主を選ばない',               g:'anime',  e:'🐦',s:['netflix','amazon']},
-  {id:424,t:'ダーウィンズゲーム',              g:'anime',  e:'🎯',s:['amazon']},
-  {id:425,t:'ハイキュー!!',                   g:'anime',  e:'🏐',s:['netflix','amazon']},
-  {id:426,t:'TRIGUN STAMPEDE',               g:'anime',  e:'🔫',s:['amazon']},
-  {id:427,t:'スキップとローファー',             g:'anime',  e:'🎒',s:['amazon']},
-  {id:428,t:'青の祓魔師',                     g:'anime',  e:'🔥',s:['amazon','hulu']},
-  {id:429,t:'乙女ゲームの破滅フラグ',           g:'anime',  e:'🌹',s:['amazon']},
-  {id:430,t:'かのかり（彼女、お借りします）',    g:'anime',  e:'💗',s:['amazon']},
+  {id:401,t:'新世紀エヴァンゲリオン',          g:'anime',  e:'',s:['netflix','amazon']},
+  {id:402,t:'カウボーイビバップ',             g:'anime',  e:'',s:['netflix','amazon']},
+  {id:403,t:'BLEACH ブリーチ',               g:'anime',  e:'',s:['amazon','hulu']},
+  {id:404,t:'無職転生',                       g:'anime',  e:'',s:['netflix','amazon']},
+  {id:405,t:'約束のネバーランド',              g:'anime',  e:'',s:['netflix','amazon']},
+  {id:406,t:'盾の勇者の成り上がり',            g:'anime',  e:'',s:['amazon']},
+  {id:407,t:'ぼっち・ざ・ろっく！',            g:'anime',  e:'',s:['amazon','abema']},
+  {id:408,t:'フルーツバスケット',              g:'anime',  e:'',s:['hulu','amazon']},
+  {id:409,t:'機動戦士ガンダム 水星の魔女',     g:'anime',  e:'',s:['netflix','amazon']},
+  {id:410,t:'Dr.STONE ドクターストーン',      g:'anime',  e:'',s:['netflix','amazon']},
+  {id:411,t:'七つの大罪',                     g:'anime',  e:'',s:['netflix','amazon']},
+  {id:412,t:'魔法少女まどかマギカ',          g:'anime',  e:'',s:['netflix','amazon']},
+  {id:413,t:'ソードアート・オンライン',         g:'anime',  e:'',s:['amazon']},
+  {id:414,t:'俺だけレベルアップな件',          g:'anime',  e:'',s:['netflix','amazon','abema']},
+  {id:415,t:'ダンダダン',                     g:'anime',  e:'',s:['netflix']},
+  {id:416,t:'ヴィンランド・サガ',              g:'anime',  e:'',s:['amazon','netflix']},
+  {id:417,t:'バキ',                           g:'anime',  e:'',s:['netflix']},
+  {id:418,t:'はじめの一歩',                   g:'anime',  e:'',s:['amazon','hulu']},
+  {id:419,t:'THE FIRST SLAM DUNK',           g:'anime',  e:'',s:['amazon']},
+  {id:420,t:'彼方のアストラ',                 g:'anime',  e:'',s:['amazon']},
+  {id:421,t:'その着せ替え人形は恋をする',       g:'anime',  e:'',s:['amazon']},
+  {id:422,t:'シャングリラ・フロンティア',        g:'anime',  e:'',s:['amazon']},
+  {id:423,t:'烏は主を選ばない',               g:'anime',  e:'',s:['netflix','amazon']},
+  {id:424,t:'ダーウィンズゲーム',              g:'anime',  e:'',s:['amazon']},
+  {id:425,t:'ハイキュー!!',                   g:'anime',  e:'',s:['netflix','amazon']},
+  {id:426,t:'TRIGUN STAMPEDE',               g:'anime',  e:'',s:['amazon']},
+  {id:427,t:'スキップとローファー',             g:'anime',  e:'',s:['amazon']},
+  {id:428,t:'青の祓魔師',                     g:'anime',  e:'',s:['amazon','hulu']},
+  {id:429,t:'乙女ゲームの破滅フラグ',           g:'anime',  e:'',s:['amazon']},
+  {id:430,t:'かのかり（彼女、お借りします）',    g:'anime',  e:'',s:['amazon']},
   // ─── 追加海外ドラマ ───
-  {id:451,t:'フレンズ',                       g:'foreign',e:'☕',s:['amazon','hulu']},
-  {id:452,t:'SUITS スーツ',                   g:'foreign',e:'👔',s:['amazon','netflix']},
-  {id:453,t:'ビッグバン★セオリー',             g:'foreign',e:'🔭',s:['amazon']},
-  {id:454,t:'ハウス・オブ・カーズ',             g:'foreign',e:'♟️',s:['netflix']},
-  {id:455,t:'コブラ会',                       g:'foreign',e:'🐍',s:['netflix']},
-  {id:456,t:'ウォーキング・デッド',             g:'foreign',e:'🧟',s:['disney','amazon']},
-  {id:457,t:'ダウントン・アビー',               g:'foreign',e:'🏰',s:['amazon']},
-  {id:458,t:'シャーロック',                    g:'foreign',e:'🔍',s:['netflix','amazon']},
-  {id:459,t:'デスパレートな妻たち',             g:'foreign',e:'🌷',s:['hulu']},
-  {id:460,t:'スパルタカス',                    g:'foreign',e:'⚔️',s:['amazon']},
-  {id:461,t:'バイキングス',                    g:'foreign',e:'⛵',s:['amazon']},
-  {id:462,t:'グッド・プレイス',                 g:'foreign',e:'😇',s:['netflix']},
-  {id:463,t:'アウター・バンクス',               g:'foreign',e:'🏄',s:['netflix']},
-  {id:464,t:'オレンジ・イズ・ニュー・ブラック', g:'foreign',e:'🍊',s:['netflix']},
-  {id:465,t:'SHOGUN 将軍',                    g:'foreign',e:'⛩️',s:['disney','hulu']},
-  {id:466,t:'CSI: 科学捜査班',                 g:'foreign',e:'🔬',s:['hulu']},
-  {id:467,t:'マインドハンター',                 g:'foreign',e:'🧠',s:['netflix']},
-  {id:468,t:'クイーンズ・ギャンビット',          g:'foreign',e:'♟️',s:['netflix']},
-  {id:469,t:'グッド・オーメンズ',               g:'foreign',e:'😇',s:['amazon']},
-  {id:470,t:'モダン・ファミリー',               g:'foreign',e:'👨‍👩‍👧‍👦',s:['disney','hulu']},
-  {id:471,t:'ウィッチャー',                    g:'foreign',e:'🐺',s:['netflix']},
-  {id:472,t:'ダーク・マター（Apple TV+）',     g:'foreign',e:'🌌',s:['apple']},
-  {id:473,t:'オーファン・ブラック',             g:'foreign',e:'🧬',s:['amazon']},
-  {id:474,t:'エリート（Elite）',                g:'foreign',e:'🎓',s:['netflix']},
-  {id:475,t:'ルシファー',                      g:'foreign',e:'😈',s:['netflix']},
+  {id:451,t:'フレンズ',                       g:'foreign',e:'',s:['amazon','hulu']},
+  {id:452,t:'SUITS スーツ',                   g:'foreign',e:'',s:['amazon','netflix']},
+  {id:453,t:'ビッグバンセオリー',             g:'foreign',e:'',s:['amazon']},
+  {id:454,t:'ハウス・オブ・カーズ',             g:'foreign',e:'',s:['netflix']},
+  {id:455,t:'コブラ会',                       g:'foreign',e:'',s:['netflix']},
+  {id:456,t:'ウォーキング・デッド',             g:'foreign',e:'',s:['disney','amazon']},
+  {id:457,t:'ダウントン・アビー',               g:'foreign',e:'',s:['amazon']},
+  {id:458,t:'シャーロック',                    g:'foreign',e:'',s:['netflix','amazon']},
+  {id:459,t:'デスパレートな妻たち',             g:'foreign',e:'',s:['hulu']},
+  {id:460,t:'スパルタカス',                    g:'foreign',e:'',s:['amazon']},
+  {id:461,t:'バイキングス',                    g:'foreign',e:'',s:['amazon']},
+  {id:462,t:'グッド・プレイス',                 g:'foreign',e:'',s:['netflix']},
+  {id:463,t:'アウター・バンクス',               g:'foreign',e:'',s:['netflix']},
+  {id:464,t:'オレンジ・イズ・ニュー・ブラック', g:'foreign',e:'',s:['netflix']},
+  {id:465,t:'SHOGUN 将軍',                    g:'foreign',e:'',s:['disney','hulu']},
+  {id:466,t:'CSI: 科学捜査班',                 g:'foreign',e:'',s:['hulu']},
+  {id:467,t:'マインドハンター',                 g:'foreign',e:'',s:['netflix']},
+  {id:468,t:'クイーンズ・ギャンビット',          g:'foreign',e:'',s:['netflix']},
+  {id:469,t:'グッド・オーメンズ',               g:'foreign',e:'',s:['amazon']},
+  {id:470,t:'モダン・ファミリー',               g:'foreign',e:'',s:['disney','hulu']},
+  {id:471,t:'ウィッチャー',                    g:'foreign',e:'',s:['netflix']},
+  {id:472,t:'ダーク・マター（Apple TV+）',     g:'foreign',e:'',s:['apple']},
+  {id:473,t:'オーファン・ブラック',             g:'foreign',e:'',s:['amazon']},
+  {id:474,t:'エリート（Elite）',                g:'foreign',e:'',s:['netflix']},
+  {id:475,t:'ルシファー',                      g:'foreign',e:'',s:['netflix']},
   // ─── 追加映画 ───
-  {id:501,t:'ジョン・ウィック',                 g:'movie',  e:'💥',s:['amazon','hulu']},
-  {id:502,t:'ダークナイト',                    g:'movie',  e:'🦇',s:['amazon','unext']},
-  {id:503,t:'ジョーカー',                      g:'movie',  e:'🃏',s:['amazon','unext']},
-  {id:504,t:'ミッション：インポッシブル',        g:'movie',  e:'🎭',s:['amazon','hulu']},
-  {id:505,t:'アラジン（実写）',                 g:'movie',  e:'🧞',s:['disney']},
-  {id:506,t:'ライオン・キング（実写）',          g:'movie',  e:'🦁',s:['disney']},
-  {id:507,t:'ズートピア',                      g:'movie',  e:'🦊',s:['disney']},
-  {id:508,t:'もののけ姫',                       g:'movie',  e:'🌲',s:['netflix','amazon']},
-  {id:509,t:'天空の城ラピュタ',                 g:'movie',  e:'✈️',s:['netflix','amazon']},
-  {id:510,t:'魔女の宅急便',                    g:'movie',  e:'🧹',s:['netflix','amazon']},
-  {id:511,t:'となりのトトロ',                   g:'movie',  e:'🍁',s:['netflix','amazon']},
-  {id:512,t:'パラサイト 半地下の家族',          g:'movie',  e:'🪜',s:['amazon','unext']},
-  {id:513,t:'グリーンブック',                   g:'movie',  e:'🎹',s:['amazon','unext']},
-  {id:514,t:'ドライブ・マイ・カー',             g:'movie',  e:'🚗',s:['amazon','unext']},
-  {id:515,t:'花束みたいな恋をした',             g:'movie',  e:'💐',s:['amazon','netflix']},
-  {id:516,t:'ワイルド・スピード シリーズ',        g:'movie',  e:'🏎️',s:['amazon','hulu']},
-  {id:517,t:'ドクター・ストレンジ',             g:'movie',  e:'🔮',s:['disney']},
-  {id:518,t:'ガーディアンズ・オブ・ギャラクシー',g:'movie',  e:'🌌',s:['disney']},
-  {id:519,t:'ブラック・パンサー',               g:'movie',  e:'🐾',s:['disney']},
-  {id:520,t:'アントマン',                       g:'movie',  e:'🐜',s:['disney']},
-  {id:521,t:'風の谷のナウシカ',                 g:'movie',  e:'🦅',s:['netflix','amazon']},
-  {id:522,t:'紅の豚',                          g:'movie',  e:'🐷',s:['netflix','amazon']},
-  {id:523,t:'崖の上のポニョ',                   g:'movie',  e:'🐟',s:['netflix','amazon']},
-  {id:524,t:'借りぐらしのアリエッティ',          g:'movie',  e:'🌿',s:['netflix','amazon']},
-  {id:525,t:'かぐや姫の物語',                   g:'movie',  e:'🌸',s:['netflix','amazon']},
+  {id:501,t:'ジョン・ウィック',                 g:'movie',  e:'',s:['amazon','hulu']},
+  {id:502,t:'ダークナイト',                    g:'movie',  e:'',s:['amazon','unext']},
+  {id:503,t:'ジョーカー',                      g:'movie',  e:'',s:['amazon','unext']},
+  {id:504,t:'ミッション：インポッシブル',        g:'movie',  e:'',s:['amazon','hulu']},
+  {id:505,t:'アラジン（実写）',                 g:'movie',  e:'',s:['disney']},
+  {id:506,t:'ライオン・キング（実写）',          g:'movie',  e:'',s:['disney']},
+  {id:507,t:'ズートピア',                      g:'movie',  e:'',s:['disney']},
+  {id:508,t:'もののけ姫',                       g:'movie',  e:'',s:['netflix','amazon']},
+  {id:509,t:'天空の城ラピュタ',                 g:'movie',  e:'',s:['netflix','amazon']},
+  {id:510,t:'魔女の宅急便',                    g:'movie',  e:'',s:['netflix','amazon']},
+  {id:511,t:'となりのトトロ',                   g:'movie',  e:'',s:['netflix','amazon']},
+  {id:512,t:'パラサイト 半地下の家族',          g:'movie',  e:'',s:['amazon','unext']},
+  {id:513,t:'グリーンブック',                   g:'movie',  e:'',s:['amazon','unext']},
+  {id:514,t:'ドライブ・マイ・カー',             g:'movie',  e:'',s:['amazon','unext']},
+  {id:515,t:'花束みたいな恋をした',             g:'movie',  e:'',s:['amazon','netflix']},
+  {id:516,t:'ワイルド・スピード シリーズ',        g:'movie',  e:'',s:['amazon','hulu']},
+  {id:517,t:'ドクター・ストレンジ',             g:'movie',  e:'',s:['disney']},
+  {id:518,t:'ガーディアンズ・オブ・ギャラクシー',g:'movie',  e:'',s:['disney']},
+  {id:519,t:'ブラック・パンサー',               g:'movie',  e:'',s:['disney']},
+  {id:520,t:'アントマン',                       g:'movie',  e:'',s:['disney']},
+  {id:521,t:'風の谷のナウシカ',                 g:'movie',  e:'',s:['netflix','amazon']},
+  {id:522,t:'紅の豚',                          g:'movie',  e:'',s:['netflix','amazon']},
+  {id:523,t:'崖の上のポニョ',                   g:'movie',  e:'',s:['netflix','amazon']},
+  {id:524,t:'借りぐらしのアリエッティ',          g:'movie',  e:'',s:['netflix','amazon']},
+  {id:525,t:'かぐや姫の物語',                   g:'movie',  e:'',s:['netflix','amazon']},
   // ─── 追加韓国ドラマ ───
-  {id:541,t:'椿の花咲く頃',                    g:'kdrama', e:'🌺',s:['netflix','unext']},
-  {id:542,t:'賢い医師生活',                    g:'kdrama', e:'🏥',s:['netflix','unext']},
-  {id:543,t:'模範タクシー',                    g:'kdrama', e:'🚕',s:['netflix']},
-  {id:544,t:'二十五、二十一',                   g:'kdrama', e:'🤸',s:['netflix']},
-  {id:545,t:'少年判事',                        g:'kdrama', e:'⚖️',s:['netflix']},
-  {id:546,t:'私の解放日誌',                    g:'kdrama', e:'📓',s:['netflix']},
-  {id:547,t:'財閥家の末息子',                  g:'kdrama', e:'💰',s:['amazon','unext']},
-  {id:548,t:'ホテルデルーナ',                  g:'kdrama', e:'🌙',s:['netflix','unext']},
-  {id:549,t:'マスク・ガール',                   g:'kdrama', e:'😷',s:['netflix']},
-  {id:550,t:'D.P. 脱走兵追跡官',              g:'kdrama', e:'🏃',s:['netflix']},
-  {id:551,t:'地獄が呼んでいる',                g:'kdrama', e:'👹',s:['netflix']},
-  {id:552,t:'わかっていても',                  g:'kdrama', e:'💔',s:['netflix']},
-  {id:553,t:'三十九',                          g:'kdrama', e:'🌿',s:['netflix']},
-  {id:554,t:'ミセン -未生-',                   g:'kdrama', e:'♟️',s:['netflix','unext']},
-  {id:555,t:'青春の記録',                      g:'kdrama', e:'📷',s:['netflix']},
-  {id:556,t:'パチンコ',                        g:'kdrama', e:'🎰',s:['apple']},
-  {id:557,t:'マイ・ネーム：偽りと復讐',        g:'kdrama', e:'👊',s:['netflix']},
-  {id:558,t:'コネクト',                        g:'kdrama', e:'🔗',s:['disney']},
-  {id:559,t:'ビッグマウス',                    g:'kdrama', e:'👄',s:['disney','hulu']},
-  {id:560,t:'ビューティー・インサイド',         g:'kdrama', e:'🪞',s:['netflix']},
+  {id:541,t:'椿の花咲く頃',                    g:'kdrama', e:'',s:['netflix','unext']},
+  {id:542,t:'賢い医師生活',                    g:'kdrama', e:'',s:['netflix','unext']},
+  {id:543,t:'模範タクシー',                    g:'kdrama', e:'',s:['netflix']},
+  {id:544,t:'二十五、二十一',                   g:'kdrama', e:'',s:['netflix']},
+  {id:545,t:'少年判事',                        g:'kdrama', e:'',s:['netflix']},
+  {id:546,t:'私の解放日誌',                    g:'kdrama', e:'',s:['netflix']},
+  {id:547,t:'財閥家の末息子',                  g:'kdrama', e:'',s:['amazon','unext']},
+  {id:548,t:'ホテルデルーナ',                  g:'kdrama', e:'',s:['netflix','unext']},
+  {id:549,t:'マスク・ガール',                   g:'kdrama', e:'',s:['netflix']},
+  {id:550,t:'D.P. 脱走兵追跡官',              g:'kdrama', e:'',s:['netflix']},
+  {id:551,t:'地獄が呼んでいる',                g:'kdrama', e:'',s:['netflix']},
+  {id:552,t:'わかっていても',                  g:'kdrama', e:'',s:['netflix']},
+  {id:553,t:'三十九',                          g:'kdrama', e:'',s:['netflix']},
+  {id:554,t:'ミセン -未生-',                   g:'kdrama', e:'',s:['netflix','unext']},
+  {id:555,t:'青春の記録',                      g:'kdrama', e:'',s:['netflix']},
+  {id:556,t:'パチンコ',                        g:'kdrama', e:'',s:['apple']},
+  {id:557,t:'マイ・ネーム：偽りと復讐',        g:'kdrama', e:'',s:['netflix']},
+  {id:558,t:'コネクト',                        g:'kdrama', e:'',s:['disney']},
+  {id:559,t:'ビッグマウス',                    g:'kdrama', e:'',s:['disney','hulu']},
+  {id:560,t:'ビューティー・インサイド',         g:'kdrama', e:'',s:['netflix']},
   // ─── 追加日本ドラマ ───
-  {id:571,t:'半沢直樹',                        g:'jdrama', e:'💼',s:['amazon','hulu']},
-  {id:572,t:'相棒',                            g:'jdrama', e:'🔍',s:['amazon','hulu']},
-  {id:573,t:'孤独のグルメ',                    g:'jdrama', e:'🍜',s:['amazon','hulu']},
-  {id:574,t:'逃げるは恥だが役に立つ',           g:'jdrama', e:'💃',s:['netflix','amazon']},
-  {id:575,t:'ミステリと言う勿れ',               g:'jdrama', e:'🔮',s:['hulu','amazon']},
-  {id:576,t:'ドクターX',                       g:'jdrama', e:'🏥',s:['amazon','hulu']},
-  {id:577,t:'おっさんずラブ',                  g:'jdrama', e:'💕',s:['amazon','hulu']},
-  {id:578,t:'凪のお暇',                        g:'jdrama', e:'🌊',s:['amazon','hulu']},
-  {id:579,t:'カルテット',                       g:'jdrama', e:'🎻',s:['amazon','unext']},
-  {id:580,t:'アンナチュラル',                   g:'jdrama', e:'🔬',s:['amazon']},
-  {id:581,t:'重版出来！',                       g:'jdrama', e:'📚',s:['netflix','amazon']},
-  {id:582,t:'俺の家の話',                       g:'jdrama', e:'🏠',s:['amazon','hulu']},
-  {id:583,t:'ドラゴン桜',                       g:'jdrama', e:'📖',s:['amazon','hulu']},
-  {id:584,t:'JIN-仁-',                         g:'jdrama', e:'⚕️',s:['hulu','unext']},
-  {id:585,t:'義母と娘のブルース',               g:'jdrama', e:'👩‍👧',s:['amazon','hulu']},
-  {id:586,t:'罠の戦争',                        g:'jdrama', e:'⚔️',s:['hulu','amazon']},
-  {id:587,t:'家政夫のミタゾノ',                g:'jdrama', e:'👔',s:['hulu','amazon']},
-  {id:588,t:'わたし、定時で帰ります。',          g:'jdrama', e:'⏰',s:['netflix','amazon']},
-  {id:589,t:'恋は続くよどこまでも',             g:'jdrama', e:'💓',s:['hulu','amazon']},
-  {id:590,t:'TOKYO MER～走る緊急救命室～',     g:'jdrama', e:'🚑',s:['amazon','unext']},
+  {id:571,t:'半沢直樹',                        g:'jdrama', e:'',s:['amazon','hulu']},
+  {id:572,t:'相棒',                            g:'jdrama', e:'',s:['amazon','hulu']},
+  {id:573,t:'孤独のグルメ',                    g:'jdrama', e:'',s:['amazon','hulu']},
+  {id:574,t:'逃げるは恥だが役に立つ',           g:'jdrama', e:'',s:['netflix','amazon']},
+  {id:575,t:'ミステリと言う勿れ',               g:'jdrama', e:'',s:['hulu','amazon']},
+  {id:576,t:'ドクターX',                       g:'jdrama', e:'',s:['amazon','hulu']},
+  {id:577,t:'おっさんずラブ',                  g:'jdrama', e:'',s:['amazon','hulu']},
+  {id:578,t:'凪のお暇',                        g:'jdrama', e:'',s:['amazon','hulu']},
+  {id:579,t:'カルテット',                       g:'jdrama', e:'',s:['amazon','unext']},
+  {id:580,t:'アンナチュラル',                   g:'jdrama', e:'',s:['amazon']},
+  {id:581,t:'重版出来！',                       g:'jdrama', e:'',s:['netflix','amazon']},
+  {id:582,t:'俺の家の話',                       g:'jdrama', e:'',s:['amazon','hulu']},
+  {id:583,t:'ドラゴン桜',                       g:'jdrama', e:'',s:['amazon','hulu']},
+  {id:584,t:'JIN-仁-',                         g:'jdrama', e:'',s:['hulu','unext']},
+  {id:585,t:'義母と娘のブルース',               g:'jdrama', e:'',s:['amazon','hulu']},
+  {id:586,t:'罠の戦争',                        g:'jdrama', e:'',s:['hulu','amazon']},
+  {id:587,t:'家政夫のミタゾノ',                g:'jdrama', e:'',s:['hulu','amazon']},
+  {id:588,t:'わたし、定時で帰ります。',          g:'jdrama', e:'',s:['netflix','amazon']},
+  {id:589,t:'恋は続くよどこまでも',             g:'jdrama', e:'',s:['hulu','amazon']},
+  {id:590,t:'TOKYO MER～走る緊急救命室～',     g:'jdrama', e:'',s:['amazon','unext']},
   // ─── 追加バラエティ ───
-  {id:621,t:'マツコの知らない世界',            g:'variety', e:'🌍',s:['amazon','hulu']},
-  {id:622,t:'ブラタモリ',                      g:'variety', e:'🗾',s:['amazon']},
-  {id:623,t:'行列のできる相談所',              g:'variety', e:'⚖️',s:['hulu']},
-  {id:624,t:'バナナマンのせっかくグルメ!!',     g:'variety', e:'🍽️',s:['hulu']},
-  {id:625,t:'出川哲朗の充電させてもらえませんか？',g:'variety',e:'🔋',s:['hulu']},
-  {id:626,t:'芸能人格付けチェック',             g:'variety', e:'🎭',s:['hulu']},
-  {id:627,t:'ドキュメンタル',                  g:'variety', e:'😱',s:['amazon']},
-  {id:628,t:'バチェラー・ジャパン',            g:'variety', e:'🌹',s:['amazon']},
-  {id:629,t:'ロンドンハーツ',                  g:'variety', e:'❤️',s:['hulu']},
-  {id:630,t:'IPPONグランプリ',                 g:'variety', e:'🎤',s:['hulu','amazon']},
-  {id:631,t:'千鳥のクセがスゴいネタGP',        g:'variety', e:'😂',s:['hulu']},
-  {id:632,t:'タモリ倶楽部',                    g:'variety', e:'🏛️',s:['amazon']},
-  {id:633,t:'ぴったんこカン★カン',             g:'variety', e:'🌟',s:['amazon']},
-  {id:634,t:'人生最高レストラン',               g:'variety', e:'🍽️',s:['hulu']},
-  {id:635,t:'100分de名著',                     g:'variety', e:'📖',s:['amazon']},
-  {id:636,t:'世界の果てまでイッテQ！',          g:'variety', e:'🌏',s:['hulu']},
+  {id:621,t:'マツコの知らない世界',            g:'variety', e:'',s:['amazon','hulu']},
+  {id:622,t:'ブラタモリ',                      g:'variety', e:'',s:['amazon']},
+  {id:623,t:'行列のできる相談所',              g:'variety', e:'',s:['hulu']},
+  {id:624,t:'バナナマンのせっかくグルメ!!',     g:'variety', e:'',s:['hulu']},
+  {id:625,t:'出川哲朗の充電させてもらえませんか？',g:'variety',e:'',s:['hulu']},
+  {id:626,t:'芸能人格付けチェック',             g:'variety', e:'',s:['hulu']},
+  {id:627,t:'ドキュメンタル',                  g:'variety', e:'',s:['amazon']},
+  {id:628,t:'バチェラー・ジャパン',            g:'variety', e:'',s:['amazon']},
+  {id:629,t:'ロンドンハーツ',                  g:'variety', e:'',s:['hulu']},
+  {id:630,t:'IPPONグランプリ',                 g:'variety', e:'',s:['hulu','amazon']},
+  {id:631,t:'千鳥のクセがスゴいネタGP',        g:'variety', e:'',s:['hulu']},
+  {id:632,t:'タモリ倶楽部',                    g:'variety', e:'',s:['amazon']},
+  {id:633,t:'ぴったんこカンカン',             g:'variety', e:'',s:['amazon']},
+  {id:634,t:'人生最高レストラン',               g:'variety', e:'',s:['hulu']},
+  {id:635,t:'100分de名著',                     g:'variety', e:'',s:['amazon']},
+  {id:636,t:'世界の果てまでイッテQ！',          g:'variety', e:'',s:['hulu']},
 ];
 
 // ─────────────────────────────────────────────────────
@@ -1222,12 +1222,12 @@ function renderSubList() {
     const dc   = daysClass(info.daysLeft);
     const uc   = urgencyClass(info.daysLeft);
     const daysText = info.daysLeft < 0
-      ? `<span class="${dc}">⚠️ 期限切れ</span>`
+      ? `<span class="${dc}"> 期限切れ</span>`
       : `<span class="${dc}">あと${info.daysLeft}日</span>`;
     return `<div class="sub-item ${uc}">
       <div class="sub-item-head">
         <span class="sub-dot" style="background:${svc.color}"></span>
-        <span class="sub-name">${svc.name}${sub.isTrial ? ' 🎁' : ''}</span>
+        <span class="sub-name">${svc.name}${sub.isTrial ? ' ' : ''}</span>
         <button class="sub-rm" onclick="removeSub('${sub.id}')">✕</button>
       </div>
       <div class="sub-deadline">
@@ -1235,7 +1235,7 @@ function renderSubList() {
       </div>
       <div class="sub-actions">
         <a href="${svc.url}" target="_blank" rel="noopener" class="sub-action-btn cancel">解約ページへ →</a>
-        <button class="sub-action-btn ical" onclick="exportICS(mySubs.find(s=>s.id==='${sub.id}'))">📅 カレンダーに追加</button>
+        <button class="sub-action-btn ical" onclick="exportICS(mySubs.find(s=>s.id==='${sub.id}'))"> カレンダーに追加</button>
       </div>
     </div>`;
   }).join('');
@@ -1252,7 +1252,7 @@ function checkDeadlineAlerts() {
   el.className = 'deadline-alert';
   el.innerHTML = `
     <button class="alert-close" onclick="this.parentElement.remove()">✕</button>
-    <div class="alert-ttl">⚠️ 解約期限が近づいています</div>
+    <div class="alert-ttl"> 解約期限が近づいています</div>
     ${urgent.map(x => `<div class="alert-item">・${x.svc.name} — あと${x.info.daysLeft}日</div>`).join('')}
   `;
   document.body.appendChild(el);
@@ -1270,7 +1270,7 @@ async function requestNotifPermission() {
   if (!('Notification' in window)) { alert('このブラウザは通知に対応していません'); return; }
   const perm = await Notification.requestPermission();
   if (perm === 'granted') {
-    document.getElementById('subNotifBtn').textContent = '🔔 通知が有効です';
+    document.getElementById('subNotifBtn').textContent = '通知が有効です';
     document.getElementById('subNotifBtn').disabled = true;
   }
 }
@@ -1382,8 +1382,8 @@ function renderRanking() {
         <div class="rank-name">${r.svc.name}</div>
         <div class="rank-bar-bg"><div class="rank-bar" style="width:${Math.round(r.score/maxScore*100)}%;background:${r.svc.color}"></div></div>
         <div class="rank-badges">
-          ${r.svc.trial ? `<span class="badge-trial">🎁${r.svc.trial}日無料</span>` : ''}
-          ${r.svc.annual ? `<span class="badge-annual">📅月${annualSave(r.svc).toLocaleString()}円節約</span>` : ''}
+          ${r.svc.trial ? `<span class="badge-trial">${r.svc.trial}日無料</span>` : ''}
+          ${r.svc.annual ? `<span class="badge-annual">月${annualSave(r.svc).toLocaleString()}円節約</span>` : ''}
         </div>
       </div>
       <span class="rank-score">${r.display}</span>
@@ -1434,7 +1434,7 @@ function allItems() { return [...DB, ...customItems]; }
   renderSubList();
   setTimeout(checkDeadlineAlerts, 800);
   if (Notification.permission === 'granted') {
-    document.getElementById('subNotifBtn').textContent = '🔔 通知が有効です';
+    document.getElementById('subNotifBtn').textContent = '通知が有効です';
     document.getElementById('subNotifBtn').disabled = true;
   }
 })();
@@ -1451,7 +1451,7 @@ function renderGrid() {
     return gOk && sOk;
   });
   if (!items.length) {
-    grid.innerHTML = `<div class="grid-empty"><span class="e">🔍</span>「${esc(searchQ)}」に一致する作品が見つかりません</div>`;
+    grid.innerHTML = `<div class="grid-empty">「${esc(searchQ)}」に一致する作品が見つかりません</div>`;
     return;
   }
   grid.innerHTML = items.map(it => {
@@ -1581,19 +1581,19 @@ async function performPersonSearch(q) {
 
     const dd = document.getElementById('addDd');
     if (!data.person) {
-      dd.innerHTML = `<div class="dd-section"><div class="dd-status">😔 「${esc(q)}」という出演者が見つかりませんでした</div></div>`;
+      dd.innerHTML = `<div class="dd-section"><div class="dd-status"> 「${esc(q)}」という出演者が見つかりませんでした</div></div>`;
       dd.className = 'add-dd open';
       return;
     }
 
     const parts = [`<div class="dd-section">
-      <div class="dd-section-hd">🧑 ${esc(data.person.name)} の出演作品</div>
+      <div class="dd-section-hd"> ${esc(data.person.name)} の出演作品</div>
       ${(data.results || []).map(item => {
         const cid = 'tc' + (tmdbCacheSeq++);
         tmdbCache.set(cid, { ...item, svcs: [...new Set((item.providers || []).map(nameToSvcKey).filter(Boolean))] });
         const svcs = [...new Set((item.providers || []).map(nameToSvcKey).filter(Boolean))];
         return `<div class="dd-item" onclick="addFromDD_tmdb('${cid}')">
-          <span class="dd-em">🎬</span>
+          <span class="dd-em"></span>
           <div class="dd-info">
             <div class="dd-title">${esc(item.title)}</div>
             <div class="dd-meta">${item.type}${item.year ? ' · ' + item.year : ''}</div>
@@ -1609,7 +1609,7 @@ async function performPersonSearch(q) {
     dd.className = 'add-dd open';
   } catch(e) {
     const dd = document.getElementById('addDd');
-    dd.innerHTML = `<div class="dd-section"><div class="dd-status">⚠️ 検索に失敗しました</div></div>`;
+    dd.innerHTML = `<div class="dd-section"><div class="dd-status"> 検索に失敗しました</div></div>`;
     dd.className = 'add-dd open';
   }
 }
@@ -1621,7 +1621,7 @@ function renderDD(localHits, tmdbItems, q, status, errMsg) {
   // ── ローカルDB結果
   if (localHits.length) {
     parts.push(`<div class="dd-section">
-      <div class="dd-section-hd">📋 登録済み作品</div>
+      <div class="dd-section-hd"> 登録済み作品</div>
       ${localHits.map(it => {
         const alr = selected.has(it.id);
         return `<div class="dd-item" onclick="addFromDD_db(${it.id})">
@@ -1640,7 +1640,7 @@ function renderDD(localHits, tmdbItems, q, status, errMsg) {
 
   } else if (status === 'nokey') {
     parts.push(`<div class="dd-section"><div class="dd-status" style="font-size:11px;flex-direction:column;align-items:flex-start;gap:2px">
-      <span>🔑 APIキー未設定のためネット検索できません</span>
+      <span> APIキー未設定のためネット検索できません</span>
       <span style="color:var(--tx2)">上の設定フォームでキーを登録してください</span>
     </div></div>`);
 
@@ -1651,13 +1651,13 @@ function renderDD(localHits, tmdbItems, q, status, errMsg) {
     );
     if (fresh.length) {
       parts.push(`<div class="dd-section">
-        <div class="dd-section-hd">🌐 TMDb検索結果</div>
+        <div class="dd-section-hd"> TMDb検索結果</div>
         ${fresh.map(item => {
           const cid = 'tc' + (tmdbCacheSeq++);
           tmdbCache.set(cid, item);
           const hasSvcs = item.svcs.length > 0;
           return `<div class="dd-item" onclick="addFromDD_tmdb('${cid}')">
-            <span class="dd-em">🎬</span>
+            <span class="dd-em"></span>
             <div class="dd-info">
               <div class="dd-title">${hlText(item.title, q)}</div>
               <div class="dd-meta">${item.type}${item.year ? ' · '+item.year : ''}</div>
@@ -1676,7 +1676,7 @@ function renderDD(localHits, tmdbItems, q, status, errMsg) {
 
   } else if (status === 'error') {
     if (!localHits.length) { showManualFallback(q); return; }
-    parts.push(`<div class="dd-section"><div class="dd-status" style="font-size:11px">⚠️ ${errMsg || 'TMDb検索に失敗しました'}</div></div>`);
+    parts.push(`<div class="dd-section"><div class="dd-status" style="font-size:11px"> ${errMsg || 'TMDb検索に失敗しました'}</div></div>`);
   }
 
   if (!parts.length) { closeDD(); return; }
@@ -1691,7 +1691,7 @@ function showManualFallback(q) {
   document.getElementById('addHint').textContent = '見つかりませんでした。配信サービスを選択して追加できます：';
   checkedSvcs.clear();
   document.querySelectorAll('.svc-chk').forEach(el => el.classList.remove('on'));
-  document.getElementById('addEmoji').value = '🎬';
+  document.getElementById('addEmoji').value = '';
 }
 
 function addFromDD_db(id) {
@@ -1712,7 +1712,7 @@ function addFromDD_tmdb(cid) {
     document.getElementById('addHint').textContent = '配信サービスの情報が取得できませんでした。手動で選択してください：';
     return;
   }
-  const custom = { id: customSeq++, t: item.title, g:'custom', e:'🎬', s: item.svcs };
+  const custom = { id: customSeq++, t: item.title, g:'custom', e:'', s: item.svcs };
   customItems.push(custom);
   selected.add(custom.id);
   renderSelList();
@@ -1740,7 +1740,7 @@ function addCustomManual() {
   const q = document.getElementById('addInput').value.trim();
   if (!q) return;
   if (!checkedSvcs.size) { alert('配信サービスを1つ以上選択してください'); return; }
-  const emoji = document.getElementById('addEmoji').value.trim() || '🎬';
+  const emoji = document.getElementById('addEmoji').value.trim() || '';
   const item = { id: customSeq++, t: q, g:'custom', e: emoji, s: [...checkedSvcs] };
   customItems.push(item);
   selected.add(item.id);
@@ -1759,7 +1759,7 @@ function closeAdd() {
   document.getElementById('addHint').textContent = '入力するとJustWatchで配信サービスを自動検索します';
   checkedSvcs.clear();
   document.querySelectorAll('.svc-chk').forEach(el => el.classList.remove('on'));
-  document.getElementById('addEmoji').value = '🎬';
+  document.getElementById('addEmoji').value = '';
 }
 
 // ─────────────────────────────────────────────────────
@@ -1797,7 +1797,7 @@ function calculate() {
 function renderResults(plans, allSel, uncoverable, overBudget) {
   const area = document.getElementById('resultArea');
   if (!plans.length) {
-    area.innerHTML = `<div class="panel"><div class="no-result-box">😔 選択された作品を全て視聴できるプランが見つかりませんでした</div></div>`;
+    area.innerHTML = `<div class="panel"><div class="no-result-box"> 選択された作品を全て視聴できるプランが見つかりませんでした</div></div>`;
     return;
   }
   const naiveCost = (() => {
@@ -1814,8 +1814,8 @@ function renderResults(plans, allSel, uncoverable, overBudget) {
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
       最適プラン
     </div>
-    ${overBudget ? `<div class="warn">⚠️ 予算内に収まるプランが見つかりません。予算を上げるか、作品を減らしてみてください。</div>` : ''}
-    ${uncoverable.length ? `<div class="warn">⚠️ 配信情報なし: ${uncoverable.map(i=>esc(i.t)).join('、')}</div>` : ''}
+    ${overBudget ? `<div class="warn"> 予算内に収まるプランが見つかりません。予算を上げるか、作品を減らしてみてください。</div>` : ''}
+    ${uncoverable.length ? `<div class="warn"> 配信情報なし: ${uncoverable.map(i=>esc(i.t)).join('、')}</div>` : ''}
     ${plans.map((p,i) => renderPlan(p, i===0, allSel, i, naiveCost)).join('')}
   </div>`;
 }
@@ -1826,12 +1826,12 @@ function renderPlan(plan, isBest, allSel, idx, naiveCost) {
   plan.combo.forEach(svc => { cov[svc] = allSel.filter(it => it.s && it.s.includes(svc)); });
   const did = `d${idx}`;
   return `<div class="result-plan${isBest?' best':''}">
-    ${isBest ? '<div class="best-badge">★ 最安プラン</div>' : `<div class="plan-alt-label">代替プラン ${idx+1}</div>`}
+    ${isBest ? '<div class="best-badge"> 最安プラン</div>' : `<div class="plan-alt-label">代替プラン ${idx+1}</div>`}
     <div class="plan-svcs">
       ${plan.combo.map(k=>`<div class="plan-svc-row">
         <div class="plan-dot" style="background:${SVC[k].color}"></div>
         <span class="plan-svc-name">${SVC[k].name}</span>
-        ${SVC[k].trial ? `<span class="svc-trial">🎁${SVC[k].trial}日無料</span>` : ''}
+        ${SVC[k].trial ? `<span class="svc-trial">${SVC[k].trial}日無料</span>` : ''}
         <span class="plan-svc-price">¥${SVC[k].price.toLocaleString()}/月</span>
       </div>`).join('')}
     </div>
@@ -1840,7 +1840,7 @@ function renderPlan(plan, isBest, allSel, idx, naiveCost) {
       const monthlyTotal = plan.cost * 12;
       const save = monthlyTotal - annualTotal;
       return save > 0
-        ? `<div class="plan-annual-total"><span>📅 年払いに切替</span><div style="text-align:right"><span class="plan-annual-val">¥${Math.round(annualTotal/12).toLocaleString()}/月相当</span><div class="plan-annual-save">年間 ¥${save.toLocaleString()} お得</div></div></div>`
+        ? `<div class="plan-annual-total"><span> 年払いに切替</span><div style="text-align:right"><span class="plan-annual-val">¥${Math.round(annualTotal/12).toLocaleString()}/月相当</span><div class="plan-annual-save">年間 ¥${save.toLocaleString()} お得</div></div></div>`
         : '';
     })()}
     <div class="plan-total">
@@ -1857,7 +1857,7 @@ function renderPlan(plan, isBest, allSel, idx, naiveCost) {
         if (!ts || !ts.length) return '';
         return `<div class="cov-svc">
           <div class="cov-svc-lbl"><span class="cov-dot" style="background:${SVC[svc].color}"></span>${SVC[svc].name}</div>
-          <div class="cov-titles">${ts.map(it=>`<span class="cov-tag">${it.e} ${esc(it.t)}</span>`).join('')}</div>
+          <div class="cov-titles">${ts.map(it=>`<span class="cov-tag">${esc(it.t)}</span>`).join('')}</div>
         </div>`;
       }).join('')}
     </div>
@@ -1919,7 +1919,7 @@ function mobileOpenSheet(view) {
     content.innerHTML = buildMobileSelectedHTML();
   } else if (view === 'results') {
     const resultArea = document.getElementById('resultArea');
-    content.innerHTML = `<div class="mobile-sheet-ttl">最安計算結果</div><div class="mob-result-area">${resultArea.innerHTML || '<div class="no-result-box">📊 計算結果がありません</div>'}</div>`;
+    content.innerHTML = `<div class="mobile-sheet-ttl">最安計算結果</div><div class="mob-result-area">${resultArea.innerHTML || '<div class="no-result-box"> 計算結果がありません</div>'}</div>`;
   } else if (view === 'more') {
     content.innerHTML = buildMobileMoreHTML();
   }
@@ -1978,9 +1978,9 @@ function buildMobileMoreHTML() {
   moreCurrentTab = 'rank';
   return `<div class="mobile-sheet-ttl">設定 / ランキング</div>
     <div class="mob-inner-tabs">
-      <button class="mob-inner-tab active" id="miTabRank" onclick="switchMoreTab('rank')">🏆 ランキング</button>
-      <button class="mob-inner-tab" id="miTabSched" onclick="switchMoreTab('sched')">📅 解約管理</button>
-      <button class="mob-inner-tab" id="miTabAdd" onclick="switchMoreTab('add')">➕ 作品追加</button>
+      <button class="mob-inner-tab active" id="miTabRank" onclick="switchMoreTab('rank')"> ランキング</button>
+      <button class="mob-inner-tab" id="miTabSched" onclick="switchMoreTab('sched')"> 解約管理</button>
+      <button class="mob-inner-tab" id="miTabAdd" onclick="switchMoreTab('add')"> 作品追加</button>
     </div>
     <div id="moreTabContent">${buildMobileRankHTML()}</div>`;
 }
@@ -2014,8 +2014,8 @@ function buildMobileRankHTML() {
         <div class="rank-name">${r.svc.name}</div>
         <div class="rank-bar-bg"><div class="rank-bar" style="width:${Math.round(r.score/maxScore*100)}%;background:${r.svc.color}"></div></div>
         <div class="rank-badges">
-          ${r.svc.trial?`<span class="badge-trial">🎁${r.svc.trial}日無料</span>`:''}
-          ${r.svc.annual?`<span class="badge-annual">📅月${annSave(r.svc).toLocaleString()}円節約</span>`:''}
+          ${r.svc.trial?`<span class="badge-trial">${r.svc.trial}日無料</span>`:''}
+          ${r.svc.annual?`<span class="badge-annual">月${annSave(r.svc).toLocaleString()}円節約</span>`:''}
         </div>
       </div>
       <span class="rank-score">${r.display}</span>
@@ -2030,7 +2030,7 @@ function buildMobileSchedHTML() {
   </div>
   <label class="sub-trial-chk"><input type="checkbox" id="mSubTrial"> 無料トライアル中</label>
   <div id="mSubListWrap">${buildSubListHTML()}</div>
-  <button class="sub-notif-btn" onclick="requestNotifPermission()">🔔 通知を有効にする</button>`;
+  <button class="sub-notif-btn" onclick="requestNotifPermission()"> 通知を有効にする</button>`;
 }
 
 function addSubMobile() {
@@ -2048,17 +2048,17 @@ function buildSubListHTML() {
   return mySubs.map(sub => {
     const svc = SVC[sub.svcKey], info = getDeadlineInfo(sub);
     const dc = daysClass(info.daysLeft), uc = urgencyClass(info.daysLeft);
-    const dt = info.daysLeft < 0 ? `<span class="${dc}">⚠️ 期限切れ</span>` : `<span class="${dc}">あと${info.daysLeft}日</span>`;
+    const dt = info.daysLeft < 0 ? `<span class="${dc}"> 期限切れ</span>` : `<span class="${dc}">あと${info.daysLeft}日</span>`;
     return `<div class="sub-item ${uc}">
       <div class="sub-item-head">
         <span class="sub-dot" style="background:${svc.color}"></span>
-        <span class="sub-name">${svc.name}${sub.isTrial?' 🎁':''}</span>
+        <span class="sub-name">${svc.name}${sub.isTrial?' ':''}</span>
         <button class="sub-rm" onclick="removeSub('${sub.id}');document.getElementById('mSubListWrap').innerHTML=buildSubListHTML()">✕</button>
       </div>
       <div class="sub-deadline">${info.label} — ${dt}</div>
       <div class="sub-actions">
         <a href="${svc.url}" target="_blank" rel="noopener" class="sub-action-btn cancel">解約ページへ →</a>
-        <button class="sub-action-btn ical" onclick="exportICS(mySubs.find(s=>s.id==='${sub.id}'))">📅 カレンダー</button>
+        <button class="sub-action-btn ical" onclick="exportICS(mySubs.find(s=>s.id==='${sub.id}'))"> カレンダー</button>
       </div>
     </div>`;
   }).join('');
@@ -2115,7 +2115,7 @@ function renderAuthUI() {
       <button class="logout-btn" onclick="signOut()">ログアウト</button>
     </div>`;
   } else {
-    area.innerHTML = `<button class="login-btn" onclick="signIn()">🔑 Googleでログイン</button>`;
+    area.innerHTML = `<button class="login-btn" onclick="signIn()"> Googleでログイン</button>`;
   }
 }
 

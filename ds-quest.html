@@ -1,0 +1,3643 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DS Notebook | タイタニック分析で学ぶデータサイエンス</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Hiragino Sans','Noto Sans JP','Yu Gothic',sans-serif;background:#1a1a2e;color:#e0e0f0;min-height:100vh}
+.screen{display:none;min-height:100vh;flex-direction:column}
+.screen.active{display:flex}
+code,pre,.mono{font-family:'SFMono-Regular','Consolas','Courier New',monospace}
+
+/* ======= TOP BAR ======= */
+.topbar{
+  background:#0f0f23;border-bottom:1px solid #2a2a4a;
+  padding:0.6rem 1.25rem;display:flex;align-items:center;gap:1rem;flex-shrink:0;
+  position:sticky;top:0;z-index:100
+}
+.tb-logo{font-weight:700;font-size:0.85rem;color:#7b7bff;white-space:nowrap}
+.tb-chapter{font-size:0.8rem;color:#888;white-space:nowrap}
+.tb-prog-wrap{flex:1;max-width:200px;height:6px;background:#2a2a4a;border-radius:3px;overflow:hidden}
+.tb-prog{height:100%;background:linear-gradient(90deg,#7b7bff,#56d4b4);border-radius:3px;transition:width 0.4s}
+.tb-xp{font-size:0.8rem;color:#ffd700;white-space:nowrap}
+.tb-cells{font-size:0.75rem;color:#666;white-space:nowrap}
+.tb-mute{background:none;border:none;font-size:1rem;cursor:pointer;opacity:0.6;padding:0 0.2rem;transition:opacity 0.2s}
+.tb-mute:hover{opacity:1}
+
+/* ======= TITLE ======= */
+#screen-title{
+  align-items:center;justify-content:center;text-align:center;
+  background:linear-gradient(160deg,#0f0f23 0%,#1a1a3e 60%,#0f1a23 100%);
+  padding:2rem 1rem;position:relative;overflow:hidden
+}
+.title-glow{
+  position:absolute;top:20%;left:50%;transform:translateX(-50%);
+  width:400px;height:400px;
+  background:radial-gradient(circle,#7b7bff11 0%,transparent 70%);
+  pointer-events:none
+}
+.nb-preview{
+  background:#0f0f23;border:1px solid #2a2a4a;border-radius:10px;
+  padding:1.25rem;font-family:'SFMono-Regular',monospace;font-size:0.82rem;
+  text-align:left;width:100%;max-width:420px;margin-bottom:2rem;
+  position:relative;z-index:1;line-height:1.7
+}
+.nb-preview-in{color:#888;margin-bottom:0.35rem;font-size:0.7rem}
+.nb-preview code .kw{color:#7b7bff}
+.nb-preview code .st{color:#ff9d3c}
+.nb-preview code .fn{color:#56d4b4}
+.nb-preview code .cm{color:#555}
+.nb-preview code .blank{
+  display:inline-block;background:#ffd70022;border:1px solid #ffd70066;
+  border-radius:3px;padding:0 6px;color:#ffd700;min-width:40px;text-align:center
+}
+.nb-preview-out{
+  background:#0a0a18;border-top:1px solid #2a2a4a;
+  margin-top:0.75rem;padding:0.75rem;border-radius:0 0 6px 6px;
+  color:#56d4b4;font-size:0.82rem
+}
+.t-title{font-size:clamp(1.8rem,7vw,3rem);font-weight:900;margin-bottom:0.4rem;position:relative;z-index:1}
+.t-title span{color:#7b7bff}
+.t-sub{color:#9090b0;margin-bottom:2rem;line-height:1.6;font-size:0.95rem;position:relative;z-index:1}
+.t-badges{display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:2rem;position:relative;z-index:1}
+.badge{background:#0f0f23;border:1px solid #2a2a4a;border-radius:20px;padding:0.3rem 0.8rem;font-size:0.78rem;color:#888}
+.btn-go{
+  background:#7b7bff;border:none;color:#fff;
+  padding:1rem 3rem;font-size:1.1rem;font-weight:700;border-radius:8px;
+  cursor:pointer;transition:all 0.2s;font-family:inherit;position:relative;z-index:1
+}
+.btn-go:hover{background:#9090ff;transform:translateY(-2px);box-shadow:0 8px 24px #7b7bff44}
+.t-progress{font-size:0.82rem;color:#ffd700;margin-top:1rem;position:relative;z-index:1}
+
+/* ======= CHAPTER SELECT ======= */
+#screen-chapters{
+  background:#1a1a2e;padding:1.5rem 1rem 3rem;align-items:center
+}
+.ch-header{text-align:center;margin-bottom:1.75rem}
+.ch-title{font-size:1.4rem;font-weight:700;color:#7b7bff}
+.ch-sub{font-size:0.85rem;color:#888;margin-top:0.25rem}
+.ch-list{width:100%;max-width:500px;display:flex;flex-direction:column;gap:0.8rem}
+.ch-card{
+  background:#0f0f23;border:1px solid #2a2a4a;border-radius:10px;
+  padding:1rem 1.25rem;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden
+}
+.ch-card:hover:not(.locked){border-color:#7b7bff55;transform:translateX(4px)}
+.ch-card.locked{opacity:0.35;cursor:not-allowed}
+.ch-card.done{border-color:#56d4b433}
+.ch-card.perfect{border-color:#ffd70033}
+.ch-row{display:flex;align-items:center;gap:0.85rem;margin-bottom:0.3rem}
+.ch-icon{font-size:1.6rem;flex-shrink:0}
+.ch-info{flex:1;min-width:0}
+.ch-num{font-size:0.62rem;color:#44445a;text-transform:uppercase;letter-spacing:0.12em}
+.ch-name{font-size:0.95rem;font-weight:700;color:#ddd}
+.ch-stars{font-size:0.9rem;letter-spacing:2px;flex-shrink:0}
+.ch-desc{font-size:0.76rem;color:#555;line-height:1.4}
+.ch-lock{position:absolute;right:1.25rem;top:50%;transform:translateY(-50%);font-size:1.2rem;opacity:0.4}
+.btn-back{
+  background:transparent;border:1px solid #2a2a4a;color:#666;
+  padding:0.5rem 1.5rem;border-radius:6px;cursor:pointer;font-size:0.82rem;
+  margin-top:1.25rem;transition:all 0.2s;font-family:inherit
+}
+.btn-back:hover{border-color:#7b7bff55;color:#7b7bff}
+
+/* ======= NOTEBOOK ======= */
+#screen-nb{background:#1a1a2e}
+.nb-body{flex:1;padding:1rem 1rem 3rem;max-width:660px;width:100%;margin:0 auto}
+.nb-chapter-header{margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid #2a2a4a}
+.nb-ch-tag{font-size:0.7rem;color:#7b7bff;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:0.25rem}
+.nb-ch-title{font-size:1.15rem;font-weight:700;color:#e0e0f0}
+.nb-ch-desc{font-size:0.82rem;color:#777;margin-top:0.2rem;line-height:1.5}
+.nb-context{
+  background:#0f1a0f;border-left:3px solid #56d4b4;border-radius:0 6px 6px 0;
+  padding:0.75rem 1rem;margin-bottom:1.25rem;font-size:0.85rem;color:#a0c0a0;line-height:1.6
+}
+
+/* CODE CELL */
+.nb-cell{margin-bottom:1.5rem}
+.cell-in-label{
+  font-size:0.68rem;color:#555;margin-bottom:0.3rem;display:flex;
+  align-items:center;gap:0.5rem;font-family:'SFMono-Regular',monospace
+}
+.cell-num{color:#7b7bff}
+.cell-code{
+  background:#0f0f23;border:1px solid #2a2a4a;border-radius:8px;
+  padding:1rem;overflow-x:auto
+}
+.cell-code pre{font-size:0.86rem;line-height:1.8;color:#ccd6f6;white-space:pre}
+.cell-code .kw{color:#7b7bff}
+.cell-code .fn{color:#56d4b4}
+.cell-code .st{color:#ff9d3c}
+.cell-code .cm{color:#444466;font-style:italic}
+.cell-code .num{color:#ff9d3c}
+.cell-code .blank{
+  display:inline-block;background:#ffd70015;border:1.5px solid #ffd70077;
+  border-radius:4px;padding:0 8px;color:#ffd700;min-width:48px;
+  text-align:center;cursor:default;font-weight:700;position:relative;
+  animation:blink-border 2s ease-in-out infinite
+}
+.cell-code .blank.filled{
+  background:#56d4b420;border-color:#56d4b4;color:#56d4b4;animation:none
+}
+.cell-code .blank.wrong-fill{
+  background:#ff444420;border-color:#ff4444;color:#ff4444;animation:none
+}
+@keyframes blink-border{
+  0%,100%{border-color:#ffd70077;box-shadow:none}
+  50%{border-color:#ffd700;box-shadow:0 0 8px #ffd70033}
+}
+
+/* QUESTION PROMPT */
+.q-prompt{
+  font-size:0.82rem;color:#888;margin:0.75rem 0 0.6rem;
+  display:flex;align-items:center;gap:0.4rem
+}
+.q-prompt::before{content:'→';color:#7b7bff}
+
+/* OPTIONS */
+.options-grid{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.85rem}
+.opt-btn{
+  background:#0f0f23;border:1px solid #2a2a4a;border-radius:6px;
+  padding:0.45rem 0.9rem;font-family:'SFMono-Regular',monospace;font-size:0.84rem;
+  color:#ccd6f6;cursor:pointer;transition:all 0.15s;white-space:nowrap
+}
+.opt-btn:hover:not([disabled]){border-color:#7b7bff88;color:#fff;background:#15152e}
+.opt-btn.selected{border-color:#7b7bff;color:#7b7bff;background:#15152e}
+.opt-btn.correct{border-color:#56d4b4!important;background:#0a2a20!important;color:#56d4b4!important;cursor:default}
+.opt-btn.wrong{border-color:#ff4444!important;background:#200a0a!important;color:#ff6060!important;cursor:default}
+.opt-btn[disabled]{cursor:default}
+
+/* CODE INPUT */
+.code-input-wrap{
+  display:flex;align-items:center;gap:0.5rem;
+  background:#0a0a18;border:1px solid #2a2a4a;border-radius:8px;
+  padding:0.55rem 0.85rem;margin-bottom:0.65rem;transition:border-color 0.15s
+}
+.code-input-wrap:focus-within{border-color:#7b7bff88}
+.code-input-prompt{color:#7b7bff;font-family:'SFMono-Regular',monospace;font-size:0.9rem;flex-shrink:0;user-select:none}
+.code-input{
+  background:transparent;border:none;outline:none;
+  font-family:'SFMono-Regular',monospace;font-size:0.9rem;color:#ccd6f6;
+  flex:1;caret-color:#7b7bff;min-width:0
+}
+.code-input::placeholder{color:#2e2e4a}
+.code-input.input-wrong{color:#ff6060;animation:inputShake 0.35s}
+.code-input[disabled]{color:#444;cursor:not-allowed}
+@keyframes inputShake{0%,100%{transform:translateX(0)}25%,75%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
+.opts-reveal-row{margin-bottom:0.75rem;display:flex;align-items:center;gap:0.6rem}
+.reveal-opts-btn{
+  background:transparent;border:1px solid #222240;color:#444;
+  padding:0.28rem 0.7rem;border-radius:5px;font-size:0.76rem;
+  cursor:pointer;font-family:inherit;transition:all 0.15s
+}
+.reveal-opts-btn:hover{border-color:#7b7bff44;color:#777}
+.hint-label{font-size:0.73rem;color:#333}
+
+/* LEARN PHASE */
+.blank.learn-answer{
+  background:#1a1a3a;border:1px solid #7b7bff88;border-radius:4px;
+  color:#a0a0ff;padding:0 0.35rem;font-weight:700;
+  animation:learnPulse 2s ease-in-out infinite
+}
+@keyframes learnPulse{0%,100%{border-color:#7b7bff44}50%{border-color:#7b7bff}}
+.learn-out-wrap{
+  background:#0a0a18;border:1px solid #1a1a3a;border-radius:8px;
+  padding:0.75rem 1rem;margin-bottom:0.9rem
+}
+.learn-actions{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:1rem;margin-top:0.25rem;flex-wrap:wrap
+}
+.learn-hint{font-size:0.78rem;color:#444}
+.btn-practice{
+  background:linear-gradient(135deg,#7b7bff,#56d4b4);border:none;color:#fff;
+  padding:0.55rem 1.5rem;border-radius:8px;font-size:0.9rem;font-weight:700;
+  cursor:pointer;font-family:inherit;transition:opacity 0.2s;flex-shrink:0
+}
+.btn-practice:hover{opacity:0.85}
+
+/* RUN / NEXT */
+.cell-actions{display:flex;align-items:center;gap:0.75rem;margin-bottom:0.85rem}
+.btn-run{
+  background:#7b7bff;border:none;color:#fff;
+  padding:0.5rem 1.4rem;border-radius:6px;font-size:0.88rem;font-weight:700;
+  cursor:pointer;transition:all 0.2s;font-family:inherit;flex-shrink:0
+}
+.btn-run:hover:not([disabled]){background:#9090ff}
+.btn-run[disabled]{background:#2a2a4a;cursor:not-allowed;color:#555}
+.run-hint{font-size:0.78rem;color:#555}
+.btn-next{
+  background:#56d4b4;border:none;color:#0f0f23;
+  padding:0.5rem 1.4rem;border-radius:6px;font-size:0.88rem;font-weight:700;
+  cursor:pointer;transition:all 0.2s;font-family:inherit;display:none
+}
+.btn-next:hover{background:#70e4c4}
+
+/* OUTPUT */
+.cell-out{
+  background:#0a0a18;border:1px solid #1a1a3a;border-radius:8px;
+  padding:0.85rem 1rem;margin-top:0.35rem;display:none
+}
+.out-label{font-size:0.68rem;color:#555;margin-bottom:0.4rem;font-family:'SFMono-Regular',monospace}
+.out-text{font-family:'SFMono-Regular',monospace;font-size:0.84rem;color:#56d4b4;white-space:pre-wrap;line-height:1.6}
+.out-table{border-collapse:collapse;font-size:0.78rem;font-family:'SFMono-Regular',monospace;width:100%;overflow-x:auto}
+.out-table th{color:#888;border-bottom:1px solid #2a2a4a;padding:0.25rem 0.5rem;text-align:left;font-weight:normal}
+.out-table td{color:#56d4b4;padding:0.2rem 0.5rem;border-bottom:1px solid #1a1a2e}
+.out-table tr:last-child td{border-bottom:none}
+.out-table-wrap{overflow-x:auto}
+.out-chart{display:flex;flex-direction:column;gap:3px}
+.chart-row{display:flex;align-items:center;gap:6px;font-size:0.75rem}
+.chart-label{color:#888;width:40px;text-align:right;font-family:'SFMono-Regular',monospace;flex-shrink:0}
+.chart-bar{height:14px;background:#7b7bff55;border-radius:2px;transition:width 0.5s}
+.chart-val{color:#56d4b4;font-family:'SFMono-Regular',monospace;font-size:0.72rem}
+
+/* XP FEEDBACK */
+.xp-flash{
+  position:fixed;top:60px;right:12px;
+  font-weight:700;font-size:0.88rem;padding:0.3rem 0.75rem;border-radius:14px;
+  pointer-events:none;z-index:300;opacity:0;transform:translateY(0);
+  transition:opacity 0.2s,transform 0.6s
+}
+.xp-flash.pos{background:#ffd700;color:#1a1000}
+.xp-flash.neg{background:#ff4444;color:#fff}
+.xp-flash.show{opacity:1;transform:translateY(-20px)}
+
+/* CHAPTER COMPLETE */
+#screen-ch-done{
+  align-items:center;justify-content:center;text-align:center;
+  padding:2rem;background:linear-gradient(160deg,#0f0f23,#0f1a0f)
+}
+.done-icon{font-size:4rem;margin-bottom:1rem}
+.done-title{font-size:1.8rem;font-weight:900;color:#56d4b4;margin-bottom:0.5rem}
+.done-stars{font-size:2.5rem;letter-spacing:5px;margin:0.75rem 0}
+.done-xp{color:#ffd700;font-size:1rem;margin-bottom:1.5rem}
+.done-table{
+  background:#0f0f23;border:1px solid #2a2a4a;border-radius:10px;
+  padding:0.85rem 1.5rem;margin-bottom:1.75rem;width:100%;max-width:280px
+}
+.done-row{display:flex;justify-content:space-between;padding:0.3rem 0;font-size:0.85rem;color:#666;border-bottom:1px solid #1a1a3a}
+.done-row:last-child{border:none}
+.done-row span:last-child{color:#ddd;font-weight:700}
+.btn-row{display:flex;gap:0.65rem;flex-wrap:wrap;justify-content:center}
+.btn-outline{
+  background:transparent;border:1px solid #2a2a4a;color:#666;
+  padding:0.65rem 1.25rem;border-radius:7px;cursor:pointer;font-size:0.9rem;
+  transition:all 0.2s;font-family:inherit
+}
+.btn-outline:hover{border-color:#7b7bff55;color:#7b7bff}
+.btn-solid{
+  background:#7b7bff;border:none;color:#fff;
+  padding:0.65rem 1.25rem;border-radius:7px;cursor:pointer;font-size:0.9rem;
+  font-weight:700;transition:all 0.2s;font-family:inherit
+}
+.btn-solid:hover{background:#9090ff;transform:translateY(-1px)}
+
+/* ALL COMPLETE */
+#screen-all-done{
+  align-items:center;justify-content:center;text-align:center;
+  padding:2rem;background:linear-gradient(160deg,#0f0f23,#0a1a0f)
+}
+.all-icon{font-size:5rem;margin-bottom:1rem}
+.all-title{font-size:2rem;font-weight:900;color:#7b7bff;margin-bottom:0.5rem}
+.all-sub{color:#888;margin-bottom:1.5rem;line-height:1.7;font-size:0.92rem}
+.all-xp{font-size:2rem;color:#ffd700;font-weight:700;margin-bottom:2rem}
+
+/* SCROLL */
+html{scroll-behavior:smooth}
+.nb-body::-webkit-scrollbar{width:4px}
+.nb-body::-webkit-scrollbar-track{background:#0f0f23}
+.nb-body::-webkit-scrollbar-thumb{background:#2a2a4a;border-radius:2px}
+</style>
+</head>
+<body>
+
+<!-- ======= TITLE ======= -->
+<div id="screen-title" class="screen">
+  <div class="title-glow"></div>
+  <div class="nb-preview">
+    <div class="nb-preview-in">In [3]: <span style="color:#444">Python基礎 – 生存率を計算する</span></div>
+    <code>
+<span class="kw">def</span> <span class="fn">survival_rate</span>(survived, total):
+    <span class="kw">return</span> survived / total * <span class="num">100</span>
+
+rate = survival_rate(<span class="num">342</span>, <span class="num">891</span>)
+<span class="fn">print</span>(<span class="st">"生存率:"</span>, <span class="blank">round</span>, rate)
+    </code>
+    <div class="nb-preview-out">生存率: 38.4 %</div>
+  </div>
+  <div class="t-title">DS <span>Notebook</span></div>
+  <div class="t-sub">タイタニックのデータを分析しながら<br>Pythonとデータサイエンスの実力をつける</div>
+  <div class="t-badges">
+    <div class="badge">🐍 Python基礎</div>
+    <div class="badge">🔢 NumPy</div>
+    <div class="badge">🐼 Pandas</div>
+    <div class="badge">📊 統計</div>
+    <div class="badge">🤖 機械学習</div>
+    <div class="badge">⚙️ 特徴量</div>
+  </div>
+  <button class="btn-go" onclick="unlockAudio();showChapters()">▶ 分析を始める</button>
+  <div class="t-progress" id="t-prog">進捗：<span id="t-done">0</span>/6 チャプター完了</div>
+</div>
+
+<!-- ======= CHAPTER SELECT ======= -->
+<div id="screen-chapters" class="screen">
+  <div class="ch-header">
+    <div class="ch-title">チャプター選択</div>
+    <div class="ch-sub">総XP：<span id="ch-xp">0</span></div>
+  </div>
+  <div class="ch-list" id="ch-list"></div>
+  <button class="btn-back" onclick="showTitle()">← タイトルへ</button>
+</div>
+
+<!-- ======= NOTEBOOK ======= -->
+<div id="screen-nb" class="screen">
+  <div class="topbar">
+    <div class="tb-logo">DS Notebook</div>
+    <div class="tb-chapter" id="tb-ch">Ch.1/6</div>
+    <div class="tb-prog-wrap"><div class="tb-prog" id="tb-prog"></div></div>
+    <div class="tb-cells" id="tb-cells">0/5</div>
+    <div class="tb-xp">XP:<span id="tb-xp">0</span></div>
+    <button class="tb-mute" id="tb-mute" onclick="BGM.toggle()" title="BGM">🔊</button>
+  </div>
+  <div class="nb-body" id="nb-body"></div>
+</div>
+
+<!-- ======= CHAPTER COMPLETE ======= -->
+<div id="screen-ch-done" class="screen">
+  <div class="done-icon" id="done-icon">✨</div>
+  <div class="done-title" id="done-title">チャプタークリア！</div>
+  <div class="done-stars" id="done-stars">⭐⭐⭐</div>
+  <div class="done-xp" id="done-xp">+150 XP</div>
+  <div class="done-table">
+    <div class="done-row"><span>正解数</span><span id="d-ok">-</span></div>
+    <div class="done-row"><span>やり直し</span><span id="d-retry">-</span></div>
+    <div class="done-row"><span>獲得XP</span><span id="d-xp">-</span></div>
+    <div class="done-row"><span>総XP</span><span id="d-total">-</span></div>
+  </div>
+  <div class="btn-row">
+    <button class="btn-outline" onclick="showChapters()">チャプター選択</button>
+    <button class="btn-solid" id="next-ch-btn" onclick="goNextChapter()">次のチャプター ▶</button>
+  </div>
+</div>
+
+<!-- ======= ALL DONE ======= -->
+<div id="screen-all-done" class="screen">
+  <div class="all-icon">🎓</div>
+  <div class="all-title">分析完了！</div>
+  <div class="all-sub">タイタニックデータの分析を通じて<br>データサイエンスの全工程を体験しました。<br>Python・NumPy・Pandas・機械学習まで<br>一通りのコードを書けるようになりました！</div>
+  <div class="all-xp" id="all-xp">総XP: 0</div>
+  <button class="btn-solid" onclick="showChapters()">チャプターを振り返る</button>
+</div>
+
+<!-- XP flash -->
+<div class="xp-flash" id="xp-flash"></div>
+
+<script>
+// =====================================================
+// DATA
+// =====================================================
+const CHAPTERS = [
+  {
+    icon:'🐍', name:'Python基礎',
+    desc:'変数・リスト・辞書・ループ・関数・内包表記・lambda・f文字列',
+    context:'データサイエンスの土台はPython。Kaggleで戦うために必要な基本構文を体に叩き込みましょう。タイタニックのデータを例に使います。',
+    cells:[
+      {
+        code:[
+          ['cm','# 変数の型を確認する'],
+          ['nl'],
+          ['plain','age = '], ['num','22'],
+          ['nl'],
+          ['plain','name = '], ['st','"Jack"'],
+          ['nl'],
+          ['fn','print'], ['plain','('], ['blank','___'], ['plain','(age))'],
+          ['nl'],
+          ['fn','print'], ['plain','(type(name))']
+        ],
+        prompt:'変数のデータ型を返す組み込み関数は？',
+        opts:['type','typeof','dtype','class'],
+        ok:0,
+        outType:'text',
+        out:"<class 'int'>\n<class 'str'>"
+      },
+      {
+        code:[
+          ['cm','# リストに要素を追加する'],
+          ['nl'],
+          ['plain','survivors = ['], ['num','1'], ['plain',', '], ['num','0'], ['plain',', '], ['num','1'], ['plain',', '], ['num','1'], ['plain',']'],
+          ['nl'],
+          ['plain','survivors.'], ['blank','___'], ['plain','(0)'],
+          ['nl'],
+          ['fn','print'], ['plain','(survivors)'],
+          ['nl'],
+          ['fn','print'], ['plain','("合計:", '], ['fn','sum'], ['plain','(survivors), "件")']
+        ],
+        prompt:'リストの末尾に要素を追加するメソッドは？',
+        opts:['append','add','insert','extend'],
+        ok:0,
+        outType:'text',
+        out:'[1, 0, 1, 1, 0]\n合計: 3 件'
+      },
+      {
+        code:[
+          ['cm','# 辞書でデータを構造化する'],
+          ['nl'],
+          ['plain','passenger = {'],
+          ['nl'],
+          ['plain','  '], ['st','"name"'], ['plain',': '], ['st','"Rose"'], ['plain',','],
+          ['nl'],
+          ['plain','  '], ['st','"age"'], ['plain',': '], ['num','17'], ['plain',','],
+          ['nl'],
+          ['plain','  '], ['st','"survived"'], ['plain',': '], ['num','1'],
+          ['nl'],
+          ['plain','}'],
+          ['nl'],
+          ['fn','print'], ['plain','(passenger.'], ['blank','___'], ['plain','())']
+        ],
+        prompt:'辞書のキー一覧を取得するメソッドは？',
+        opts:['keys','values','items','get'],
+        ok:0,
+        outType:'text',
+        out:"dict_keys(['name', 'age', 'survived'])"
+      },
+      {
+        code:[
+          ['cm','# インデックスと値を同時に取り出す'],
+          ['nl'],
+          ['plain','classes = ['], ['st','"1等"'], ['plain',', '], ['st','"2等"'], ['plain',', '], ['st','"3等"'], ['plain',']'],
+          ['nl'],
+          ['kw','for'], ['plain',' i, cls '], ['kw','in'], ['plain',' '], ['blank','___'], ['plain','(classes):'],
+          ['nl'],
+          ['plain','  '], ['fn','print'], ['plain','(f"クラス{i+1}: {cls}")']
+        ],
+        prompt:'リストのインデックスと値を同時に取り出す関数は？',
+        opts:['enumerate','zip','range','items'],
+        ok:0,
+        outType:'text',
+        out:'クラス1: 1等\nクラス2: 2等\nクラス3: 3等'
+      },
+      {
+        code:[
+          ['cm','# 条件付きリスト内包表記'],
+          ['nl'],
+          ['plain','fares = ['], ['num','7.25'], ['plain',', '], ['num','71.28'], ['plain',', '], ['num','13.0'], ['plain',', '], ['num','53.1'], ['plain',']'],
+          ['nl'],
+          ['plain','high = [f '], ['kw','for'], ['plain',' f '], ['kw','in'], ['plain',' fares '], ['kw','if'], ['plain',' f '], ['blank','___'], ['plain',' '], ['num','30'], ['plain',']'],
+          ['nl'],
+          ['fn','print'], ['plain','(high)']
+        ],
+        prompt:'30より大きい値だけを抽出する比較演算子は？',
+        opts:['>','>=','<','!='],
+        ok:0,
+        outType:'text',
+        out:'[71.28, 53.1]'
+      },
+      {
+        code:[
+          ['cm','# 生存率を計算する関数を定義'],
+          ['nl'],
+          ['kw','def'], ['plain',' survival_rate(data):'],
+          ['nl'],
+          ['plain','    survived = '], ['fn','sum'], ['plain','(data)'],
+          ['nl'],
+          ['plain','    '], ['kw','return'], ['plain',' '], ['fn','round'], ['plain','(survived / '], ['fn','len'], ['plain','(data) * '], ['num','100'], ['plain',', '], ['num','1'], ['plain',')'],
+          ['nl'],
+          ['nl'],
+          ['plain','data = ['], ['num','1'], ['plain',','], ['num','0'], ['plain',','], ['num','1'], ['plain',','], ['num','1'], ['plain',','], ['num','0'], ['plain',','], ['num','1'], ['plain',']'],
+          ['nl'],
+          ['fn','print'], ['plain','('], ['blank','___'], ['plain','(data), "%")']
+        ],
+        prompt:'定義した関数を呼び出すには？関数名をそのまま書く',
+        opts:['survival_rate','survived','data','rate'],
+        ok:0,
+        outType:'text',
+        out:'66.7 %'
+      },
+      {
+        code:[
+          ['cm','# lambda で1行の変換関数を作る'],
+          ['nl'],
+          ['plain','to_jp = '], ['blank','___'], ['plain',' x: '], ['st','"女性"'], ['plain',' '], ['kw','if'], ['plain',' x == '], ['st','"female"'], ['plain',' '], ['kw','else'], ['plain',' '], ['st','"男性"'],
+          ['nl'],
+          ['nl'],
+          ['plain','sex_list = ['], ['st','"female"'], ['plain',', '], ['st','"male"'], ['plain',', '], ['st','"female"'], ['plain',']'],
+          ['nl'],
+          ['fn','print'], ['plain','([to_jp(s) '], ['kw','for'], ['plain',' s '], ['kw','in'], ['plain',' sex_list])']
+        ],
+        prompt:'無名関数（ラムダ式）を定義するキーワードは？',
+        opts:['lambda','def','func','map'],
+        ok:0,
+        outType:'text',
+        out:"['女性', '男性', '女性']"
+      },
+      {
+        code:[
+          ['cm','# f文字列で変数を文字列に埋め込む'],
+          ['nl'],
+          ['plain','total = '], ['num','891'],
+          ['nl'],
+          ['plain','survived = '], ['num','342'],
+          ['nl'],
+          ['plain','rate = survived / total * '], ['num','100'],
+          ['nl'],
+          ['fn','print'], ['plain','('], ['blank','___'], ['plain','"タイタニック生存率: {rate:.1f}%")']
+        ],
+        prompt:'変数を文字列に埋め込む「f文字列」を使うには先頭に何をつける？',
+        opts:['f','r','b','format('],
+        ok:0,
+        outType:'text',
+        out:'タイタニック生存率: 38.4%'
+      }
+    ]
+  },
+  {
+    icon:'🔢', name:'NumPy',
+    desc:'多次元配列・数値計算・ブロードキャスト・乱数・axis指定',
+    context:'NumPyはPythonの数値計算エンジン。Pandasの内部でも使われており、行列演算や統計計算が高速です。',
+    cells:[
+      {
+        code:[
+          ['kw','import'], ['plain',' numpy '], ['kw','as'], ['plain',' np'],
+          ['nl'],
+          ['nl'],
+          ['plain','fares = np.'], ['blank','___'], ['plain','(['], ['num','7.25'], ['plain',', '], ['num','71.28'], ['plain',', '], ['num','13.0'], ['plain',', '], ['num','53.1'], ['plain','])'],
+          ['nl'],
+          ['fn','print'], ['plain','(fares)'],
+          ['nl'],
+          ['fn','print'], ['plain','("dtype:", fares.dtype)']
+        ],
+        prompt:'Pythonリストを NumPy 配列に変換する関数は？',
+        opts:['array','arange','zeros','fromlist'],
+        ok:0,
+        outType:'text',
+        out:'[ 7.25 71.28 13.   53.1 ]\ndtype: float64'
+      },
+      {
+        code:[
+          ['kw','import'], ['plain',' numpy '], ['kw','as'], ['plain',' np'],
+          ['nl'],
+          ['nl'],
+          ['plain','data = np.arange('], ['num','12'], ['plain',')'],
+          ['nl'],
+          ['plain','matrix = data.'], ['blank','___'], ['plain','('], ['num','3'], ['plain',', '], ['num','4'], ['plain',')'],
+          ['nl'],
+          ['fn','print'], ['plain','(matrix)'],
+          ['nl'],
+          ['fn','print'], ['plain','("shape:", matrix.shape)']
+        ],
+        prompt:'配列の形状を変えるメソッドは？（「再形成」の意）',
+        opts:['reshape','resize','ravel','transpose'],
+        ok:0,
+        outType:'text',
+        out:'[[ 0  1  2  3]\n [ 4  5  6  7]\n [ 8  9 10 11]]\nshape: (3, 4)'
+      },
+      {
+        code:[
+          ['kw','import'], ['plain',' numpy '], ['kw','as'], ['plain',' np'],
+          ['nl'],
+          ['nl'],
+          ['plain','ages = np.array(['], ['num','22'], ['plain',', '], ['num','5'], ['plain',', '], ['num','38'], ['plain',', '], ['num','12'], ['plain',', '], ['num','45'], ['plain','])'],
+          ['nl'],
+          ['plain','adults = ages[ages '], ['blank','___'], ['plain',' '], ['num','18'], ['plain',']'],
+          ['nl'],
+          ['fn','print'], ['plain','("18歳以上:", adults)']
+        ],
+        prompt:'18歳以上を条件で抽出するには？',
+        opts:['>=','<=','>','=='],
+        ok:0,
+        outType:'text',
+        out:'18歳以上: [22 38 45]'
+      },
+      {
+        code:[
+          ['kw','import'], ['plain',' numpy '], ['kw','as'], ['plain',' np'],
+          ['nl'],
+          ['nl'],
+          ['plain','fares = np.array(['], ['num','7.25'], ['plain',', '], ['num','71.28'], ['plain',', '], ['num','13.0'], ['plain',', '], ['num','53.1'], ['plain','])'],
+          ['nl'],
+          ['fn','print'], ['plain','("平均:", np.'], ['blank','___'], ['plain','(fares).round('], ['num','2'], ['plain','))'],
+          ['nl'],
+          ['fn','print'], ['plain','("標準偏差:", np.std(fares).round('], ['num','2'], ['plain','))'],
+          ['nl'],
+          ['fn','print'], ['plain','("最大値:", np.max(fares))']
+        ],
+        prompt:'配列の平均値を求める NumPy 関数は？',
+        opts:['mean','average','median','sum'],
+        ok:0,
+        outType:'text',
+        out:'平均: 36.16\n標準偏差: 25.57\n最大値: 71.28'
+      },
+      {
+        code:[
+          ['kw','import'], ['plain',' numpy '], ['kw','as'], ['plain',' np'],
+          ['nl'],
+          ['nl'],
+          ['plain','ages = np.array(['], ['num','22'], ['plain',', '], ['num','5'], ['plain',', '], ['num','38'], ['plain',', '], ['num','12'], ['plain',', '], ['num','45'], ['plain','])'],
+          ['nl'],
+          ['plain','labels = np.'], ['blank','___'], ['plain','(ages < '], ['num','18'], ['plain',', '], ['st','"child"'], ['plain',', '], ['st','"adult"'], ['plain',')'],
+          ['nl'],
+          ['fn','print'], ['plain','(labels)']
+        ],
+        prompt:'条件に応じて値を切り替える NumPy 関数は？',
+        opts:['where','select','choose','if_'],
+        ok:0,
+        outType:'text',
+        out:"['adult' 'child' 'adult' 'child' 'adult']"
+      },
+      {
+        code:[
+          ['kw','import'], ['plain',' numpy '], ['kw','as'], ['plain',' np'],
+          ['nl'],
+          ['nl'],
+          ['plain','train = np.array(['], ['num','1'], ['plain',', '], ['num','0'], ['plain',', '], ['num','1'], ['plain','])'],
+          ['nl'],
+          ['plain','test  = np.array(['], ['num','0'], ['plain',', '], ['num','1'], ['plain','])'],
+          ['nl'],
+          ['plain','all_data = np.'], ['blank','___'], ['plain','([train, test])'],
+          ['nl'],
+          ['fn','print'], ['plain','(all_data)']
+        ],
+        prompt:'複数の1次元配列を1つに結合する NumPy 関数は？',
+        opts:['concatenate','stack','vstack','append'],
+        ok:0,
+        outType:'text',
+        out:'[1 0 1 0 1]'
+      },
+      {
+        code:[
+          ['kw','import'], ['plain',' numpy '], ['kw','as'], ['plain',' np'],
+          ['nl'],
+          ['nl'],
+          ['plain','np.random.'], ['blank','___'], ['plain','(42)'],
+          ['nl'],
+          ['plain','noise = np.random.randn('], ['num','5'], ['plain',').round('], ['num','3'], ['plain',')'],
+          ['nl'],
+          ['fn','print'], ['plain','(noise)'],
+          ['nl'],
+          ['cm','# seedを固定すると毎回同じ結果（再現性の確保）']
+        ],
+        prompt:'乱数を固定して結果を再現可能にする関数は？',
+        opts:['seed','fix','state','reset'],
+        ok:0,
+        outType:'text',
+        out:'[ 0.497  0.861 -0.234  1.765  0.977]'
+      },
+      {
+        code:[
+          ['kw','import'], ['plain',' numpy '], ['kw','as'], ['plain',' np'],
+          ['nl'],
+          ['nl'],
+          ['plain','data = np.array([['], ['num','1'], ['plain',','], ['num','2'], ['plain',','], ['num','3'], ['plain','],['], ['num','4'], ['plain',','], ['num','5'], ['plain',','], ['num','6'], ['plain',']])'],
+          ['nl'],
+          ['fn','print'], ['plain','(np.sum(data, '], ['blank','___'], ['plain','=0))'],
+          ['nl'],
+          ['fn','print'], ['plain','(np.sum(data, axis=1))'],
+          ['nl'],
+          ['cm','# axis=0:列方向  axis=1:行方向']
+        ],
+        prompt:'列方向（縦方向）に集計するには axis= に何を指定する？',
+        opts:['axis=0','axis=1','axis=2','axis=-1'],
+        ok:0,
+        outType:'text',
+        out:'[5 7 9]\n[ 6 15]'
+      }
+    ]
+  },
+  {
+    icon:'🐼', name:'Pandas基礎',
+    desc:'CSV読み込み・データ確認・列選択・フィルタリング・iloc・drop',
+    context:'PandasはデータサイエンスのExcel。KaggleコンペのデータはCSVで配布されるので最重要スキルです。',
+    cells:[
+      {
+        code:[
+          ['kw','import'], ['plain',' pandas '], ['kw','as'], ['plain',' pd'],
+          ['nl'],
+          ['nl'],
+          ['plain','df = pd.'], ['blank','___'], ['plain','('], ['st','"titanic.csv"'], ['plain',')'],
+          ['nl'],
+          ['fn','print'], ['plain','(df.shape)'],
+          ['nl'],
+          ['fn','print'], ['plain','(df.columns.tolist())']
+        ],
+        prompt:'CSVファイルをDataFrameとして読み込む関数は？',
+        opts:['read_csv','load_csv','open_csv','from_csv'],
+        ok:0,
+        outType:'text',
+        out:"(891, 12)\n['survived','pclass','sex','age','sibsp','parch','fare','embarked',...]"
+      },
+      {
+        code:[
+          ['kw','import'], ['plain',' pandas '], ['kw','as'], ['plain',' pd'],
+          ['nl'],
+          ['nl'],
+          ['plain','df = pd.read_csv('], ['st','"titanic.csv"'], ['plain',')'],
+          ['nl'],
+          ['plain','df.'], ['blank','___'], ['plain','()']
+        ],
+        prompt:'各列のデータ型・欠損数・メモリ使用量を一覧表示するメソッドは？',
+        opts:['info','describe','shape','dtypes'],
+        ok:0,
+        outType:'text',
+        out:'<class pandas.DataFrame>\nRangeIndex: 891 entries\nData columns (12):\n survived  891 non-null  int64\n pclass    891 non-null  int64\n sex       891 non-null  object\n age       714 non-null  float64  ← 177欠損\n fare      891 non-null  float64'
+      },
+      {
+        code:[
+          ['cm','# データの先頭を確認する'],
+          ['nl'],
+          ['plain','df.'], ['blank','___'], ['plain','(5)']
+        ],
+        prompt:'DataFrameの先頭N行を表示するメソッドは？',
+        opts:['head','tail','top','first'],
+        ok:0,
+        outType:'table',
+        out:{
+          cols:['survived','pclass','sex','age','fare'],
+          rows:[
+            ['0','3','male','22.0','7.25'],
+            ['1','1','female','38.0','71.28'],
+            ['1','3','female','26.0','7.93'],
+            ['1','1','female','35.0','53.10'],
+            ['0','3','male','35.0','8.05']
+          ]
+        }
+      },
+      {
+        code:[
+          ['cm','# 数値列の基本統計量を一括確認'],
+          ['nl'],
+          ['plain','df['], ['st','"age"'], ['plain','].'], ['blank','___'], ['plain','()']
+        ],
+        prompt:'平均・標準偏差・最小・最大・分位点を一括確認するメソッドは？',
+        opts:['describe','info','head','stat'],
+        ok:0,
+        outType:'text',
+        out:'count    714.000\nmean      29.699\nstd       14.526\nmin        0.420\n25%       20.125\n50%       28.000\n75%       38.000\nmax       80.000'
+      },
+      {
+        code:[
+          ['cm','# 運賃の高い順に並べ替え'],
+          ['nl'],
+          ['plain','df_sorted = df.'], ['blank','___'], ['plain','(by='], ['st','"fare"'], ['plain',', ascending='], ['kw','False'], ['plain',')'],
+          ['nl'],
+          ['fn','print'], ['plain','(df_sorted[['], ['st','"pclass"'], ['plain',', '], ['st','"fare"'], ['plain',', '], ['st','"survived"'], ['plain',']].head('], ['num','3'], ['plain','))']
+        ],
+        prompt:'列の値で並べ替えるメソッドは？',
+        opts:['sort_values','sort','orderby','arrange'],
+        ok:0,
+        outType:'table',
+        out:{
+          cols:['pclass','fare','survived'],
+          rows:[['1','512.33','1'],['1','512.33','1'],['1','512.33','0']]
+        }
+      },
+      {
+        code:[
+          ['cm','# 女性のデータだけを絞り込む'],
+          ['nl'],
+          ['plain','women = df[df['], ['st','"sex"'], ['plain','] '], ['blank','___'], ['plain',' '], ['st','"female"'], ['plain',']'],
+          ['nl'],
+          ['fn','print'], ['plain','("女性数:", '], ['fn','len'], ['plain','(women))'],
+          ['nl'],
+          ['fn','print'], ['plain','("女性生存率:", women['], ['st','"survived"'], ['plain','].mean().round('], ['num','2'], ['plain','))']
+        ],
+        prompt:'値が等しいかどうかを判定する比較演算子は？',
+        opts:['==','=','!=','is'],
+        ok:0,
+        outType:'text',
+        out:'女性数: 314\n女性生存率: 0.74'
+      },
+      {
+        code:[
+          ['cm','# 行番号でデータを取り出す'],
+          ['nl'],
+          ['plain','row = df.'], ['blank','___'], ['plain','[0]'],
+          ['nl'],
+          ['fn','print'], ['plain','(row[['], ['st','"survived"'], ['plain',', '], ['st','"sex"'], ['plain',', '], ['st','"age"'], ['plain',', '], ['st','"fare"'], ['plain',']].to_dict())']
+        ],
+        prompt:'行番号（整数インデックス）でデータを取り出すメソッドは？',
+        opts:['iloc','loc','at','ix'],
+        ok:0,
+        outType:'text',
+        out:"{'survived': 0, 'sex': 'male', 'age': 22.0, 'fare': 7.25}"
+      },
+      {
+        code:[
+          ['cm','# 不要な列を削除する'],
+          ['nl'],
+          ['plain','df_clean = df.'], ['blank','___'], ['plain','(columns=['], ['st','"name"'], ['plain',', '], ['st','"ticket"'], ['plain',', '], ['st','"cabin"'], ['plain','])'],
+          ['nl'],
+          ['fn','print'], ['plain','("残列数:", df_clean.shape['], ['num','1'], ['plain','])']
+        ],
+        prompt:'指定した列を削除するメソッドは？',
+        opts:['drop','remove','delete','pop'],
+        ok:0,
+        outType:'text',
+        out:'残列数: 9'
+      }
+    ]
+  },
+  {
+    icon:'🔗', name:'Pandas応用',
+    desc:'groupby・agg・merge・pivot_table・apply・value_counts・concat',
+    context:'Pandas中級スキル。グループ集計やテーブル結合はKaggleのEDA（探索的データ分析）で必ず使います。',
+    cells:[
+      {
+        code:[
+          ['cm','# 性別ごとの生存率を集計'],
+          ['nl'],
+          ['plain','result = df.'], ['blank','___'], ['plain','('], ['st','"sex"'], ['plain',')['], ['st','"survived"'], ['plain','].mean()'],
+          ['nl'],
+          ['fn','print'], ['plain','(result.round('], ['num','3'], ['plain','))']
+        ],
+        prompt:'特定の列でグループ化して集計するメソッドは？',
+        opts:['groupby','pivot','agg','aggregate'],
+        ok:0,
+        outType:'text',
+        out:'sex\nfemale    0.742\nmale      0.189\nName: survived, dtype: float64'
+      },
+      {
+        code:[
+          ['cm','# 複数の集計を同時に行う'],
+          ['nl'],
+          ['plain','result = df.groupby('], ['st','"pclass"'], ['plain',').'], ['blank','___'], ['plain','({'],
+          ['nl'],
+          ['plain','  '], ['st','"survived"'], ['plain',': '], ['st','"mean"'], ['plain',','],
+          ['nl'],
+          ['plain','  '], ['st','"age"'], ['plain',': '], ['st','"median"'], ['plain',','],
+          ['nl'],
+          ['plain','  '], ['st','"fare"'], ['plain',': '], ['st','"mean"'],
+          ['nl'],
+          ['plain','}).round('], ['num','2'], ['plain',')'],
+          ['nl'],
+          ['fn','print'], ['plain','(result)']
+        ],
+        prompt:'複数の集計関数を同時に適用するメソッドは？',
+        opts:['agg','apply','transform','aggregate'],
+        ok:0,
+        outType:'table',
+        out:{
+          cols:['pclass','survived','age','fare'],
+          rows:[
+            ['1','0.63','37.0','84.15'],
+            ['2','0.47','29.0','20.66'],
+            ['3','0.24','24.0','13.68']
+          ]
+        }
+      },
+      {
+        code:[
+          ['cm','# 2つのDataFrameをキーで結合する'],
+          ['nl'],
+          ['plain','ports = pd.DataFrame({'],
+          ['nl'],
+          ['plain','  '], ['st','"embarked"'], ['plain',': ['], ['st','"S"'], ['plain',','], ['st','"C"'], ['plain',','], ['st','"Q"'], ['plain','],'],
+          ['nl'],
+          ['plain','  '], ['st','"port_name"'], ['plain',': ['], ['st','"Southampton"'], ['plain',','], ['st','"Cherbourg"'], ['plain',','], ['st','"Queenstown"'], ['plain',']'],
+          ['nl'],
+          ['plain','})'],
+          ['nl'],
+          ['plain','df2 = pd.'], ['blank','___'], ['plain','(df, ports, on='], ['st','"embarked"'], ['plain',', how='], ['st','"left"'], ['plain',')'],
+          ['nl'],
+          ['fn','print'], ['plain','(df2[['], ['st','"sex"'], ['plain',', '], ['st','"embarked"'], ['plain',', '], ['st','"port_name"'], ['plain',']].head('], ['num','2'], ['plain','))']
+        ],
+        prompt:'2つのDataFrameをキー列で結合する関数は？',
+        opts:['merge','concat','join','combine'],
+        ok:0,
+        outType:'table',
+        out:{
+          cols:['sex','embarked','port_name'],
+          rows:[
+            ['male','S','Southampton'],
+            ['female','C','Cherbourg']
+          ]
+        }
+      },
+      {
+        code:[
+          ['cm','# ピボットテーブルで性別×等級の生存率を集計'],
+          ['nl'],
+          ['plain','pivot = df.'], ['blank','___'], ['plain','('],
+          ['nl'],
+          ['plain','  values='], ['st','"survived"'], ['plain',','],
+          ['nl'],
+          ['plain','  index='], ['st','"sex"'], ['plain',','],
+          ['nl'],
+          ['plain','  columns='], ['st','"pclass"'], ['plain',','],
+          ['nl'],
+          ['plain','  aggfunc='], ['st','"mean"'],
+          ['nl'],
+          ['plain',').round('], ['num','2'], ['plain',')'],
+          ['nl'],
+          ['fn','print'], ['plain','(pivot)']
+        ],
+        prompt:'行・列・値を指定してクロス集計するメソッドは？',
+        opts:['pivot_table','crosstab','groupby','transpose'],
+        ok:0,
+        outType:'table',
+        out:{
+          cols:['sex','pclass1','pclass2','pclass3'],
+          rows:[
+            ['female','0.97','0.92','0.50'],
+            ['male','0.37','0.16','0.14']
+          ]
+        }
+      },
+      {
+        code:[
+          ['cm','# 各行に関数を適用して新列を作る'],
+          ['nl'],
+          ['plain','df['], ['st','"fare_level"'], ['plain','] = df['], ['st','"fare"'], ['plain','].'], ['blank','___'], ['plain','('],
+          ['nl'],
+          ['plain','  '], ['kw','lambda'], ['plain',' x: '], ['st','"high"'], ['plain',' '], ['kw','if'], ['plain',' x > '], ['num','50'], ['plain',' '], ['kw','else'], ['plain',' '], ['st','"low"'],
+          ['nl'],
+          ['plain',')'],
+          ['nl'],
+          ['fn','print'], ['plain','(df['], ['st','"fare_level"'], ['plain','].value_counts())']
+        ],
+        prompt:'各行に関数を適用して新しい値を生成するメソッドは？',
+        opts:['apply','map','transform','replace'],
+        ok:0,
+        outType:'text',
+        out:'fare_level\nlow     698\nhigh    193\nName: count, dtype: int64'
+      },
+      {
+        code:[
+          ['cm','# 各値の出現回数を確認'],
+          ['nl'],
+          ['plain','counts = df['], ['st','"embarked"'], ['plain','].'], ['blank','___'], ['plain','()'],
+          ['nl'],
+          ['fn','print'], ['plain','(counts)']
+        ],
+        prompt:'各値の出現頻度（度数）を返すメソッドは？',
+        opts:['value_counts','count','groupby','unique'],
+        ok:0,
+        outType:'text',
+        out:'embarked\nS    644\nC    168\nQ     77\nName: count, dtype: int64'
+      },
+      {
+        code:[
+          ['cm','# 文字列列の部分一致で検索'],
+          ['nl'],
+          ['plain','mask = df['], ['st','"sex"'], ['plain','].str.'], ['blank','___'], ['plain','('], ['st','"fe"'], ['plain',')'],
+          ['nl'],
+          ['fn','print'], ['plain','(df[mask]['], ['st','"sex"'], ['plain','].value_counts())']
+        ],
+        prompt:'"fe"という文字が含まれているか検索する str メソッドは？',
+        opts:['contains','find','match','search'],
+        ok:0,
+        outType:'text',
+        out:'sex\nfemale    314\nName: count, dtype: int64'
+      },
+      {
+        code:[
+          ['cm','# 複数のDataFrameを縦に結合する'],
+          ['nl'],
+          ['plain','train = pd.read_csv('], ['st','"train.csv"'], ['plain',')'],
+          ['nl'],
+          ['plain','test  = pd.read_csv('], ['st','"test.csv"'], ['plain',')'],
+          ['nl'],
+          ['plain','all_df = pd.'], ['blank','___'], ['plain','([train, test], ignore_index='], ['kw','True'], ['plain',')'],
+          ['nl'],
+          ['fn','print'], ['plain','("全データ数:", '], ['fn','len'], ['plain','(all_df))']
+        ],
+        prompt:'複数のDataFrameを縦方向に結合する関数は？',
+        opts:['concat','merge','join','append'],
+        ok:0,
+        outType:'text',
+        out:'全データ数: 1309'
+      }
+    ]
+  },
+  {
+    icon:'📊', name:'統計・EDA',
+    desc:'相関・欠損確認・分位点・クロス集計・歪度・ユニーク・最頻値',
+    context:'EDA（探索的データ分析）はKaggleで最重要フェーズ。モデルを作る前にデータを徹底的に理解しましょう。',
+    cells:[
+      {
+        code:[
+          ['cm','# 数値変数間の相関係数を計算'],
+          ['nl'],
+          ['plain','corr = df.'], ['blank','___'], ['plain','()'],
+          ['nl'],
+          ['fn','print'], ['plain','(corr[['], ['st','"survived"'], ['plain',']].round('], ['num','2'], ['plain','))']
+        ],
+        prompt:'数値列間の相関係数行列を計算するメソッドは？',
+        opts:['corr','cov','pearson','corrcoef'],
+        ok:0,
+        outType:'table',
+        out:{
+          cols:['','survived'],
+          rows:[
+            ['survived','1.00'],
+            ['pclass','-0.34'],
+            ['age','-0.08'],
+            ['fare','0.26']
+          ]
+        }
+      },
+      {
+        code:[
+          ['cm','# 欠損値の数と割合を確認'],
+          ['nl'],
+          ['plain','missing = df.'], ['blank','___'], ['plain','().sum()'],
+          ['nl'],
+          ['plain','missing_pct = (missing / '], ['fn','len'], ['plain','(df) * '], ['num','100'], ['plain',').round('], ['num','1'], ['plain',')'],
+          ['nl'],
+          ['fn','print'], ['plain','(missing[missing > '], ['num','0'], ['plain','])'],
+          ['nl'],
+          ['fn','print'], ['plain','(missing_pct[missing_pct > '], ['num','0'], ['plain','])']
+        ],
+        prompt:'各セルが欠損かどうかを判定する（TrueNaN, Falseなど）メソッドは？',
+        opts:['isnull','notnull','isna','dropna'],
+        ok:0,
+        outType:'text',
+        out:'age       177\ncabin     687\nembarked    2\n---\nage       19.9%\ncabin     77.1%\nembarked   0.2%'
+      },
+      {
+        code:[
+          ['cm','# 分位点（パーセンタイル）を計算'],
+          ['nl'],
+          ['plain','q1 = df['], ['st','"fare"'], ['plain','].'], ['blank','___'], ['plain','('], ['num','0.25'], ['plain',')'],
+          ['nl'],
+          ['plain','q3 = df['], ['st','"fare"'], ['plain','].quantile('], ['num','0.75'], ['plain',')'],
+          ['nl'],
+          ['plain','iqr = q3 - q1'],
+          ['nl'],
+          ['fn','print'], ['plain','(f"Q1:{q1:.1f}  Q3:{q3:.1f}  IQR:{iqr:.1f}")']
+        ],
+        prompt:'任意のパーセンタイル（0〜1）を求めるメソッドは？',
+        opts:['quantile','percentile','quartile','percentrank'],
+        ok:0,
+        outType:'text',
+        out:'Q1:7.9  Q3:31.0  IQR:23.1'
+      },
+      {
+        code:[
+          ['cm','# 生存×性別のクロス集計'],
+          ['nl'],
+          ['plain','ct = pd.'], ['blank','___'], ['plain','(df['], ['st','"sex"'], ['plain','], df['], ['st','"survived"'], ['plain','])'],
+          ['nl'],
+          ['fn','print'], ['plain','(ct)']
+        ],
+        prompt:'2つの変数のクロス集計（度数分布表）を作る関数は？',
+        opts:['crosstab','pivot','groupby','contingency'],
+        ok:0,
+        outType:'table',
+        out:{
+          cols:['survived','0','1'],
+          rows:[
+            ['sex (female)','81','233'],
+            ['sex (male)','468','109']
+          ]
+        }
+      },
+      {
+        code:[
+          ['cm','# 分布の歪み（Skewness）を確認'],
+          ['nl'],
+          ['fn','print'], ['plain','("fare 歪度:", df['], ['st','"fare"'], ['plain','].'], ['blank','___'], ['plain','().round('], ['num','2'], ['plain','))'],
+          ['nl'],
+          ['fn','print'], ['plain','("age  歪度:", df['], ['st','"age"'], ['plain','].skew().round('], ['num','2'], ['plain','))'],
+          ['nl'],
+          ['cm','# >1なら右歪み → 対数変換を検討']
+        ],
+        prompt:'分布の歪み（skewness）を計算するメソッドは？',
+        opts:['skew','kurtosis','var','std'],
+        ok:0,
+        outType:'text',
+        out:'fare 歪度: 4.79  ← 右歪み（対数変換推奨）\nage  歪度: 0.39  ← ほぼ正規分布'
+      },
+      {
+        code:[
+          ['cm','# ユニークな値の一覧を取得'],
+          ['nl'],
+          ['fn','print'], ['plain','("港の種類:", df['], ['st','"embarked"'], ['plain','].'], ['blank','___'], ['plain','())'],
+          ['nl'],
+          ['fn','print'], ['plain','("種類数:", df['], ['st','"embarked"'], ['plain','].nunique())']
+        ],
+        prompt:'列内のユニークな値一覧を返すメソッドは？',
+        opts:['unique','distinct','nunique','unique_values'],
+        ok:0,
+        outType:'text',
+        out:"港の種類: ['S' 'C' 'Q' nan]\n種類数: 3"
+      },
+      {
+        code:[
+          ['cm','# 運賃が高い上位5件を取得'],
+          ['nl'],
+          ['plain','top5 = df.'], ['blank','___'], ['plain','('], ['num','5'], ['plain',', '], ['st','"fare"'], ['plain',')[['], ['st','"pclass"'], ['plain',', '], ['st','"fare"'], ['plain',', '], ['st','"survived"'], ['plain',']'],
+          ['nl'],
+          ['fn','print'], ['plain','(top5)']
+        ],
+        prompt:'指定列の値が大きい順に上位N行を返すメソッドは？',
+        opts:['nlargest','sort_values','head','max'],
+        ok:0,
+        outType:'table',
+        out:{
+          cols:['pclass','fare','survived'],
+          rows:[
+            ['1','512.33','1'],
+            ['1','512.33','1'],
+            ['1','512.33','0'],
+            ['1','512.33','1'],
+            ['1','512.33','0']
+          ]
+        }
+      },
+      {
+        code:[
+          ['cm','# 最頻値（モード）を確認'],
+          ['nl'],
+          ['fn','print'], ['plain','("最頻値:", df['], ['st','"age"'], ['plain','].'], ['blank','___'], ['plain','()['], ['num','0'], ['plain','])'],
+          ['nl'],
+          ['fn','print'], ['plain','("中央値:", df['], ['st','"age"'], ['plain','].median())'],
+          ['nl'],
+          ['fn','print'], ['plain','("平均値:", df['], ['st','"age"'], ['plain','].mean().round('], ['num','1'], ['plain','))']
+        ],
+        prompt:'最も多く現れる値（最頻値）を求めるメソッドは？',
+        opts:['mode','mean','max','most_common'],
+        ok:0,
+        outType:'text',
+        out:'最頻値: 24.0\n中央値: 28.0\n平均値: 29.7'
+      }
+    ]
+  },
+  {
+    icon:'🎨', name:'可視化',
+    desc:'hist・scatter・boxplot・barplot・heatmap・countplot・savefig',
+    context:'グラフを見ると数字だけではわからないパターンが見えます。Kaggleのノートブックでも可視化は必須スキルです。',
+    cells:[
+      {
+        code:[
+          ['kw','import'], ['plain',' matplotlib.pyplot '], ['kw','as'], ['plain',' plt'],
+          ['nl'],
+          ['nl'],
+          ['plain','plt.'], ['blank','___'], ['plain','(df['], ['st','"age"'], ['plain','].dropna(), bins='], ['num','30'], ['plain',', color='], ['st','"steelblue"'], ['plain',')'],
+          ['nl'],
+          ['plain','plt.xlabel('], ['st','"年齢"'], ['plain',')'],
+          ['nl'],
+          ['plain','plt.title('], ['st','"乗客の年齢分布"'], ['plain',')'],
+          ['nl'],
+          ['plain','plt.show()']
+        ],
+        prompt:'ヒストグラムを描く matplotlib 関数は？',
+        opts:['hist','bar','histogram','plot'],
+        ok:0,
+        outType:'chart',
+        out:{title:'乗客の年齢分布',bars:[
+          {label:'0-10歳',val:62},{label:'11-20歳',val:102},{label:'21-30歳',val:220},
+          {label:'31-40歳',val:167},{label:'41-50歳',val:118},{label:'51-60歳',val:70},{label:'61歳以上',val:45}
+        ]}
+      },
+      {
+        code:[
+          ['kw','import'], ['plain',' matplotlib.pyplot '], ['kw','as'], ['plain',' plt'],
+          ['nl'],
+          ['nl'],
+          ['plain','plt.'], ['blank','___'], ['plain','(df['], ['st','"age"'], ['plain','], df['], ['st','"fare"'], ['plain','], alpha='], ['num','0.3'], ['plain',', c=df['], ['st','"survived"'], ['plain','])'],
+          ['nl'],
+          ['plain','plt.xlabel('], ['st','"年齢"'], ['plain',')'],
+          ['nl'],
+          ['plain','plt.ylabel('], ['st','"運賃"'], ['plain',')'],
+          ['nl'],
+          ['plain','plt.show()']
+        ],
+        prompt:'2変数の散布図を描く matplotlib 関数は？',
+        opts:['scatter','plot','points','scatterplot'],
+        ok:0,
+        outType:'text',
+        out:'[散布図] 年齢(x軸) vs 運賃(y軸)\n→ 高額運賃（>100）は20〜50歳代に集中\n→ 外れ値（fare=512）が数件確認できる\n→ 生存者（c=1）は高額運賃帯に多い'
+      },
+      {
+        code:[
+          ['kw','import'], ['plain',' seaborn '], ['kw','as'], ['plain',' sns'],
+          ['nl'],
+          ['nl'],
+          ['plain','sns.'], ['blank','___'], ['plain','(x='], ['st','"pclass"'], ['plain',', y='], ['st','"fare"'], ['plain',', data=df)'],
+          ['nl'],
+          ['plain','plt.title('], ['st','"客室等級別の運賃分布"'], ['plain',')'],
+          ['nl'],
+          ['plain','plt.show()']
+        ],
+        prompt:'グループごとの分布を箱ひげ図で表示する seaborn 関数は？',
+        opts:['boxplot','barplot','violinplot','histplot'],
+        ok:0,
+        outType:'text',
+        out:'[箱ひげ図] pclass(x) vs fare(y)\n1等: 中央値$60, 外れ値多数\n2等: 中央値$15\n3等: 中央値$8, 低分散'
+      },
+      {
+        code:[
+          ['kw','import'], ['plain',' seaborn '], ['kw','as'], ['plain',' sns'],
+          ['nl'],
+          ['nl'],
+          ['plain','surv_by_class = df.groupby('], ['st','"pclass"'], ['plain',')['], ['st','"survived"'], ['plain','].mean()'],
+          ['nl'],
+          ['plain','sns.'], ['blank','___'], ['plain','(x=surv_by_class.index, y=surv_by_class.values)'],
+          ['nl'],
+          ['plain','plt.ylabel('], ['st','"生存率"'], ['plain',')'],
+          ['nl'],
+          ['plain','plt.show()']
+        ],
+        prompt:'棒グラフを描く seaborn 関数は？',
+        opts:['barplot','bar','histplot','lineplot'],
+        ok:0,
+        outType:'chart',
+        out:{title:'等級別生存率',bars:[
+          {label:'1等',val:63},{label:'2等',val:47},{label:'3等',val:24}
+        ]}
+      },
+      {
+        code:[
+          ['kw','import'], ['plain',' seaborn '], ['kw','as'], ['plain',' sns'],
+          ['nl'],
+          ['nl'],
+          ['plain','corr = df[numeric_cols].corr()'],
+          ['nl'],
+          ['plain','sns.'], ['blank','___'], ['plain','(corr, annot='], ['kw','True'], ['plain',', fmt='], ['st','".2f"'], ['plain',', cmap='], ['st','"coolwarm"'], ['plain',')'],
+          ['nl'],
+          ['plain','plt.title('], ['st','"相関ヒートマップ"'], ['plain',')'],
+          ['nl'],
+          ['plain','plt.show()']
+        ],
+        prompt:'相関行列を色で可視化するヒートマップ関数は？',
+        opts:['heatmap','colormap','corrmap','imshow'],
+        ok:0,
+        outType:'text',
+        out:'[ヒートマップ]\n→ fare ↔ survived: +0.26（正の相関）\n→ pclass ↔ survived: -0.34（負の相関）\n→ pclass ↔ fare: -0.55（強い負の相関）'
+      },
+      {
+        code:[
+          ['kw','import'], ['plain',' matplotlib.pyplot '], ['kw','as'], ['plain',' plt'],
+          ['nl'],
+          ['nl'],
+          ['plain','fig, axes = plt.'], ['blank','___'], ['plain','('], ['num','1'], ['plain',', '], ['num','2'], ['plain',', figsize=('], ['num','12'], ['plain',', '], ['num','4'], ['plain','))'],
+          ['nl'],
+          ['plain','axes[0].hist(df[df['], ['st','"survived"'], ['plain',']==0]['], ['st','"age"'], ['plain','].dropna(), label='], ['st','"死亡"'], ['plain',')'],
+          ['nl'],
+          ['plain','axes[1].hist(df[df['], ['st','"survived"'], ['plain',']==1]['], ['st','"age"'], ['plain','].dropna(), label='], ['st','"生存"'], ['plain',')'],
+          ['nl'],
+          ['plain','plt.show()']
+        ],
+        prompt:'複数のグラフを横並びに表示する関数は？',
+        opts:['subplots','subplot','axes','figure'],
+        ok:0,
+        outType:'text',
+        out:'[左] 死亡者の年齢分布: 全年代に広く分布\n[右] 生存者の年齢分布: 子供と20〜40代女性に偏る'
+      },
+      {
+        code:[
+          ['kw','import'], ['plain',' seaborn '], ['kw','as'], ['plain',' sns'],
+          ['nl'],
+          ['nl'],
+          ['plain','sns.'], ['blank','___'], ['plain','(x='], ['st','"sex"'], ['plain',', hue='], ['st','"survived"'], ['plain',', data=df)'],
+          ['nl'],
+          ['plain','plt.title('], ['st','"性別・生存別の人数"'], ['plain',')'],
+          ['nl'],
+          ['plain','plt.show()']
+        ],
+        prompt:'カテゴリ変数の度数を棒グラフで表示する seaborn 関数は？',
+        opts:['countplot','barplot','catplot','histplot'],
+        ok:0,
+        outType:'chart',
+        out:{title:'性別・生存別の人数',bars:[
+          {label:'男性(死亡)',val:468},{label:'男性(生存)',val:109},
+          {label:'女性(死亡)',val:81},{label:'女性(生存)',val:233}
+        ]}
+      },
+      {
+        code:[
+          ['kw','import'], ['plain',' matplotlib.pyplot '], ['kw','as'], ['plain',' plt'],
+          ['nl'],
+          ['nl'],
+          ['plain','plt.scatter(df['], ['st','"age"'], ['plain','], df['], ['st','"fare"'], ['plain','])'],
+          ['nl'],
+          ['plain','plt.xlabel('], ['st','"年齢"'], ['plain',')'],
+          ['nl'],
+          ['plain','plt.'], ['blank','___'], ['plain','('], ['st','"graph.png"'], ['plain',', dpi='], ['num','150'], ['plain',', bbox_inches='], ['st','"tight"'], ['plain',')']
+        ],
+        prompt:'グラフを画像ファイルとして保存する関数は？',
+        opts:['savefig','save','export','write'],
+        ok:0,
+        outType:'text',
+        out:'graph.png が保存されました（dpi=150, 幅1800px相当）'
+      }
+    ]
+  },
+  {
+    icon:'⚙️', name:'前処理',
+    desc:'欠損補完・dropna・LabelEncoder・get_dummies・StandardScaler・外れ値除去',
+    context:'データの前処理はモデル精度の8割を決めると言われます。Kaggleで上位に入るには前処理の質が重要です。',
+    cells:[
+      {
+        code:[
+          ['cm','# 数値列を平均値で欠損補完'],
+          ['nl'],
+          ['plain','df['], ['st','"age"'], ['plain','] = df['], ['st','"age"'], ['plain','].'], ['blank','___'], ['plain','(df['], ['st','"age"'], ['plain','].mean())'],
+          ['nl'],
+          ['fn','print'], ['plain','("欠損数:", df['], ['st','"age"'], ['plain','].isnull().sum())']
+        ],
+        prompt:'欠損値（NaN）を指定した値で埋めるメソッドは？',
+        opts:['fillna','dropna','replace','impute'],
+        ok:0,
+        outType:'text',
+        out:'欠損数: 0'
+      },
+      {
+        code:[
+          ['cm','# 欠損行を削除する'],
+          ['nl'],
+          ['fn','print'], ['plain','("削除前:", df.shape)'],
+          ['nl'],
+          ['plain','df_clean = df.'], ['blank','___'], ['plain','(subset=['], ['st','"age"'], ['plain',', '], ['st','"embarked"'], ['plain','])'],
+          ['nl'],
+          ['fn','print'], ['plain','("削除後:", df_clean.shape)']
+        ],
+        prompt:'欠損値を含む行を削除するメソッドは？',
+        opts:['dropna','fillna','remove','drop'],
+        ok:0,
+        outType:'text',
+        out:'削除前: (891, 12)\n削除後: (710, 12)'
+      },
+      {
+        code:[
+          ['kw','from'], ['plain',' sklearn.preprocessing import '], ['blank','___'],
+          ['nl'],
+          ['nl'],
+          ['plain','le = LabelEncoder()'],
+          ['nl'],
+          ['plain','df['], ['st','"sex_enc"'], ['plain','] = le.fit_transform(df['], ['st','"sex"'], ['plain','])'],
+          ['nl'],
+          ['fn','print'], ['plain','(df[['], ['st','"sex"'], ['plain',', '], ['st','"sex_enc"'], ['plain',']].head('], ['num','3'], ['plain','))']
+        ],
+        prompt:'カテゴリを整数（0,1,2...）に変換するクラスは？',
+        opts:['LabelEncoder','OrdinalEncoder','OneHotEncoder','BinaryEncoder'],
+        ok:0,
+        outType:'table',
+        out:{
+          cols:['sex','sex_enc'],
+          rows:[['male','1'],['female','0'],['female','0']]
+        }
+      },
+      {
+        code:[
+          ['cm','# ワンホットエンコーディング（多重共線性対策あり）'],
+          ['nl'],
+          ['plain','df = pd.'], ['blank','___'], ['plain','(df, columns=['], ['st','"embarked"'], ['plain','], drop_first='], ['kw','True'], ['plain',')'],
+          ['nl'],
+          ['plain','emb_cols = [c '], ['kw','for'], ['plain',' c '], ['kw','in'], ['plain',' df.columns '], ['kw','if'], ['plain',' '], ['st','"embarked"'], ['plain',' '], ['kw','in'], ['plain',' c]'],
+          ['nl'],
+          ['fn','print'], ['plain','(emb_cols)']
+        ],
+        prompt:'カテゴリ変数をダミー変数に変換する Pandas 関数は？',
+        opts:['get_dummies','encode','factorize','to_numeric'],
+        ok:0,
+        outType:'text',
+        out:"['embarked_C', 'embarked_Q']\n※ embarked_S は drop_first=True で削除"
+      },
+      {
+        code:[
+          ['kw','from'], ['plain',' sklearn.preprocessing import '], ['blank','___'],
+          ['nl'],
+          ['nl'],
+          ['plain','scaler = StandardScaler()'],
+          ['nl'],
+          ['plain','X_scaled = scaler.fit_transform(X_train)'],
+          ['nl'],
+          ['fn','print'], ['plain','("平均:", X_scaled.mean().round('], ['num','4'], ['plain','))'],
+          ['nl'],
+          ['fn','print'], ['plain','("標準偏差:", X_scaled.std().round('], ['num','4'], ['plain','))']
+        ],
+        prompt:'データを「平均0・標準偏差1」に標準化するクラスは？',
+        opts:['StandardScaler','MinMaxScaler','Normalizer','RobustScaler'],
+        ok:0,
+        outType:'text',
+        out:'平均: 0.0\n標準偏差: 1.0'
+      },
+      {
+        code:[
+          ['kw','from'], ['plain',' sklearn.preprocessing import '], ['blank','___'],
+          ['nl'],
+          ['nl'],
+          ['plain','scaler = MinMaxScaler()'],
+          ['nl'],
+          ['plain','X_norm = scaler.fit_transform(X_train)'],
+          ['nl'],
+          ['fn','print'], ['plain','("最小:", X_norm.min(axis=0).round('], ['num','2'], ['plain','))'],
+          ['nl'],
+          ['fn','print'], ['plain','("最大:", X_norm.max(axis=0).round('], ['num','2'], ['plain','))']
+        ],
+        prompt:'値を 0〜1 の範囲に変換（正規化）するクラスは？',
+        opts:['MinMaxScaler','StandardScaler','Normalizer','MaxAbsScaler'],
+        ok:0,
+        outType:'text',
+        out:'最小: [0. 0.]\n最大: [1. 1.]'
+      },
+      {
+        code:[
+          ['cm','# 重複行を削除する'],
+          ['nl'],
+          ['fn','print'], ['plain','("削除前:", df.shape)'],
+          ['nl'],
+          ['plain','df_clean = df.'], ['blank','___'], ['plain','()'],
+          ['nl'],
+          ['fn','print'], ['plain','("削除後:", df_clean.shape)']
+        ],
+        prompt:'重複した行を削除するメソッドは？',
+        opts:['drop_duplicates','unique','dropna','deduplicate'],
+        ok:0,
+        outType:'text',
+        out:'削除前: (891, 12)\n削除後: (889, 12)'
+      },
+      {
+        code:[
+          ['cm','# IQRで外れ値を除去する'],
+          ['nl'],
+          ['plain','Q1 = df['], ['st','"fare"'], ['plain','].quantile('], ['num','0.25'], ['plain',')'],
+          ['nl'],
+          ['plain','Q3 = df['], ['st','"fare"'], ['plain','].quantile('], ['num','0.75'], ['plain',')'],
+          ['nl'],
+          ['plain','IQR = Q3 - Q1'],
+          ['nl'],
+          ['plain','lower = Q1 - '], ['num','1.5'], ['plain',' * IQR'],
+          ['nl'],
+          ['plain','upper = Q3 + '], ['num','1.5'], ['plain',' * IQR'],
+          ['nl'],
+          ['plain','df_ok = df[df['], ['st','"fare"'], ['plain','].'], ['blank','___'], ['plain','(lower, upper)]'],
+          ['nl'],
+          ['fn','print'], ['plain','("外れ値除去後:", df_ok.shape)']
+        ],
+        prompt:'値が指定した範囲 [lower, upper] 内かを確認するメソッドは？',
+        opts:['between','clip','filter','within'],
+        ok:0,
+        outType:'text',
+        out:'外れ値除去後: (840, 12)\n51件の外れ値を除去'
+      }
+    ]
+  },
+  {
+    icon:'🧪', name:'特徴量エンジニアリング',
+    desc:'ビニング・新特徴量・対数変換・タイトル抽出・target encoding・map',
+    context:'生データのままでは精度が出ません。ドメイン知識を活かして新特徴量を作ることがKaggleの醍醐味です。',
+    cells:[
+      {
+        code:[
+          ['cm','# 年齢を年代カテゴリにビニング'],
+          ['nl'],
+          ['plain','df['], ['st','"age_group"'], ['plain','] = pd.'], ['blank','___'], ['plain','('],
+          ['nl'],
+          ['plain','  df['], ['st','"age"'], ['plain','],'],
+          ['nl'],
+          ['plain','  bins=['], ['num','0'], ['plain',', '], ['num','12'], ['plain',', '], ['num','18'], ['plain',', '], ['num','35'], ['plain',', '], ['num','60'], ['plain',', '], ['num','100'], ['plain','],'],
+          ['nl'],
+          ['plain','  labels=['], ['st','"child"'], ['plain',', '], ['st','"teen"'], ['plain',', '], ['st','"adult"'], ['plain',', '], ['st','"senior"'], ['plain',', '], ['st','"elderly"'], ['plain',']'],
+          ['nl'],
+          ['plain',')'],
+          ['nl'],
+          ['fn','print'], ['plain','(df['], ['st','"age_group"'], ['plain','].value_counts())']
+        ],
+        prompt:'連続値を区間（ビン）に分けてカテゴリ化する Pandas 関数は？',
+        opts:['cut','qcut','digitize','bin'],
+        ok:0,
+        outType:'text',
+        out:'adult     385\nsenior    193\nteen      101\nchild      53\nelderly    41'
+      },
+      {
+        code:[
+          ['cm','# 家族の人数を特徴量として作る'],
+          ['nl'],
+          ['plain','df['], ['st','"family_size"'], ['plain','] = df['], ['st','"sibsp"'], ['plain','] + df['], ['st','"parch"'], ['plain','] + '], ['blank','___'],
+          ['nl'],
+          ['plain','df['], ['st','"is_alone"'], ['plain','] = (df['], ['st','"family_size"'], ['plain','] == '], ['num','1'], ['plain',').astype('], ['fn','int'], ['plain',')'],
+          ['nl'],
+          ['fn','print'], ['plain','(df[['], ['st','"sibsp"'], ['plain',', '], ['st','"parch"'], ['plain',', '], ['st','"family_size"'], ['plain',', '], ['st','"is_alone"'], ['plain',']].head('], ['num','3'], ['plain','))']
+        ],
+        prompt:'自分1人分を加えるために何を足す？',
+        opts:['1','0','2','sibsp'],
+        ok:0,
+        outType:'table',
+        out:{
+          cols:['sibsp','parch','family_size','is_alone'],
+          rows:[['1','0','2','0'],['1','0','2','0'],['0','0','1','1']]
+        }
+      },
+      {
+        code:[
+          ['cm','# 右歪み分布を対数変換で正規化'],
+          ['nl'],
+          ['kw','import'], ['plain',' numpy '], ['kw','as'], ['plain',' np'],
+          ['nl'],
+          ['plain','df['], ['st','"log_fare"'], ['plain','] = np.'], ['blank','___'], ['plain','(df['], ['st','"fare"'], ['plain','])'],
+          ['nl'],
+          ['fn','print'], ['plain','("fare  歪度:", df['], ['st','"fare"'], ['plain','].skew().round('], ['num','2'], ['plain','))'],
+          ['nl'],
+          ['fn','print'], ['plain','("log_fare 歪度:", df['], ['st','"log_fare"'], ['plain','].skew().round('], ['num','2'], ['plain','))']
+        ],
+        prompt:'log(1+x) で0を含むデータを安全に対数変換する numpy 関数は？',
+        opts:['log1p','log','log2','log10'],
+        ok:0,
+        outType:'text',
+        out:'fare  歪度: 4.79\nlog_fare 歪度: 0.44  ← 正規分布に近づいた'
+      },
+      {
+        code:[
+          ['cm','# 名前から敬称（タイトル）を抽出する'],
+          ['nl'],
+          ['plain','df['], ['st','"title"'], ['plain','] = df['], ['st','"name"'], ['plain','].str.'], ['blank','___'], ['plain','(r\'([A-Z][a-z]+)\\.\''],
+          ['nl'],
+          ['fn','print'], ['plain','(df['], ['st','"title"'], ['plain','].value_counts().head('], ['num','5'], ['plain','))']
+        ],
+        prompt:'正規表現でパターンを抽出する str メソッドは？',
+        opts:['extract','findall','match','search'],
+        ok:0,
+        outType:'text',
+        out:'Mr        517\nMiss      182\nMrs       125\nMaster     40\nDr          7'
+      },
+      {
+        code:[
+          ['cm','# グループの統計値を各行に付与（transform）'],
+          ['nl'],
+          ['plain','df['], ['st','"title_surv"'], ['plain','] = df.groupby('], ['st','"title"'], ['plain',')['], ['st','"survived"'], ['plain','].'], ['blank','___'], ['plain','('], ['st','"mean"'], ['plain',')'],
+          ['nl'],
+          ['fn','print'], ['plain','(df.groupby('], ['st','"title"'], ['plain',')['], ['st','"title_surv"'], ['plain','].first().round('], ['num','2'], ['plain','))']
+        ],
+        prompt:'groupby した集計値を元のDataFrameの各行に対応させて付与するメソッドは？',
+        opts:['transform','apply','agg','map'],
+        ok:0,
+        outType:'text',
+        out:'title\nMaster    0.58\nMiss      0.70\nMr        0.16\nMrs       0.79'
+      },
+      {
+        code:[
+          ['cm','# 交互作用特徴量（等級×運賃）'],
+          ['nl'],
+          ['plain','df['], ['st','"pclass_fare"'], ['plain','] = df['], ['st','"pclass"'], ['plain','] '], ['blank','___'], ['plain',' df['], ['st','"fare"'], ['plain',']'],
+          ['nl'],
+          ['plain','df['], ['st','"age_fare"'], ['plain','] = df['], ['st','"age"'], ['plain','] * df['], ['st','"fare"'], ['plain',']'],
+          ['nl'],
+          ['fn','print'], ['plain','(df[['], ['st','"pclass"'], ['plain',', '], ['st','"fare"'], ['plain',', '], ['st','"pclass_fare"'], ['plain',']].head('], ['num','3'], ['plain','))']
+        ],
+        prompt:'2つの特徴量を掛け合わせる演算子は？',
+        opts:['*','+','/','**'],
+        ok:0,
+        outType:'table',
+        out:{
+          cols:['pclass','fare','pclass_fare'],
+          rows:[['3','7.25','21.75'],['1','71.28','71.28'],['3','7.93','23.79']]
+        }
+      },
+      {
+        code:[
+          ['cm','# 辞書を使って値を変換（マッピング）'],
+          ['nl'],
+          ['plain','title_map = {'],
+          ['nl'],
+          ['plain','  '], ['st','"Mr"'], ['plain',':'], ['num','1'], ['plain',', '], ['st','"Miss"'], ['plain',':'], ['num','2'], ['plain',', '], ['st','"Mrs"'], ['plain',':'], ['num','3'], ['plain',', '], ['st','"Master"'], ['plain',':'], ['num','4'],
+          ['nl'],
+          ['plain','}'],
+          ['nl'],
+          ['plain','df['], ['st','"title_enc"'], ['plain','] = df['], ['st','"title"'], ['plain','].'], ['blank','___'], ['plain','(title_map)'],
+          ['nl'],
+          ['fn','print'], ['plain','(df[['], ['st','"title"'], ['plain',', '], ['st','"title_enc"'], ['plain',']].head('], ['num','3'], ['plain','))']
+        ],
+        prompt:'辞書を使って列の値を変換するメソッドは？',
+        opts:['map','apply','replace','encode'],
+        ok:0,
+        outType:'table',
+        out:{
+          cols:['title','title_enc'],
+          rows:[['Mr','1'],['Mrs','3'],['Miss','2']]
+        }
+      },
+      {
+        code:[
+          ['kw','from'], ['plain',' sklearn.preprocessing import PolynomialFeatures'],
+          ['nl'],
+          ['nl'],
+          ['plain','poly = '], ['blank','___'], ['plain','(degree='], ['num','2'], ['plain',', include_bias='], ['kw','False'], ['plain',')'],
+          ['nl'],
+          ['plain','X_poly = poly.fit_transform(X[numeric_cols])'],
+          ['nl'],
+          ['fn','print'], ['plain','("元の特徴量数:", X.shape['], ['num','1'], ['plain','])'],
+          ['nl'],
+          ['fn','print'], ['plain','("多項式特徴量数:", X_poly.shape['], ['num','1'], ['plain','])']
+        ],
+        prompt:'2次の多項式特徴量（交互作用含む）を生成するクラスは？',
+        opts:['PolynomialFeatures','InteractionFeatures','QuadraticFeatures','Kernel'],
+        ok:0,
+        outType:'text',
+        out:'元の特徴量数: 6\n多項式特徴量数: 27'
+      }
+    ]
+  },
+  {
+    icon:'🤖', name:'機械学習',
+    desc:'LogisticRegression・RandomForest・cross_val_score・GridSearchCV・XGBoost',
+    context:'いよいよ機械学習本番。Kaggleで使われる主要アルゴリズムをひと通りマスターします。',
+    cells:[
+      {
+        code:[
+          ['kw','from'], ['plain',' sklearn.model_selection import '], ['blank','___'],
+          ['nl'],
+          ['nl'],
+          ['plain','X = df[feature_cols]'],
+          ['nl'],
+          ['plain','y = df['], ['st','"survived"'], ['plain',']'],
+          ['nl'],
+          ['plain','X_train, X_test, y_train, y_test = train_test_split('],
+          ['nl'],
+          ['plain','  X, y, test_size='], ['num','0.2'], ['plain',', random_state='], ['num','42'],
+          ['nl'],
+          ['plain',')'],
+          ['nl'],
+          ['fn','print'], ['plain','("訓練:", X_train.shape, "テスト:", X_test.shape)']
+        ],
+        prompt:'データを訓練・テスト用に分割する関数は？',
+        opts:['train_test_split','split','cross_split','partition'],
+        ok:0,
+        outType:'text',
+        out:'訓練: (712, 8) テスト: (179, 8)'
+      },
+      {
+        code:[
+          ['kw','from'], ['plain',' sklearn.linear_model import '], ['blank','___'],
+          ['nl'],
+          ['nl'],
+          ['plain','lr = LogisticRegression(max_iter='], ['num','1000'], ['plain',')'],
+          ['nl'],
+          ['plain','lr.fit(X_train, y_train)'],
+          ['nl'],
+          ['fn','print'], ['plain','(f"ロジスティック回帰: {lr.score(X_test, y_test):.3f}")']
+        ],
+        prompt:'0か1かを確率で予測する線形分類モデルのクラスは？',
+        opts:['LogisticRegression','LinearRegression','LogisticClassifier','Logistic'],
+        ok:0,
+        outType:'text',
+        out:'ロジスティック回帰: 0.799'
+      },
+      {
+        code:[
+          ['kw','from'], ['plain',' sklearn.ensemble import RandomForestClassifier'],
+          ['nl'],
+          ['nl'],
+          ['plain','rf = RandomForestClassifier(n_estimators='], ['num','100'], ['plain',', max_depth='], ['num','5'], ['plain',', random_state='], ['num','42'], ['plain',')'],
+          ['nl'],
+          ['plain','rf.'], ['blank','___'], ['plain','(X_train, y_train)'],
+          ['nl'],
+          ['fn','print'], ['plain','("RF精度:", rf.score(X_test, y_test).round('], ['num','3'], ['plain','))']
+        ],
+        prompt:'モデルに訓練データを学習させるメソッドは？',
+        opts:['fit','train','learn','run'],
+        ok:0,
+        outType:'text',
+        out:'RF精度: 0.827'
+      },
+      {
+        code:[
+          ['kw','from'], ['plain',' sklearn.model_selection import '], ['blank','___'],
+          ['nl'],
+          ['nl'],
+          ['plain','scores = cross_val_score(rf, X, y, cv='], ['num','5'], ['plain',', scoring='], ['st','"accuracy"'], ['plain',')'],
+          ['nl'],
+          ['fn','print'], ['plain','("各Fold:", scores.round('], ['num','3'], ['plain','))'],
+          ['nl'],
+          ['fn','print'], ['plain','(f"平均: {scores.mean():.3f} ± {scores.std():.3f}")']
+        ],
+        prompt:'K分割交差検証でスコアを計算する関数は？',
+        opts:['cross_val_score','cross_validate','KFold','StratifiedKFold'],
+        ok:0,
+        outType:'text',
+        out:'各Fold: [0.821 0.809 0.843 0.854 0.832]\n平均: 0.832 ± 0.016'
+      },
+      {
+        code:[
+          ['kw','from'], ['plain',' sklearn.model_selection import '], ['blank','___'],
+          ['nl'],
+          ['nl'],
+          ['plain','param_grid = {'],
+          ['nl'],
+          ['plain','  '], ['st','"n_estimators"'], ['plain',': ['], ['num','50'], ['plain',', '], ['num','100'], ['plain','],'],
+          ['nl'],
+          ['plain','  '], ['st','"max_depth"'], ['plain',': ['], ['num','3'], ['plain',', '], ['num','5'], ['plain',', '], ['num','7'], ['plain',']'],
+          ['nl'],
+          ['plain','}'],
+          ['nl'],
+          ['plain','gs = GridSearchCV(rf, param_grid, cv='], ['num','5'], ['plain',')'],
+          ['nl'],
+          ['plain','gs.fit(X_train, y_train)'],
+          ['nl'],
+          ['fn','print'], ['plain','("最良params:", gs.best_params_)']
+        ],
+        prompt:'ハイパーパラメータを格子探索で最適化するクラスは？',
+        opts:['GridSearchCV','RandomSearchCV','BayesSearchCV','AutoML'],
+        ok:0,
+        outType:'text',
+        out:"最良params: {'max_depth': 5, 'n_estimators': 100}"
+      },
+      {
+        code:[
+          ['cm','# 特徴量重要度を確認する'],
+          ['nl'],
+          ['plain','importances = rf.'], ['blank','___'],
+          ['nl'],
+          ['plain','feat_imp = pd.Series(importances, index=feature_cols).sort_values(ascending='], ['kw','False'], ['plain',')'],
+          ['nl'],
+          ['fn','print'], ['plain','(feat_imp.round('], ['num','3'], ['plain','))']
+        ],
+        prompt:'RandomForestの特徴量重要度が格納されている属性は？',
+        opts:['feature_importances_','feature_importance','importances_','coef_'],
+        ok:0,
+        outType:'chart',
+        out:{title:'特徴量重要度',bars:[
+          {label:'title_enc',val:24},{label:'fare',val:21},{label:'age',val:17},
+          {label:'sex_enc',val:15},{label:'pclass',val:12},{label:'family_size',val:11}
+        ]}
+      },
+      {
+        code:[
+          ['cm','# 確率値で予測する（AUC計算に必要）'],
+          ['nl'],
+          ['plain','y_prob = rf.'], ['blank','___'], ['plain','(X_test)[:, '], ['num','1'], ['plain',']'],
+          ['nl'],
+          ['kw','from'], ['plain',' sklearn.metrics import roc_auc_score'],
+          ['nl'],
+          ['plain','auc = roc_auc_score(y_test, y_prob)'],
+          ['nl'],
+          ['fn','print'], ['plain','(f"ROC-AUC: {auc:.3f}")']
+        ],
+        prompt:'各クラスの確率値を返すメソッドは？（[:, 1] で生存確率を取り出す）',
+        opts:['predict_proba','predict','decision_function','score'],
+        ok:0,
+        outType:'text',
+        out:'ROC-AUC: 0.881'
+      },
+      {
+        code:[
+          ['kw','from'], ['plain',' xgboost import '], ['blank','___'],
+          ['nl'],
+          ['nl'],
+          ['plain','xgb = XGBClassifier('],
+          ['nl'],
+          ['plain','  n_estimators='], ['num','200'], ['plain',', learning_rate='], ['num','0.05'], ['plain',','],
+          ['nl'],
+          ['plain','  max_depth='], ['num','4'], ['plain',', random_state='], ['num','42'],
+          ['nl'],
+          ['plain',')'],
+          ['nl'],
+          ['plain','xgb.fit(X_train, y_train)'],
+          ['nl'],
+          ['fn','print'], ['plain','("XGB精度:", xgb.score(X_test, y_test).round('], ['num','3'], ['plain','))']
+        ],
+        prompt:'Kaggleで最もよく使われる勾配ブースティングモデルのクラスは？',
+        opts:['XGBClassifier','GradientBoostingClassifier','LGBMClassifier','CatBoostClassifier'],
+        ok:0,
+        outType:'text',
+        out:'XGB精度: 0.844'
+      }
+    ]
+  },
+  {
+    icon:'🏆', name:'モデル評価・Kaggle提出',
+    desc:'confusion_matrix・ROC-AUC・VotingClassifier・to_csv・Pipeline',
+    context:'モデルを正しく評価して、Kaggleに提出するまでの完全ワークフロー。これが分かれば実際のコンペに参加できます！',
+    cells:[
+      {
+        code:[
+          ['kw','from'], ['plain',' sklearn.metrics import accuracy_score, '], ['blank','___'],
+          ['nl'],
+          ['nl'],
+          ['plain','y_pred = rf.predict(X_test)'],
+          ['nl'],
+          ['fn','print'], ['plain','("Accuracy:", accuracy_score(y_test, y_pred).round('], ['num','3'], ['plain','))'],
+          ['nl'],
+          ['plain','cm = confusion_matrix(y_test, y_pred)'],
+          ['nl'],
+          ['fn','print'], ['plain','("混同行列:\\n", cm)']
+        ],
+        prompt:'予測値と正解から混同行列（TP/FP/TN/FN）を計算する関数は？',
+        opts:['confusion_matrix','accuracy_matrix','error_matrix','score_matrix'],
+        ok:0,
+        outType:'table',
+        out:{
+          cols:['','予測:死亡','予測:生存'],
+          rows:[
+            ['実際:死亡','101（TN）','9（FP）'],
+            ['実際:生存','26（FN）','43（TP）']
+          ]
+        }
+      },
+      {
+        code:[
+          ['kw','from'], ['plain',' sklearn.metrics import '], ['blank','___'],
+          ['nl'],
+          ['nl'],
+          ['fn','print'], ['plain','(classification_report(y_test, y_pred,'],
+          ['nl'],
+          ['plain','  target_names=['], ['st','"死亡"'], ['plain',', '], ['st','"生存"'], ['plain',']))']
+        ],
+        prompt:'適合率・再現率・F1スコアをまとめて表示する関数は？',
+        opts:['classification_report','metrics_report','full_report','score_report'],
+        ok:0,
+        outType:'text',
+        out:'              precision  recall  f1-score\n死亡              0.80    0.92      0.85\n生存              0.83    0.62      0.71\naccuracy                            0.81'
+      },
+      {
+        code:[
+          ['kw','from'], ['plain',' sklearn.metrics import '], ['blank','___'],
+          ['nl'],
+          ['nl'],
+          ['plain','y_prob = rf.predict_proba(X_test)[:, '], ['num','1'], ['plain',']'],
+          ['nl'],
+          ['plain','auc = roc_auc_score(y_test, y_prob)'],
+          ['nl'],
+          ['fn','print'], ['plain','(f"ROC-AUC: {auc:.4f}")'],
+          ['nl'],
+          ['cm','# AUCが1.0に近いほど優秀 / 0.5 = ランダム予測']
+        ],
+        prompt:'ROC曲線の面積（識別能力の指標）を計算する関数は？',
+        opts:['roc_auc_score','auc_score','roc_score','area_under_curve'],
+        ok:0,
+        outType:'text',
+        out:'ROC-AUC: 0.8812'
+      },
+      {
+        code:[
+          ['kw','from'], ['plain',' sklearn.ensemble import '], ['blank','___'],
+          ['nl'],
+          ['nl'],
+          ['plain','ensemble = VotingClassifier('],
+          ['nl'],
+          ['plain','  estimators=[('], ['st','"lr"'], ['plain',', lr), ('], ['st','"rf"'], ['plain',', rf), ('], ['st','"xgb"'], ['plain',', xgb)],'],
+          ['nl'],
+          ['plain','  voting='], ['st','"soft"'],
+          ['nl'],
+          ['plain',')'],
+          ['nl'],
+          ['plain','ensemble.fit(X_train, y_train)'],
+          ['nl'],
+          ['fn','print'], ['plain','("アンサンブル精度:", ensemble.score(X_test, y_test).round('], ['num','3'], ['plain','))']
+        ],
+        prompt:'複数モデルを多数決・確率平均で組み合わせるクラスは？',
+        opts:['VotingClassifier','BaggingClassifier','StackingClassifier','EnsembleClassifier'],
+        ok:0,
+        outType:'text',
+        out:'アンサンブル精度: 0.849'
+      },
+      {
+        code:[
+          ['cm','# Kaggle提出用ファイルを作成する'],
+          ['nl'],
+          ['plain','test_df = pd.read_csv('], ['st','"test.csv"'], ['plain',')'],
+          ['nl'],
+          ['plain','predictions = ensemble.predict(X_test_processed)'],
+          ['nl'],
+          ['plain','submission = pd.DataFrame({'],
+          ['nl'],
+          ['plain','  '], ['st','"PassengerId"'], ['plain',': test_df['], ['st','"PassengerId"'], ['plain','],'],
+          ['nl'],
+          ['plain','  '], ['st','"Survived"'], ['plain',': predictions'],
+          ['nl'],
+          ['plain','})'],
+          ['nl'],
+          ['plain','submission.'], ['blank','___'], ['plain','('], ['st','"submission.csv"'], ['plain',', index='], ['kw','False'], ['plain',')'],
+          ['nl'],
+          ['fn','print'], ['plain','("作成完了:", submission.shape)']
+        ],
+        prompt:'DataFrameをCSVファイルに書き出すメソッドは？',
+        opts:['to_csv','write_csv','save_csv','export_csv'],
+        ok:0,
+        outType:'text',
+        out:'作成完了: (418, 2)\n→ Kaggleのsubmitページにアップロードして提出！'
+      },
+      {
+        code:[
+          ['kw','from'], ['plain',' sklearn.model_selection import learning_curve'],
+          ['nl'],
+          ['nl'],
+          ['plain','train_sizes, train_scores, val_scores = '], ['blank','___'], ['plain','('],
+          ['nl'],
+          ['plain','  rf, X, y, cv='], ['num','5'], ['plain',','],
+          ['nl'],
+          ['plain','  train_sizes=np.linspace('], ['num','0.1'], ['plain',', '], ['num','1.0'], ['plain',', '], ['num','10'], ['plain',')'],
+          ['nl'],
+          ['plain',')'],
+          ['nl'],
+          ['fn','print'], ['plain','("検証スコア:", val_scores.mean(axis='], ['num','1'], ['plain',').round('], ['num','3'], ['plain','))']
+        ],
+        prompt:'データ量を変化させて学習曲線を取得する関数は？',
+        opts:['learning_curve','validation_curve','cross_val_curve','train_curve'],
+        ok:0,
+        outType:'text',
+        out:'検証スコア: [0.76 0.79 0.81 0.82 0.83 0.83 0.83 0.83 0.83 0.83]'
+      },
+      {
+        code:[
+          ['kw','from'], ['plain',' sklearn.ensemble import '], ['blank','___'],
+          ['nl'],
+          ['nl'],
+          ['plain','stacking = StackingClassifier('],
+          ['nl'],
+          ['plain','  estimators=[('], ['st','"rf"'], ['plain',', rf), ('], ['st','"xgb"'], ['plain',', xgb)],'],
+          ['nl'],
+          ['plain','  final_estimator=LogisticRegression(),'],
+          ['nl'],
+          ['plain','  cv='], ['num','5'],
+          ['nl'],
+          ['plain',')'],
+          ['nl'],
+          ['plain','stacking.fit(X_train, y_train)'],
+          ['nl'],
+          ['fn','print'], ['plain','("スタッキング精度:", stacking.score(X_test, y_test).round('], ['num','3'], ['plain','))']
+        ],
+        prompt:'複数モデルの出力を別モデルで統合するスタッキングクラスは？',
+        opts:['StackingClassifier','VotingClassifier','BaggingClassifier','AdaBoostClassifier'],
+        ok:0,
+        outType:'text',
+        out:'スタッキング精度: 0.855'
+      },
+      {
+        code:[
+          ['kw','from'], ['plain',' sklearn.pipeline import '], ['blank','___'],
+          ['nl'],
+          ['nl'],
+          ['plain','pipe = Pipeline(['],
+          ['nl'],
+          ['plain','  ('], ['st','"scaler"'], ['plain',', StandardScaler()),'],
+          ['nl'],
+          ['plain','  ('], ['st','"model"'], ['plain',', RandomForestClassifier(random_state=42))'],
+          ['nl'],
+          ['plain','])'],
+          ['nl'],
+          ['plain','pipe.fit(X_train, y_train)'],
+          ['nl'],
+          ['fn','print'], ['plain','("Pipeline精度:", pipe.score(X_test, y_test).round('], ['num','3'], ['plain','))']
+        ],
+        prompt:'前処理→モデルを一本化してデータリークを防ぐクラスは？',
+        opts:['Pipeline','Workflow','Chain','Sequence'],
+        ok:0,
+        outType:'text',
+        out:'Pipeline精度: 0.832\n→ データリークなしで前処理+学習が完了'
+      }
+    ]
+  }
+
+  ,
+  {
+    icon:'🔧', name:'Pandas詳細',
+    desc:'rename・astype・query・melt・assign・reset_index・select_dtypes',
+    context:'Pandasの中級操作。知っているとコードが一気にスッキリする関数群です。',
+    cells:[
+      {
+        code:[
+          ['cm','# 列名を分かりやすく変更する'],
+          ['nl'],
+          ['plain','df = df.'], ['blank','___'], ['plain','(columns={'],
+          ['nl'],
+          ['plain','  '], ['st','"sibsp"'], ['plain',': '], ['st','"siblings_spouses"'], ['plain',','],
+          ['nl'],
+          ['plain','  '], ['st','"parch"'], ['plain',': '], ['st','"parents_children"'],
+          ['nl'],
+          ['plain','})'],
+          ['nl'],
+          ['fn','print'], ['plain','(df.columns.tolist())']
+        ],
+        prompt:'列名を変更するメソッドは？',
+        opts:['rename','relabel','set_columns','col_rename'],
+        ok:0,
+        outType:'text',
+        out:"['survived','pclass','sex','age','siblings_spouses','parents_children','fare',...]"
+      },
+      {
+        code:[
+          ['cm','# データ型を変換する'],
+          ['nl'],
+          ['plain','df['], ['st','"pclass"'], ['plain','] = df['], ['st','"pclass"'], ['plain','].'], ['blank','___'], ['plain','(str)'],
+          ['nl'],
+          ['plain','df['], ['st','"survived"'], ['plain','] = df['], ['st','"survived"'], ['plain','].astype(bool)'],
+          ['nl'],
+          ['fn','print'], ['plain','(df[['], ['st','"pclass"'], ['plain',', '], ['st','"survived"'], ['plain',']].dtypes)']
+        ],
+        prompt:'列のデータ型を変換するメソッドは？',
+        opts:['astype','convert','cast','to_type'],
+        ok:0,
+        outType:'text',
+        out:'pclass      object\nsurvived      bool\ndtype: object'
+      },
+      {
+        code:[
+          ['cm','# インデックスを0始まりに振り直す'],
+          ['nl'],
+          ['plain','women = df[df['], ['st','"sex"'], ['plain','] == '], ['st','"female"'], ['plain',']'],
+          ['nl'],
+          ['plain','women = women.'], ['blank','___'], ['plain','(drop='], ['kw','True'], ['plain',')'],
+          ['nl'],
+          ['fn','print'], ['plain','(women.index.tolist()[:5])']
+        ],
+        prompt:'インデックスを0から振り直すメソッドは？',
+        opts:['reset_index','reindex','set_index','index_reset'],
+        ok:0,
+        outType:'text',
+        out:'[0, 1, 2, 3, 4]'
+      },
+      {
+        code:[
+          ['cm','# SQL風の条件でデータを絞り込む'],
+          ['nl'],
+          ['plain','result = df.'], ['blank','___'], ['plain','('], ['st','"age > 30 and pclass == 1"'], ['plain',')'],
+          ['nl'],
+          ['fn','print'], ['plain','("件数:", '], ['fn','len'], ['plain','(result))'],
+          ['nl'],
+          ['fn','print'], ['plain','(result[['], ['st','"sex"'], ['plain',', '], ['st','"age"'], ['plain',', '], ['st','"survived"'], ['plain',']].head(3))']
+        ],
+        prompt:'SQL風の文字列で条件抽出できるメソッドは？',
+        opts:['query','filter','where','select'],
+        ok:0,
+        outType:'table',
+        out:{
+          cols:['sex','age','survived'],
+          rows:[['female','38.0','1'],['male','35.0','0'],['female','58.0','1']]
+        }
+      },
+      {
+        code:[
+          ['cm','# wide形式をlong形式に変換（melt）'],
+          ['nl'],
+          ['plain','df_long = df[['], ['st','"pclass"'], ['plain',', '], ['st','"age"'], ['plain',', '], ['st','"fare"'], ['plain',']].'], ['blank','___'], ['plain','('],
+          ['nl'],
+          ['plain','  id_vars=['], ['st','"pclass"'], ['plain','],'],
+          ['nl'],
+          ['plain','  var_name='], ['st','"feature"'], ['plain',','],
+          ['nl'],
+          ['plain','  value_name='], ['st','"value"'],
+          ['nl'],
+          ['plain',')'],
+          ['nl'],
+          ['fn','print'], ['plain','(df_long.head(4))']
+        ],
+        prompt:'列を行方向に展開してlong形式に変換するメソッドは？',
+        opts:['melt','stack','unpivot','reshape'],
+        ok:0,
+        outType:'table',
+        out:{
+          cols:['pclass','feature','value'],
+          rows:[['3','age','22.0'],['1','age','38.0'],['3','fare','7.25'],['1','fare','71.28']]
+        }
+      },
+      {
+        code:[
+          ['cm','# 新列を追加する（チェーン可能）'],
+          ['nl'],
+          ['plain','df = df.'], ['blank','___'], ['plain','('],
+          ['nl'],
+          ['plain','  family_size='], ['kw','lambda'], ['plain',' x: x['], ['st','"sibsp"'], ['plain','] + x['], ['st','"parch"'], ['plain','] + '], ['num','1'], ['plain',','],
+          ['nl'],
+          ['plain','  fare_per_person='], ['kw','lambda'], ['plain',' x: x['], ['st','"fare"'], ['plain','] / x.family_size'],
+          ['nl'],
+          ['plain',')'],
+          ['nl'],
+          ['fn','print'], ['plain','(df[['], ['st','"fare"'], ['plain',', '], ['st','"family_size"'], ['plain',', '], ['st','"fare_per_person"'], ['plain',']].head(3))']
+        ],
+        prompt:'メソッドチェーンで新列を追加できるメソッドは？',
+        opts:['assign','add_column','insert','new_col'],
+        ok:0,
+        outType:'table',
+        out:{
+          cols:['fare','family_size','fare_per_person'],
+          rows:[['7.25','2','3.63'],['71.28','2','35.64'],['7.93','1','7.93']]
+        }
+      },
+      {
+        code:[
+          ['cm','# 重複しているかどうか確認（True=重複）'],
+          ['nl'],
+          ['plain','dup_mask = df.'], ['blank','___'], ['plain','(subset=['], ['st','"pclass"'], ['plain',', '], ['st','"sex"'], ['plain',', '], ['st','"age"'], ['plain',', '], ['st','"fare"'], ['plain','])'],
+          ['nl'],
+          ['fn','print'], ['plain','("重複数:", dup_mask.sum())'],
+          ['nl'],
+          ['fn','print'], ['plain','("重複データ:\\n", df[dup_mask].head(2))']
+        ],
+        prompt:'各行が重複かどうかのboolマスクを返すメソッドは？',
+        opts:['duplicated','is_duplicate','check_dup','find_dup'],
+        ok:0,
+        outType:'text',
+        out:'重複数: 2\n重複データ:\n   pclass   sex   age  fare\n23      3  male  22.0  7.25'
+      },
+      {
+        code:[
+          ['cm','# 数値列だけを取り出す'],
+          ['nl'],
+          ['plain','num_cols = df.'], ['blank','___'], ['plain','(include=['], ['st','"number"'], ['plain','])'],
+          ['nl'],
+          ['fn','print'], ['plain','("数値列:", num_cols.columns.tolist())'],
+          ['nl'],
+          ['nl'],
+          ['plain','cat_cols = df.select_dtypes(include=['], ['st','"object"'], ['plain','])'],
+          ['nl'],
+          ['fn','print'], ['plain','("文字列列:", cat_cols.columns.tolist())']
+        ],
+        prompt:'特定のデータ型の列だけを選択するメソッドは？',
+        opts:['select_dtypes','filter_dtypes','get_numeric','dtype_select'],
+        ok:0,
+        outType:'text',
+        out:"数値列: ['survived', 'pclass', 'age', 'sibsp', 'parch', 'fare']\n文字列列: ['sex', 'embarked', 'name']"
+      }
+    ]
+  },
+  {
+    icon:'📅', name:'文字列・日付処理',
+    desc:'str.split・lower・replace・len・pd.to_datetime・dt accessor・rolling・shift',
+    context:'実データには文字列と日付が必ず含まれます。これらを特徴量に変換する操作はKaggleで頻出です。',
+    cells:[
+      {
+        code:[
+          ['cm','# 名前を姓と名に分割する'],
+          ['nl'],
+          ['plain','parts = df['], ['st','"name"'], ['plain','].str.'], ['blank','___'], ['plain','('], ['st','", "'], ['plain',', expand='], ['kw','True'], ['plain',')'],
+          ['nl'],
+          ['plain','df['], ['st','"last_name"'], ['plain',']  = parts[0]'],
+          ['nl'],
+          ['plain','df['], ['st','"first_name"'], ['plain','] = parts[1]'],
+          ['nl'],
+          ['fn','print'], ['plain','(df[['], ['st','"name"'], ['plain',', '], ['st','"last_name"'], ['plain',', '], ['st','"first_name"'], ['plain',']].head(2))']
+        ],
+        prompt:'文字列を区切り文字で分割する str メソッドは？',
+        opts:['split','divide','cut','separate'],
+        ok:0,
+        outType:'table',
+        out:{
+          cols:['name','last_name','first_name'],
+          rows:[
+            ['Braund, Mr. Owen Harris','Braund','Mr. Owen Harris'],
+            ['Cumings, Mrs. John B.','Cumings','Mrs. John B.']
+          ]
+        }
+      },
+      {
+        code:[
+          ['cm','# 文字列を小文字に統一する'],
+          ['nl'],
+          ['plain','df['], ['st','"sex_lower"'], ['plain','] = df['], ['st','"sex"'], ['plain','].str.'], ['blank','___'], ['plain','()'],
+          ['nl'],
+          ['plain','df['], ['st','"embarked_lower"'], ['plain','] = df['], ['st','"embarked"'], ['plain','].str.lower()'],
+          ['nl'],
+          ['fn','print'], ['plain','(df[['], ['st','"sex"'], ['plain',', '], ['st','"sex_lower"'], ['plain',']].head(3))']
+        ],
+        prompt:'文字列を全て小文字に変換する str メソッドは？',
+        opts:['lower','upper','title','casefold'],
+        ok:0,
+        outType:'table',
+        out:{
+          cols:['sex','sex_lower'],
+          rows:[['male','male'],['female','female'],['female','female']]
+        }
+      },
+      {
+        code:[
+          ['cm','# 文字列を置換する'],
+          ['nl'],
+          ['plain','df['], ['st','"name_clean"'], ['plain','] = df['], ['st','"name"'], ['plain','].str.'], ['blank','___'], ['plain','(r\'[\\(\\)]\', \'\', regex='], ['kw','True'], ['plain',')'],
+          ['nl'],
+          ['fn','print'], ['plain','(df[['], ['st','"name"'], ['plain',', '], ['st','"name_clean"'], ['plain',']].head(2))']
+        ],
+        prompt:'文字列内の一部を別の文字列に置換する str メソッドは？',
+        opts:['replace','sub','swap','change'],
+        ok:0,
+        outType:'table',
+        out:{
+          cols:['name','name_clean'],
+          rows:[
+            ['Braund, Mr. Owen Harris','Braund, Mr. Owen Harris'],
+            ['Heikkinen, Miss. Laina','Heikkinen, Miss. Laina']
+          ]
+        }
+      },
+      {
+        code:[
+          ['cm','# 文字列の長さを特徴量にする'],
+          ['nl'],
+          ['plain','df['], ['st','"name_len"'], ['plain','] = df['], ['st','"name"'], ['plain','].str.'], ['blank','___'], ['plain','()'],
+          ['nl'],
+          ['fn','print'], ['plain','(df.groupby('], ['st','"survived"'], ['plain',')['], ['st','"name_len"'], ['plain','].mean().round(1))']
+        ],
+        prompt:'各文字列の文字数を返す str メソッドは？',
+        opts:['len','count','size','length'],
+        ok:0,
+        outType:'text',
+        out:'survived\n0    24.3\n1    27.1\nName: name_len, dtype: float64'
+      },
+      {
+        code:[
+          ['cm','# 文字列を日付型に変換する'],
+          ['nl'],
+          ['plain','dates = pd.Series(['], ['st','"2012-04-10"'], ['plain',', '], ['st','"2012-04-12"'], ['plain',', '], ['st','"2012-04-14"'], ['plain','])'],
+          ['nl'],
+          ['plain','dates = pd.'], ['blank','___'], ['plain','(dates)'],
+          ['nl'],
+          ['fn','print'], ['plain','(dates.dtype)'],
+          ['nl'],
+          ['fn','print'], ['plain','(dates[0])']
+        ],
+        prompt:'文字列を datetime 型に変換する Pandas 関数は？',
+        opts:['to_datetime','parse_date','as_datetime','convert_date'],
+        ok:0,
+        outType:'text',
+        out:'datetime64[ns]\n2012-04-10 00:00:00'
+      },
+      {
+        code:[
+          ['cm','# 日付から年・月・曜日を取り出す'],
+          ['nl'],
+          ['plain','df['], ['st','"year"'], ['plain',']    = df['], ['st','"date"'], ['plain','].dt.'], ['blank','___'],
+          ['nl'],
+          ['plain','df['], ['st','"month"'], ['plain',']]   = df['], ['st','"date"'], ['plain','].dt.month'],
+          ['nl'],
+          ['plain','df['], ['st','"dayofweek"'], ['plain','] = df['], ['st','"date"'], ['plain','].dt.dayofweek'],
+          ['nl'],
+          ['fn','print'], ['plain','(df[['], ['st','"date"'], ['plain',', '], ['st','"year"'], ['plain',', '], ['st','"month"'], ['plain',', '], ['st','"dayofweek"'], ['plain',']].head(2))']
+        ],
+        prompt:'datetime列から「年」を取り出す dt accessor の属性は？',
+        opts:['year','years','get_year','Year'],
+        ok:0,
+        outType:'table',
+        out:{
+          cols:['date','year','month','dayofweek'],
+          rows:[['2012-04-10','2012','4','1'],['2012-04-12','2012','4','3']]
+        }
+      },
+      {
+        code:[
+          ['cm','# 前の行の値を参照する（ラグ特徴量）'],
+          ['nl'],
+          ['plain','df = df.sort_values(['], ['st','"id"'], ['plain',', '], ['st','"date"'], ['plain','])'],
+          ['nl'],
+          ['plain','df['], ['st','"sales_lag1"'], ['plain','] = df.groupby('], ['st','"id"'], ['plain',')['], ['st','"sales"'], ['plain','].'], ['blank','___'], ['plain','(1)'],
+          ['nl'],
+          ['fn','print'], ['plain','(df[['], ['st','"id"'], ['plain',', '], ['st','"date"'], ['plain',', '], ['st','"sales"'], ['plain',', '], ['st','"sales_lag1"'], ['plain',']].head(4))']
+        ],
+        prompt:'1つ前の行の値を取り出す（ラグ特徴量）メソッドは？',
+        opts:['shift','lag','prev','roll'],
+        ok:0,
+        outType:'table',
+        out:{
+          cols:['id','date','sales','sales_lag1'],
+          rows:[['1','2024-01','100','NaN'],['1','2024-02','120','100'],['1','2024-03','90','120'],['2','2024-01','80','NaN']]
+        }
+      },
+      {
+        code:[
+          ['cm','# 移動平均を計算する'],
+          ['nl'],
+          ['plain','df['], ['st','"fare_roll3"'], ['plain','] = df['], ['st','"fare"'], ['plain','].'], ['blank','___'], ['plain','(window='], ['num','3'], ['plain',').mean()'],
+          ['nl'],
+          ['plain','df['], ['st','"fare_roll3_std"'], ['plain','] = df['], ['st','"fare"'], ['plain','].rolling(window=3).std()'],
+          ['nl'],
+          ['fn','print'], ['plain','(df[['], ['st','"fare"'], ['plain',', '], ['st','"fare_roll3"'], ['plain',']].head(5))']
+        ],
+        prompt:'指定した幅のウィンドウで集計する（移動平均など）メソッドは？',
+        opts:['rolling','moving','window','slide'],
+        ok:0,
+        outType:'table',
+        out:{
+          cols:['fare','fare_roll3'],
+          rows:[['7.25','NaN'],['71.28','NaN'],['7.93','28.82'],['53.10','44.10'],['8.05','23.03']]
+        }
+      }
+    ]
+  },
+  {
+    icon:'🌿', name:'LightGBM',
+    desc:'LGBMClassifier・num_leaves・early_stopping・feature_importance・CatBoost',
+    context:'KaggleではXGBoostよりLightGBMの方がよく使われます。速くて精度も高いことが多いです。',
+    cells:[
+      {
+        code:[
+          ['kw','from'], ['plain',' lightgbm import '], ['blank','___'],
+          ['nl'],
+          ['nl'],
+          ['plain','lgb = LGBMClassifier('],
+          ['nl'],
+          ['plain','  n_estimators='], ['num','1000'], ['plain',','],
+          ['nl'],
+          ['plain','  learning_rate='], ['num','0.05'], ['plain',','],
+          ['nl'],
+          ['plain','  random_state='], ['num','42'],
+          ['nl'],
+          ['plain',')'],
+          ['nl'],
+          ['plain','lgb.fit(X_train, y_train)'],
+          ['nl'],
+          ['fn','print'], ['plain','("LGB精度:", lgb.score(X_test, y_test).round(3))']
+        ],
+        prompt:'LightGBMの分類モデルのクラス名は？',
+        opts:['LGBMClassifier','LightGBMClassifier','LGBClassifier','LightGBM'],
+        ok:0,
+        outType:'text',
+        out:'LGB精度: 0.848'
+      },
+      {
+        code:[
+          ['cm','# LightGBMの重要なハイパーパラメータ'],
+          ['nl'],
+          ['plain','lgb = LGBMClassifier('],
+          ['nl'],
+          ['plain','  '], ['blank','___'], ['plain','=31,   '], ['cm','# 決定木の葉の最大数（大きいほど複雑）'],
+          ['nl'],
+          ['plain','  min_child_samples=20,  '], ['cm','# 葉の最小サンプル数'],
+          ['nl'],
+          ['plain','  subsample=0.8,         '], ['cm','# 行のサンプリング率'],
+          ['nl'],
+          ['plain','  colsample_bytree=0.8   '], ['cm','# 列のサンプリング率'],
+          ['nl'],
+          ['plain',')'],
+          ['nl'],
+          ['fn','print'], ['plain','("num_leaves:", lgb.num_leaves)']
+        ],
+        prompt:'LightGBMで木の複雑さを制御する最重要パラメータは？',
+        opts:['num_leaves','max_depth','n_leaves','leaf_count'],
+        ok:0,
+        outType:'text',
+        out:'num_leaves: 31'
+      },
+      {
+        code:[
+          ['cm','# early stopping で過学習を防ぐ'],
+          ['nl'],
+          ['kw','from'], ['plain',' lightgbm import early_stopping, log_evaluation'],
+          ['nl'],
+          ['nl'],
+          ['plain','lgb.fit('],
+          ['nl'],
+          ['plain','  X_train, y_train,'],
+          ['nl'],
+          ['plain','  eval_set=[(X_test, y_test)],'],
+          ['nl'],
+          ['plain','  callbacks=['],
+          ['nl'],
+          ['plain','    '], ['blank','___'], ['plain','(50),  '], ['cm','# 50回改善なければ停止'],
+          ['nl'],
+          ['plain','    log_evaluation(100)'],
+          ['nl'],
+          ['plain','  ]'],
+          ['nl'],
+          ['plain',')']
+        ],
+        prompt:'改善がなければ学習を早期終了するコールバック関数は？',
+        opts:['early_stopping','stop_training','patience','EarlyStopping'],
+        ok:0,
+        outType:'text',
+        out:'Training until validation scores stopped improving.\nEarly stopping, best iteration is: 342\nValid accuracy: 0.854'
+      },
+      {
+        code:[
+          ['cm','# 特徴量重要度を確認する'],
+          ['nl'],
+          ['plain','importances = lgb.'], ['blank','___'],
+          ['nl'],
+          ['plain','feat_imp = pd.Series(importances, index=feature_cols)'],
+          ['nl'],
+          ['plain','feat_imp = feat_imp.sort_values(ascending='], ['kw','False'], ['plain',')'],
+          ['nl'],
+          ['fn','print'], ['plain','(feat_imp.head(5))']
+        ],
+        prompt:'LightGBMの特徴量重要度が格納されている属性は？',
+        opts:['feature_importances_','feature_importance','importances_','gain_'],
+        ok:0,
+        outType:'chart',
+        out:{title:'LightGBM 特徴量重要度',bars:[
+          {label:'fare',val:380},{label:'age',val:312},{label:'title_enc',val:289},
+          {label:'pclass',val:201},{label:'family_size',val:178}
+        ]}
+      },
+      {
+        code:[
+          ['cm','# LightGBM: 学習率を段階的に下げる'],
+          ['nl'],
+          ['plain','lgb_params = {'],
+          ['nl'],
+          ['plain','  '], ['st','"n_estimators"'], ['plain',': '], ['num','2000'], ['plain',','],
+          ['nl'],
+          ['plain','  '], ['st','"learning_rate"'], ['plain',': '], ['blank','___'], ['plain',',  '], ['cm','# 小さいほど精度↑・時間↑'],
+          ['nl'],
+          ['plain','  '], ['st','"num_leaves"'], ['plain',': '], ['num','63'], ['plain',','],
+          ['nl'],
+          ['plain','  '], ['st','"random_state"'], ['plain',': '], ['num','42'],
+          ['nl'],
+          ['plain','}'],
+          ['nl'],
+          ['fn','print'], ['plain','("推奨: 0.05前後、early_stoppingと組み合わせる")']
+        ],
+        prompt:'LightGBMの学習率パラメータ、推奨値はどれ？',
+        opts:['0.05','0.5','0.005','5.0'],
+        ok:0,
+        outType:'text',
+        out:'推奨: 0.05前後、early_stoppingと組み合わせる'
+      },
+      {
+        code:[
+          ['kw','from'], ['plain',' catboost import '], ['blank','___'],
+          ['nl'],
+          ['nl'],
+          ['plain','cb = CatBoostClassifier('],
+          ['nl'],
+          ['plain','  iterations='], ['num','1000'], ['plain',','],
+          ['nl'],
+          ['plain','  learning_rate='], ['num','0.05'], ['plain',','],
+          ['nl'],
+          ['plain','  depth='], ['num','6'], ['plain',','],
+          ['nl'],
+          ['plain','  verbose='], ['num','0'],
+          ['nl'],
+          ['plain',')'],
+          ['nl'],
+          ['plain','cb.fit(X_train, y_train)'],
+          ['nl'],
+          ['fn','print'], ['plain','("CatBoost精度:", cb.score(X_test, y_test).round(3))']
+        ],
+        prompt:'カテゴリ変数をそのまま使えるCatBoostの分類クラスは？',
+        opts:['CatBoostClassifier','CatClassifier','CBClassifier','CatBoost'],
+        ok:0,
+        outType:'text',
+        out:'CatBoost精度: 0.851'
+      },
+      {
+        code:[
+          ['cm','# CatBoost: カテゴリ列をそのまま指定する'],
+          ['nl'],
+          ['plain','cat_cols = ['], ['st','"sex"'], ['plain',', '], ['st','"embarked"'], ['plain',', '], ['st','"title"'], ['plain',']'],
+          ['nl'],
+          ['plain','cb = CatBoostClassifier(verbose=0)'],
+          ['nl'],
+          ['plain','cb.fit('],
+          ['nl'],
+          ['plain','  X_train, y_train,'],
+          ['nl'],
+          ['plain','  '], ['blank','___'], ['plain','=cat_cols  '], ['cm','# エンコード不要でそのまま渡せる'],
+          ['nl'],
+          ['plain',')'],
+          ['nl'],
+          ['fn','print'], ['plain','("精度:", cb.score(X_test, y_test).round(3))']
+        ],
+        prompt:'CatBoostにカテゴリ列を指定するパラメータは？',
+        opts:['cat_features','categorical_features','category_cols','cat_cols'],
+        ok:0,
+        outType:'text',
+        out:'精度: 0.856'
+      },
+      {
+        code:[
+          ['cm','# 3モデルの比較'],
+          ['nl'],
+          ['plain','models = {'],
+          ['nl'],
+          ['plain','  '], ['st','"XGB"'], ['plain',': XGBClassifier(n_estimators=200, random_state=42),'],
+          ['nl'],
+          ['plain','  '], ['st','"LGB"'], ['plain',': LGBMClassifier(n_estimators=200, random_state=42),'],
+          ['nl'],
+          ['plain','  '], ['st','"CAT"'], ['plain',': CatBoostClassifier(iterations=200, verbose=0)'],
+          ['nl'],
+          ['plain','}'],
+          ['nl'],
+          ['kw','for'], ['plain',' name, model '], ['kw','in'], ['plain',' models.'], ['blank','___'], ['plain','():'],
+          ['nl'],
+          ['plain','  model.fit(X_train, y_train)'],
+          ['nl'],
+          ['plain','  '], ['fn','print'], ['plain','(name, model.score(X_test, y_test).round(3))']
+        ],
+        prompt:'辞書のキーと値を同時に取り出すメソッドは？',
+        opts:['items','keys','values','pairs'],
+        ok:0,
+        outType:'text',
+        out:'XGB 0.844\nLGB 0.848\nCAT 0.856'
+      }
+    ]
+  },
+  {
+    icon:'🔄', name:'交差検証',
+    desc:'StratifiedKFold・手動CVループ・GroupKFold・OOF予測・TimeSeriesSplit',
+    context:'Kaggleで信頼できるスコアを得るには交差検証が必須。ここを甘くすると本番スコアが全く違ってきます。',
+    cells:[
+      {
+        code:[
+          ['kw','from'], ['plain',' sklearn.model_selection import '], ['blank','___'],
+          ['nl'],
+          ['nl'],
+          ['plain','skf = StratifiedKFold(n_splits='], ['num','5'], ['plain',', shuffle='], ['kw','True'], ['plain',', random_state='], ['num','42'], ['plain',')'],
+          ['nl'],
+          ['fn','print'], ['plain','("Folds:", skf.n_splits)'],
+          ['nl'],
+          ['cm','# クラス比率を保ったまま分割（不均衡データで重要）']
+        ],
+        prompt:'クラス比率を保ったまま分割する交差検証クラスは？',
+        opts:['StratifiedKFold','KFold','GroupKFold','StratifiedShuffleSplit'],
+        ok:0,
+        outType:'text',
+        out:'Folds: 5'
+      },
+      {
+        code:[
+          ['cm','# 手動CVループでOOF予測を作る'],
+          ['nl'],
+          ['plain','oof_preds = np.zeros('], ['fn','len'], ['plain','(X))'],
+          ['nl'],
+          ['plain','scores = []'],
+          ['nl'],
+          ['kw','for'], ['plain',' fold, (tr_idx, val_idx) '], ['kw','in'], ['plain',' '], ['blank','___'], ['plain','(skf.split(X, y)):'],
+          ['nl'],
+          ['plain','  X_tr, X_val = X.iloc[tr_idx], X.iloc[val_idx]'],
+          ['nl'],
+          ['plain','  y_tr, y_val = y.iloc[tr_idx], y.iloc[val_idx]'],
+          ['nl'],
+          ['plain','  model.fit(X_tr, y_tr)'],
+          ['nl'],
+          ['plain','  oof_preds[val_idx] = model.predict(X_val)']
+        ],
+        prompt:'インデックスと要素を同時に取り出す組み込み関数は？',
+        opts:['enumerate','zip','range','items'],
+        ok:0,
+        outType:'text',
+        out:'Fold 0 完了\nFold 1 完了\n...\nFold 4 完了'
+      },
+      {
+        code:[
+          ['cm','# OOF予測でモデル全体の精度を評価'],
+          ['nl'],
+          ['plain','scores = []'],
+          ['nl'],
+          ['kw','for'], ['plain',' fold, (tr_idx, val_idx) '], ['kw','in'], ['plain',' enumerate(skf.split(X, y)):'],
+          ['nl'],
+          ['plain','  model.fit(X.iloc[tr_idx], y.iloc[tr_idx])'],
+          ['nl'],
+          ['plain','  pred = model.predict(X.iloc[val_idx])'],
+          ['nl'],
+          ['plain','  scores.append(accuracy_score(y.iloc[val_idx], pred))'],
+          ['nl'],
+          ['fn','print'], ['plain','(f"CV平均: {np.'], ['blank','___'], ['plain','(scores):.4f} ± {np.std(scores):.4f}")']
+        ],
+        prompt:'リストや配列の平均を計算する NumPy 関数は？',
+        opts:['mean','average','median','sum'],
+        ok:0,
+        outType:'text',
+        out:'CV平均: 0.8329 ± 0.0142'
+      },
+      {
+        code:[
+          ['kw','from'], ['plain',' sklearn.model_selection import cross_val_predict'],
+          ['nl'],
+          ['nl'],
+          ['plain','oof = '], ['blank','___'], ['plain','('],
+          ['nl'],
+          ['plain','  rf, X, y,'],
+          ['nl'],
+          ['plain','  cv=StratifiedKFold(n_splits=5, shuffle=True, random_state=42),'],
+          ['nl'],
+          ['plain','  method='], ['st','"predict_proba"'],
+          ['nl'],
+          ['plain',')[:, 1]'],
+          ['nl'],
+          ['plain','print("OOF AUC:", roc_auc_score(y, oof).round(4))']
+        ],
+        prompt:'交差検証でOOF（out-of-fold）予測値を返す関数は？',
+        opts:['cross_val_predict','cross_val_score','cross_validate','oof_predict'],
+        ok:0,
+        outType:'text',
+        out:'OOF AUC: 0.8734'
+      },
+      {
+        code:[
+          ['kw','from'], ['plain',' sklearn.model_selection import '], ['blank','___'],
+          ['nl'],
+          ['nl'],
+          ['plain','gkf = GroupKFold(n_splits=5)'],
+          ['nl'],
+          ['plain','groups = df['], ['st','"ship_id"'], ['plain',']  '], ['cm','# 同じグループが同じfoldに入らない'],
+          ['nl'],
+          ['kw','for'], ['plain',' tr, val '], ['kw','in'], ['plain',' gkf.split(X, y, groups):'],
+          ['nl'],
+          ['plain','  '], ['fn','print'], ['plain','("train groups:", '], ['fn','len'], ['plain','('], ['fn','set'], ['plain','(groups.iloc[tr])), "val groups:", '], ['fn','len'], ['plain','('], ['fn','set'], ['plain','(groups.iloc[val])))']
+        ],
+        prompt:'グループが分割をまたがないよう制御する交差検証クラスは？',
+        opts:['GroupKFold','StratifiedGroupKFold','LeaveOneGroupOut','GroupShuffleSplit'],
+        ok:0,
+        outType:'text',
+        out:'train groups: 8 val groups: 2\ntrain groups: 8 val groups: 2'
+      },
+      {
+        code:[
+          ['kw','from'], ['plain',' sklearn.model_selection import '], ['blank','___'],
+          ['nl'],
+          ['nl'],
+          ['plain','tss = TimeSeriesSplit(n_splits=5)'],
+          ['nl'],
+          ['kw','for'], ['plain',' fold, (tr, val) '], ['kw','in'], ['plain',' enumerate(tss.split(X)):'],
+          ['nl'],
+          ['plain','  '], ['fn','print'], ['plain','(f"Fold{fold}: train[{tr[0]}:{tr[-1]}] val[{val[0]}:{val[-1]}]")']
+        ],
+        prompt:'時系列データで過去→未来の順序を守って分割するクラスは？',
+        opts:['TimeSeriesSplit','TimeSplit','SequentialSplit','DateSplit'],
+        ok:0,
+        outType:'text',
+        out:'Fold0: train[0:178] val[179:213]\nFold1: train[0:213] val[214:248]\nFold2: train[0:248] val[249:283]'
+      },
+      {
+        code:[
+          ['cm','# 複数モデルのスコアを比較する'],
+          ['nl'],
+          ['plain','results = {}'],
+          ['nl'],
+          ['kw','for'], ['plain',' name, model '], ['kw','in'], ['plain',' models.items():'],
+          ['nl'],
+          ['plain','  scores = cross_val_score('],
+          ['nl'],
+          ['plain','    model, X, y,'],
+          ['nl'],
+          ['plain','    cv=StratifiedKFold(5, shuffle='], ['kw','True'], ['plain',', random_state=42),'],
+          ['nl'],
+          ['plain','    scoring='], ['blank','___'],
+          ['nl'],
+          ['plain','  )'],
+          ['nl'],
+          ['plain','  results[name] = scores.mean()'],
+          ['nl'],
+          ['fn','print'], ['plain','(results)']
+        ],
+        prompt:'ROC-AUCをscoringに指定する文字列は？',
+        opts:['"roc_auc"','"auc"','"roc_curve"','"accuracy"'],
+        ok:0,
+        outType:'text',
+        out:"{'XGB': 0.869, 'LGB': 0.881, 'CAT': 0.878}"
+      },
+      {
+        code:[
+          ['cm','# OOF予測でスタッキング用メタ特徴量を作る'],
+          ['nl'],
+          ['plain','meta_train = np.zeros(('], ['fn','len'], ['plain','(X_train), '], ['fn','len'], ['plain','(base_models)))'],
+          ['nl'],
+          ['kw','for'], ['plain',' i, model '], ['kw','in'], ['plain',' enumerate(base_models):'],
+          ['nl'],
+          ['plain','  meta_train[:, i] = cross_val_predict('],
+          ['nl'],
+          ['plain','    model, X_train, y_train,'],
+          ['nl'],
+          ['plain','    cv=5, method='], ['blank','___'],
+          ['nl'],
+          ['plain','  )[:, 1]'],
+          ['nl'],
+          ['fn','print'], ['plain','("メタ特徴量 shape:", meta_train.shape)']
+        ],
+        prompt:'確率値でOOF予測するためにmethodに渡す文字列は？',
+        opts:['"predict_proba"','"predict"','"decision_function"','"proba"'],
+        ok:0,
+        outType:'text',
+        out:'メタ特徴量 shape: (712, 3)'
+      }
+    ]
+  },
+  {
+    icon:'📐', name:'評価指標',
+    desc:'RMSE・MAE・R²・log_loss・F1・precision・recall・balanced_accuracy',
+    context:'コンペによって評価指標が違います。指標を正しく理解してチューニングすることがスコアアップの鍵です。',
+    cells:[
+      {
+        code:[
+          ['kw','from'], ['plain',' sklearn.metrics import mean_squared_error'],
+          ['nl'],
+          ['kw','import'], ['plain',' numpy '], ['kw','as'], ['plain',' np'],
+          ['nl'],
+          ['nl'],
+          ['plain','mse = mean_squared_error(y_test, y_pred)'],
+          ['nl'],
+          ['plain','rmse = np.'], ['blank','___'], ['plain','(mse)'],
+          ['nl'],
+          ['fn','print'], ['plain','(f"MSE:  {mse:.4f}")'],
+          ['nl'],
+          ['fn','print'], ['plain','(f"RMSE: {rmse:.4f}")'],
+          ['nl'],
+          ['cm','# RMSEは回帰コンペで最もよく使われる']
+        ],
+        prompt:'MSEの平方根（RMSE）を計算する NumPy 関数は？',
+        opts:['sqrt','root','square_root','pow'],
+        ok:0,
+        outType:'text',
+        out:'MSE:  0.1521\nRMSE: 0.3900'
+      },
+      {
+        code:[
+          ['kw','from'], ['plain',' sklearn.metrics import '], ['blank','___'],
+          ['nl'],
+          ['nl'],
+          ['plain','mae = mean_absolute_error(y_test, y_pred)'],
+          ['nl'],
+          ['fn','print'], ['plain','(f"MAE: {mae:.4f}")'],
+          ['nl'],
+          ['cm','# MAE: 外れ値の影響を受けにくい'],
+          ['nl'],
+          ['cm','# RMSE: 外れ値に敏感（大きい誤差を重視）']
+        ],
+        prompt:'予測誤差の絶対値の平均（MAE）を計算する関数は？',
+        opts:['mean_absolute_error','mean_squared_error','median_absolute_error','max_error'],
+        ok:0,
+        outType:'text',
+        out:'MAE: 0.2891'
+      },
+      {
+        code:[
+          ['kw','from'], ['plain',' sklearn.metrics import '], ['blank','___'],
+          ['nl'],
+          ['nl'],
+          ['plain','r2 = r2_score(y_test, y_pred)'],
+          ['nl'],
+          ['fn','print'], ['plain','(f"R² スコア: {r2:.4f}")'],
+          ['nl'],
+          ['cm','# R²=1.0: 完全予測 / R²=0: 平均値と同じ / R²<0: 平均値以下']
+        ],
+        prompt:'回帰モデルの決定係数（R²）を計算する関数は？',
+        opts:['r2_score','r_squared','coefficient_of_determination','r2'],
+        ok:0,
+        outType:'text',
+        out:'R² スコア: 0.6823'
+      },
+      {
+        code:[
+          ['kw','from'], ['plain',' sklearn.metrics import '], ['blank','___'],
+          ['nl'],
+          ['nl'],
+          ['plain','y_prob = model.predict_proba(X_test)[:, 1]'],
+          ['nl'],
+          ['plain','ll = log_loss(y_test, y_prob)'],
+          ['nl'],
+          ['fn','print'], ['plain','(f"Log Loss: {ll:.4f}")'],
+          ['nl'],
+          ['cm','# 小さいほど良い / 確率の品質を評価する指標']
+        ],
+        prompt:'確率予測の品質を評価するLog Loss関数は？',
+        opts:['log_loss','cross_entropy','binary_crossentropy','logloss'],
+        ok:0,
+        outType:'text',
+        out:'Log Loss: 0.4231'
+      },
+      {
+        code:[
+          ['kw','from'], ['plain',' sklearn.metrics import '], ['blank','___'],
+          ['nl'],
+          ['nl'],
+          ['plain','f1 = f1_score(y_test, y_pred, average='], ['st','"macro"'], ['plain',')'],
+          ['nl'],
+          ['fn','print'], ['plain','(f"F1（macro）: {f1:.4f}")'],
+          ['nl'],
+          ['nl'],
+          ['plain','f1_w = f1_score(y_test, y_pred, average='], ['st','"weighted"'], ['plain',')'],
+          ['nl'],
+          ['fn','print'], ['plain','(f"F1（weighted）: {f1_w:.4f}")']
+        ],
+        prompt:'適合率と再現率の調和平均（F1スコア）を計算する関数は？',
+        opts:['f1_score','f1','f_score','harmonic_mean'],
+        ok:0,
+        outType:'text',
+        out:'F1（macro）:    0.7823\nF1（weighted）: 0.8012'
+      },
+      {
+        code:[
+          ['kw','from'], ['plain',' sklearn.metrics import precision_score, '], ['blank','___'],
+          ['nl'],
+          ['nl'],
+          ['plain','prec = precision_score(y_test, y_pred)'],
+          ['nl'],
+          ['plain','rec  = recall_score(y_test, y_pred)'],
+          ['nl'],
+          ['fn','print'], ['plain','(f"Precision: {prec:.3f}  '], ['cm','# 予測1のうち本当に1の割合'],
+          ['nl'],
+          ['fn','print'], ['plain','(f"Recall:    {rec:.3f}  '], ['cm','# 本当に1のうち1と予測できた割合']
+        ],
+        prompt:'実際に正例のうち正しく検出できた割合（再現率）を計算する関数は？',
+        opts:['recall_score','sensitivity_score','detection_rate','true_positive_rate'],
+        ok:0,
+        outType:'text',
+        out:'Precision: 0.826  # 予測1のうち本当に1の割合\nRecall:    0.623  # 本当に1のうち1と予測できた割合'
+      },
+      {
+        code:[
+          ['kw','from'], ['plain',' sklearn.metrics import '], ['blank','___'],
+          ['nl'],
+          ['nl'],
+          ['plain','ba = balanced_accuracy_score(y_test, y_pred)'],
+          ['nl'],
+          ['fn','print'], ['plain','(f"Balanced Accuracy: {ba:.4f}")'],
+          ['nl'],
+          ['cm','# 不均衡データでの精度評価に向いている'],
+          ['nl'],
+          ['cm','# クラスごとのrecallの平均']
+        ],
+        prompt:'クラス不均衡があるときに使う精度指標の関数は？',
+        opts:['balanced_accuracy_score','accuracy_score','weighted_accuracy','class_balanced_accuracy'],
+        ok:0,
+        outType:'text',
+        out:'Balanced Accuracy: 0.7712'
+      },
+      {
+        code:[
+          ['cm','# 評価指標の選び方まとめ'],
+          ['nl'],
+          ['plain','metrics = {'],
+          ['nl'],
+          ['plain','  '], ['st','"分類（均衡）"'], ['plain',':  '], ['st','"accuracy, ROC-AUC"'], ['plain',','],
+          ['nl'],
+          ['plain','  '], ['st','"分類（不均衡）"'], ['plain',': '], ['st','"F1, balanced_accuracy"'], ['plain',','],
+          ['nl'],
+          ['plain','  '], ['st','"確率評価"'], ['plain','    :  '], ['st','"log_loss, ROC-AUC"'], ['plain',','],
+          ['nl'],
+          ['plain','  '], ['st','"回帰"'], ['plain','         :  '], ['st','"RMSE, MAE, R²"'],
+          ['nl'],
+          ['plain','}'],
+          ['nl'],
+          ['kw','for'], ['plain',' k, v '], ['kw','in'], ['plain',' metrics.'], ['blank','___'], ['plain','():'],
+          ['nl'],
+          ['plain','  '], ['fn','print'], ['plain','(f"{k}: {v}")']
+        ],
+        prompt:'辞書のキーと値のペアを取り出すメソッドは？',
+        opts:['items','keys','values','pairs'],
+        ok:0,
+        outType:'text',
+        out:'分類（均衡）:  accuracy, ROC-AUC\n分類（不均衡）: F1, balanced_accuracy\n確率評価:     log_loss, ROC-AUC\n回帰:         RMSE, MAE, R²'
+      }
+    ]
+  },
+  {
+    icon:'🎯', name:'特徴量選択・次元削減',
+    desc:'SelectKBest・RFE・SelectFromModel・VarianceThreshold・PCA・mutual_info',
+    context:'特徴量が多すぎるとモデルが遅くなり過学習しやすくなります。重要な特徴量だけを選ぶ技術を学びます。',
+    cells:[
+      {
+        code:[
+          ['kw','from'], ['plain',' sklearn.feature_selection import '], ['blank','___'], ['plain',', f_classif'],
+          ['nl'],
+          ['nl'],
+          ['plain','selector = SelectKBest(f_classif, k='], ['num','10'], ['plain',')'],
+          ['nl'],
+          ['plain','X_selected = selector.fit_transform(X_train, y_train)'],
+          ['nl'],
+          ['fn','print'], ['plain','("選択前:", X_train.shape)'],
+          ['nl'],
+          ['fn','print'], ['plain','("選択後:", X_selected.shape)']
+        ],
+        prompt:'統計的検定スコアで上位K個の特徴量を選ぶクラスは？',
+        opts:['SelectKBest','SelectTop','TopKSelector','KBestFeatures'],
+        ok:0,
+        outType:'text',
+        out:'選択前: (712, 27)\n選択後: (712, 10)'
+      },
+      {
+        code:[
+          ['cm','# 選ばれた特徴量の名前を確認'],
+          ['nl'],
+          ['plain','selected_mask = selector.get_support()'],
+          ['nl'],
+          ['plain','selected_cols = np.array(feature_cols)['], ['blank','___'], ['plain',']'],
+          ['nl'],
+          ['fn','print'], ['plain','("選ばれた特徴量:", selected_cols)'],
+          ['nl'],
+          ['fn','print'], ['plain','("スコア Top5:")'],
+          ['nl'],
+          ['fn','print'], ['plain','(pd.Series(selector.scores_, index=feature_cols).nlargest(5))']
+        ],
+        prompt:'boolマスクで配列から要素を取り出すには？',
+        opts:['selected_mask','selected_cols','True','feature_cols'],
+        ok:0,
+        outType:'text',
+        out:"選ばれた特徴量: ['pclass', 'sex_enc', 'age', 'fare', 'title_enc', ...]\nスコア Top5:\ntitle_enc    89.3\nsex_enc      81.2\npclass       72.4"
+      },
+      {
+        code:[
+          ['kw','from'], ['plain',' sklearn.feature_selection import '], ['blank','___'],
+          ['nl'],
+          ['nl'],
+          ['plain','rfe = RFE(estimator=rf, n_features_to_select='], ['num','10'], ['plain',')'],
+          ['nl'],
+          ['plain','rfe.fit(X_train, y_train)'],
+          ['nl'],
+          ['plain','selected = np.array(feature_cols)[rfe.support_]'],
+          ['nl'],
+          ['fn','print'], ['plain','("RFE選択:", selected)']
+        ],
+        prompt:'モデルを使って重要な特徴量を再帰的に絞り込むクラスは？',
+        opts:['RFE','RecursiveSelector','FeatureElimination','RFESelector'],
+        ok:0,
+        outType:'text',
+        out:"RFE選択: ['pclass', 'sex_enc', 'age', 'log_fare', 'title_enc', 'family_size', ...]"
+      },
+      {
+        code:[
+          ['kw','from'], ['plain',' sklearn.feature_selection import '], ['blank','___'],
+          ['nl'],
+          ['nl'],
+          ['plain','sfm = SelectFromModel(rf, threshold='], ['st','"median"'], ['plain',')'],
+          ['nl'],
+          ['plain','sfm.fit(X_train, y_train)'],
+          ['nl'],
+          ['plain','X_sfm = sfm.transform(X_train)'],
+          ['nl'],
+          ['fn','print'], ['plain','("元:", X_train.shape, "→ 選択後:", X_sfm.shape)']
+        ],
+        prompt:'学習済みモデルの重要度で特徴量を選ぶクラスは？',
+        opts:['SelectFromModel','ModelSelector','ImportanceSelector','FeatureSelector'],
+        ok:0,
+        outType:'text',
+        out:'元: (712, 27) → 選択後: (712, 13)'
+      },
+      {
+        code:[
+          ['kw','from'], ['plain',' sklearn.feature_selection import '], ['blank','___'],
+          ['nl'],
+          ['nl'],
+          ['plain','vt = VarianceThreshold(threshold='], ['num','0.01'], ['plain',')'],
+          ['nl'],
+          ['plain','X_vt = vt.fit_transform(X_train)'],
+          ['nl'],
+          ['fn','print'], ['plain','("分散が低い列を除去:", X_train.shape, "→", X_vt.shape)'],
+          ['nl'],
+          ['cm','# ほぼ一定値の列（情報量ゼロ）を除去する']
+        ],
+        prompt:'分散が低い（ほぼ一定値）の特徴量を除去するクラスは？',
+        opts:['VarianceThreshold','LowVarianceFilter','ZeroVariance','ConstantFilter'],
+        ok:0,
+        outType:'text',
+        out:'分散が低い列を除去: (712, 27) → (712, 24)'
+      },
+      {
+        code:[
+          ['kw','from'], ['plain',' sklearn.decomposition import '], ['blank','___'],
+          ['nl'],
+          ['nl'],
+          ['plain','pca = PCA(n_components='], ['num','0.95'], ['plain',')  '], ['cm','# 分散の95%を説明できる成分数を自動選択'],
+          ['nl'],
+          ['plain','X_pca = pca.fit_transform(X_scaled)'],
+          ['nl'],
+          ['fn','print'], ['plain','("元の特徴量数:", X_scaled.shape[1])'],
+          ['nl'],
+          ['fn','print'], ['plain','("PCA後の次元数:", X_pca.shape[1])']
+        ],
+        prompt:'主成分分析（PCA）を実行するクラスは？',
+        opts:['PCA','PrincipalComponentAnalysis','SVD','TruncatedSVD'],
+        ok:0,
+        outType:'text',
+        out:'元の特徴量数: 27\nPCA後の次元数: 12'
+      },
+      {
+        code:[
+          ['cm','# 各主成分が説明する分散の割合を確認'],
+          ['nl'],
+          ['plain','pca = PCA(n_components='], ['num','5'], ['plain',')'],
+          ['nl'],
+          ['plain','pca.fit(X_scaled)'],
+          ['nl'],
+          ['fn','print'], ['plain','("各成分の説明分散比:\\n", pca.'], ['blank','___'], ['plain','.round(3))'],
+          ['nl'],
+          ['fn','print'], ['plain','("累積説明分散比:\\n", pca.explained_variance_ratio_.cumsum().round(3))']
+        ],
+        prompt:'各主成分が全分散のうち何割を説明するかを示す属性は？',
+        opts:['explained_variance_ratio_','explained_variance_','components_','variance_ratio_'],
+        ok:0,
+        outType:'text',
+        out:'各成分の説明分散比:\n [0.312 0.189 0.121 0.098 0.073]\n累積説明分散比:\n [0.312 0.501 0.622 0.720 0.793]'
+      },
+      {
+        code:[
+          ['kw','from'], ['plain',' sklearn.feature_selection import '], ['blank','___'], ['plain',', mutual_info_classif'],
+          ['nl'],
+          ['nl'],
+          ['plain','mi_scores = mutual_info_classif(X_train, y_train, random_state=42)'],
+          ['nl'],
+          ['plain','mi = pd.Series(mi_scores, index=feature_cols).sort_values(ascending='], ['kw','False'], ['plain',')'],
+          ['nl'],
+          ['fn','print'], ['plain','(mi.head(6))']
+        ],
+        prompt:'各特徴量と目的変数の相互情報量を計算する関数は？',
+        opts:['mutual_info_classif','SelectKBest','f_classif','chi2'],
+        ok:0,
+        outType:'chart',
+        out:{title:'相互情報量スコア',bars:[
+          {label:'title_enc',val:18},{label:'sex_enc',val:16},{label:'pclass',val:12},
+          {label:'fare',val:11},{label:'age',val:9},{label:'family_size',val:7}
+        ]}
+      }
+    ]
+  }
+];
+
+// =====================================================
+// STATE
+// =====================================================
+// SOUND
+// =====================================================
+// Shared AudioContext with Safari unlock
+let _AC = null;
+let _audioReady = false;
+
+function getAC() {
+  if(!_AC) {
+    try { _AC = new (window.AudioContext||window.webkitAudioContext)(); } catch(e){}
+  }
+  return _AC;
+}
+
+// Safari requires a silent buffer played synchronously in a user gesture
+function unlockAudio() {
+  const ac = getAC();
+  if(!ac || _audioReady) return;
+  // Resume the context
+  if(ac.state === 'suspended') {
+    ac.resume();
+  }
+  // Play a 1-sample silent buffer — this is the standard Safari unlock trick
+  try {
+    const buf = ac.createBuffer(1, 1, 22050);
+    const src = ac.createBufferSource();
+    src.buffer = buf;
+    src.connect(ac.destination);
+    src.start(0);
+  } catch(e) {}
+  _audioReady = true;
+}
+
+function _beep(freq, type, dur, vol, freq2) {
+  try {
+    const ac = getAC();
+    if(!ac || ac.state === 'suspended') return;
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.connect(g); g.connect(ac.destination);
+    o.type = type; o.frequency.value = freq;
+    const t = ac.currentTime;
+    if(freq2) o.frequency.exponentialRampToValueAtTime(freq2, t+dur);
+    g.gain.setValueAtTime(vol, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t+dur);
+    o.start(t); o.stop(t+dur+0.05);
+  } catch(e){ console.warn('SFX error',e); }
+}
+
+const SFX = {
+  correct() {
+    _beep(1047,'sine',0.13,0.4);
+    setTimeout(()=>_beep(1319,'sine',0.13,0.35), 70);
+  },
+  wrong() {
+    _beep(220,'square',0.12,0.2,140);
+  },
+  tick() {
+    _beep(1600,'sine',0.04,0.12);
+  },
+  type() {
+    _beep(2200,'sine',0.025,0.06);
+  },
+  clear(perfect) {
+    const ns = perfect?[523,659,784,1047,1319]:[523,659,784,1047];
+    ns.forEach((f,i)=>setTimeout(()=>_beep(f,'sine',0.18,0.25), i*80));
+    if(perfect) setTimeout(()=>{
+      [523,659,784].forEach((f,i)=>setTimeout(()=>_beep(f,'sine',0.5,0.2),i*20));
+    },500);
+  }
+};
+
+// =====================================================
+// BGM
+// =====================================================
+const BGM = (() => {
+  let playing=false, muted=false, timer=null, step=0, curPat=0, nextTime=0;
+  let mOsc=null, mGn=null, bOsc=null, bGn=null, masterGn=null;
+
+  const P = [
+    { m:[523,659,784,880,784,659,523,392], b:[131,196,131,196,131,196,131,98],  bpm:100, w:'square'   },
+    { m:[440,523,659,784,659,523,440,349], b:[110,165,110,165,110,165,110,82],  bpm:108, w:'triangle' },
+    { m:[659,784,880,988,880,784,659,587], b:[165,247,165,247,165,247,165,123], bpm:132, w:'square'   },
+    { m:[523,784,1047,1319,1047,784,523,392],b:[131,196,131,261,131,196,131,98],bpm:120, w:'sine'     },
+  ];
+
+  // Build persistent oscillators (always running, only gain changes)
+  const setup = () => {
+    if(mOsc) return;
+    unlockAudio();
+    const c=getAC();
+    masterGn=c.createGain(); masterGn.gain.value=0.45; masterGn.connect(c.destination);
+    mOsc=c.createOscillator(); mGn=c.createGain(); mGn.gain.value=0;
+    mOsc.connect(mGn); mGn.connect(masterGn); mOsc.start();
+    bOsc=c.createOscillator(); bGn=c.createGain(); bGn.gain.value=0;
+    bOsc.type='triangle'; bOsc.connect(bGn); bGn.connect(masterGn); bOsc.start();
+  };
+
+  const sched = () => {
+    if(!playing) return;
+    const c=getAC(), p=P[curPat], bd=60/p.bpm;
+    mOsc.type = p.w;
+    while(nextTime < c.currentTime+0.4){
+      const mi=step%p.m.length, bi=step%p.b.length, t=nextTime;
+      // melody envelope
+      mOsc.frequency.setValueAtTime(p.m[mi], t);
+      mGn.gain.setValueAtTime(0.001, t);
+      mGn.gain.linearRampToValueAtTime(0.055, t+0.02);
+      mGn.gain.setValueAtTime(0.055, t+bd*0.65);
+      mGn.gain.linearRampToValueAtTime(0.001, t+bd*0.88);
+      // bass envelope
+      bOsc.frequency.setValueAtTime(p.b[bi], t);
+      bGn.gain.setValueAtTime(0.001, t);
+      bGn.gain.linearRampToValueAtTime(0.045, t+0.02);
+      bGn.gain.setValueAtTime(0.045, t+bd*0.82);
+      bGn.gain.linearRampToValueAtTime(0.001, t+bd*0.95);
+      step++; nextTime+=bd;
+    }
+    timer=setTimeout(sched,100);
+  };
+
+  const btn = () => {
+    const el=document.getElementById('tb-mute');
+    if(el) el.textContent=(playing&&!muted)?'🔊':'🔇';
+  };
+
+  return {
+    start(chId){
+      if(muted) return;
+      clearTimeout(timer);
+      setup();
+      curPat=Math.min(Math.floor((chId||0)/4),P.length-1);
+      step=0; nextTime=getAC().currentTime+0.1; playing=true;
+      sched(); btn();
+    },
+    stop(){
+      playing=false; clearTimeout(timer);
+      if(mGn){ const t=getAC().currentTime; mGn.gain.cancelScheduledValues(t); mGn.gain.setValueAtTime(0,t+0.05); }
+      if(bGn){ const t=getAC().currentTime; bGn.gain.cancelScheduledValues(t); bGn.gain.setValueAtTime(0,t+0.05); }
+      btn();
+    },
+    toggle(){
+      if(playing){ muted=true; this.stop(); }
+      else { muted=false; this.start(G.chId||0); }
+      btn();
+    }
+  };
+})();
+
+// =====================================================
+let S = { totalXP:0, progress:[] };
+let G = { chId:0, cellIdx:0, xp:0, retries:0, selected:null, inputMode:'text' };
+
+function save(){ try{ localStorage.setItem('dsnb1',JSON.stringify(S)); }catch(e){} }
+function load(){ try{ const d=localStorage.getItem('dsnb1'); if(d){ S=JSON.parse(d); if(!S.progress) S.progress=[]; } }catch(e){} }
+
+// =====================================================
+// SCREENS
+// =====================================================
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function showTitle(){
+  const done = S.progress.filter(p=>p&&p.stars>0).length;
+  document.getElementById('t-done').textContent = done;
+  show('screen-title');
+}
+
+function showChapters(){
+  document.getElementById('ch-xp').textContent = S.totalXP;
+  buildChapterList();
+  show('screen-chapters');
+}
+
+function buildChapterList(){
+  const list = document.getElementById('ch-list');
+  list.innerHTML = '';
+  CHAPTERS.forEach((ch, i) => {
+    const p = S.progress[i];
+    const unlocked = i===0 || (S.progress[i-1] && S.progress[i-1].stars>0);
+    const stars = p ? p.stars : 0;
+    const starStr = '⭐'.repeat(stars) + '☆'.repeat(3-stars);
+    const div = document.createElement('div');
+    div.className = 'ch-card' + (!unlocked?' locked':'') + (stars===3?' perfect':stars>0?' done':'');
+    div.innerHTML = `
+      <div class="ch-row">
+        <div class="ch-icon">${ch.icon}</div>
+        <div class="ch-info">
+          <div class="ch-num">CHAPTER ${i+1} · ${ch.cells.length}セル</div>
+          <div class="ch-name">${ch.name}</div>
+        </div>
+        <div class="ch-stars">${starStr}</div>
+      </div>
+      <div class="ch-desc">${ch.desc}</div>
+      ${!unlocked?'<div class="ch-lock">🔒</div>':''}
+    `;
+    if(unlocked) div.onclick = ()=>startChapter(i);
+    list.appendChild(div);
+  });
+}
+
+// =====================================================
+// GAME
+// =====================================================
+function startChapter(id){
+  G = { chId:id, cellIdx:0, xp:0, retries:0, selected:null, inputMode:'text' };
+  show('screen-nb');
+  buildNotebook();
+  BGM.start(id);
+}
+
+function buildNotebook(){
+  const ch = CHAPTERS[G.chId];
+  updateTopbar();
+  const body = document.getElementById('nb-body');
+  body.innerHTML = `
+    <div class="nb-chapter-header">
+      <div class="nb-ch-tag">Chapter ${G.chId+1} of ${CHAPTERS.length}</div>
+      <div class="nb-ch-title">${ch.icon} ${ch.name}</div>
+      <div class="nb-ch-desc">${ch.desc}</div>
+    </div>
+    <div class="nb-context">${ch.context}</div>
+    <div id="cells-area"></div>
+  `;
+  renderCurrentCell();
+}
+
+function updateTopbar(){
+  const ch = CHAPTERS[G.chId];
+  const total = ch.cells.length;
+  document.getElementById('tb-ch').textContent = `Ch.${G.chId+1}/${CHAPTERS.length}`;
+  document.getElementById('tb-prog').style.width = (G.cellIdx/total*100)+'%';
+  document.getElementById('tb-cells').textContent = `${G.cellIdx}/${total}`;
+  document.getElementById('tb-xp').textContent = S.totalXP + G.xp;
+}
+
+function renderCurrentCell(){
+  const ch = CHAPTERS[G.chId];
+  const cell = ch.cells[G.cellIdx];
+  const area = document.getElementById('cells-area');
+  const div = document.createElement('div');
+  div.className = 'nb-cell';
+  div.id = 'cell-'+G.cellIdx;
+
+  // learn phase: code with answer shown + highlighted
+  let learnCode = '';
+  for(const tok of cell.code){
+    if(tok[0]==='nl'){ learnCode+='\n'; continue; }
+    if(tok[0]==='blank'){
+      learnCode += `<span class="blank learn-answer">${escHtml(cell.opts[cell.ok])}</span>`;
+    } else {
+      const cls = tok[0]==='plain'?'':tok[0];
+      const txt = escHtml(tok[1]);
+      learnCode += cls ? `<span class="${cls}">${txt}</span>` : txt;
+    }
+  }
+
+  div.innerHTML = `
+    <div class="cell-in-label">In [<span class="cell-num">${G.cellIdx+1}</span>]:</div>
+    <div class="cell-code"><pre>${learnCode}</pre></div>
+    <div class="q-prompt">${cell.prompt}</div>
+    <div class="learn-out-wrap">
+      <div class="out-label">Out [${G.cellIdx+1}]:</div>
+      <div class="out-content">${renderOutput(cell)}</div>
+    </div>
+    <div class="learn-actions">
+      <span class="learn-hint">↑ コードを読んで覚えてください</span>
+      <button class="btn-practice" onclick="startPractice()">✍️ やってみる →</button>
+    </div>
+  `;
+  area.appendChild(div);
+  G.selected = null;
+  G.inputMode = 'text';
+}
+
+function startPractice(){
+  const ch = CHAPTERS[G.chId];
+  const cell = ch.cells[G.cellIdx];
+  const div = document.getElementById('cell-'+G.cellIdx);
+
+  // practice phase: code with blank
+  let codeHtml = '';
+  for(const tok of cell.code){
+    if(tok[0]==='nl'){ codeHtml+='\n'; continue; }
+    if(tok[0]==='blank'){
+      codeHtml += `<span class="blank" id="blank-${G.cellIdx}">___</span>`;
+    } else {
+      const cls = tok[0]==='plain'?'':tok[0];
+      const txt = escHtml(tok[1]);
+      codeHtml += cls ? `<span class="${cls}">${txt}</span>` : txt;
+    }
+  }
+
+  const optsHtml = cell.opts.map((o,i)=>
+    `<button class="opt-btn" onclick="selectOpt(${i})">${escHtml(o)}</button>`
+  ).join('');
+
+  div.innerHTML = `
+    <div class="cell-in-label">In [<span class="cell-num">${G.cellIdx+1}</span>]:</div>
+    <div class="cell-code"><pre>${codeHtml}</pre></div>
+    <div class="q-prompt">${cell.prompt}</div>
+    <div class="code-input-wrap">
+      <span class="code-input-prompt">&gt;&gt;&gt;</span>
+      <input type="text" class="code-input" id="code-input-${G.cellIdx}"
+             placeholder="ここにコードを入力..."
+             onkeydown="if(event.key==='Enter'&&!event.isComposing)handleRun()"
+             oncompositionend="this._composed=true"
+             onkeyup="if(event.key==='Enter'&&this._composed){this._composed=false;handleRun()}"
+             oninput="SFX.type()"
+             autocomplete="off" autocorrect="off" spellcheck="false" autocapitalize="off"/>
+    </div>
+    <div class="cell-actions">
+      <button class="btn-run" id="run-btn-${G.cellIdx}" onclick="handleRun()">▶ 実行</button>
+      <div class="run-hint" id="run-hint-${G.cellIdx}">答えを入力して実行してください</div>
+      <button class="btn-next" id="next-btn-${G.cellIdx}" style="display:none" onclick="nextCell()">次のセル ▶</button>
+    </div>
+    <div class="opts-reveal-row" id="opts-reveal-row-${G.cellIdx}">
+      <button class="reveal-opts-btn" onclick="revealOptions()">💡 選択肢を見る</button>
+      <span class="hint-label" id="hint-label-${G.cellIdx}"></span>
+    </div>
+    <div class="options-grid" id="options-grid-${G.cellIdx}" style="display:none">${optsHtml}</div>
+    <div class="cell-out" id="out-${G.cellIdx}">
+      <div class="out-label">Out [${G.cellIdx+1}]:</div>
+      <div class="out-content" id="out-content-${G.cellIdx}"></div>
+    </div>
+  `;
+  setTimeout(()=>{ const el=document.getElementById('code-input-'+G.cellIdx); if(el) el.focus(); },50);
+}
+
+// Global Enter key: advance through learn→practice→next without mouse
+document.addEventListener('keydown', function(e){
+  if(e.key!=='Enter' || e.isComposing) return;
+  const active = document.activeElement;
+  // If a non-disabled input is focused, let its own handler take over
+  if(active && active.tagName==='INPUT' && !active.disabled) return;
+
+  // 1. Correct answer → next cell
+  const nextBtn = document.getElementById('next-btn-'+G.cellIdx);
+  if(nextBtn && nextBtn.style.display==='inline-flex'){
+    SFX.tick(); nextCell(); return;
+  }
+  // 2. Learn phase → start practice
+  const practiceBtn = document.querySelector('.btn-practice');
+  if(practiceBtn){ SFX.tick(); startPractice(); return; }
+  // 3. Input exists but focus lost → refocus
+  const inp = document.getElementById('code-input-'+G.cellIdx);
+  if(inp && !inp.disabled){ inp.focus(); }
+});
+
+function handleRun(){
+  SFX.tick();
+  if(G.inputMode==='options') runCell();
+  else submitInput();
+}
+
+function submitInput(){
+  const inputEl = document.getElementById('code-input-'+G.cellIdx);
+  if(!inputEl || inputEl.disabled) return;
+  const typed = inputEl.value.trim();
+  if(!typed) return;
+
+  const ch = CHAPTERS[G.chId];
+  const cell = ch.cells[G.cellIdx];
+  const correct = cell.opts[cell.ok];
+
+  if(typed.toLowerCase()===correct.toLowerCase()){
+    SFX.correct();
+    inputEl.disabled = true;
+    document.getElementById('run-btn-'+G.cellIdx).disabled = true;
+
+    const blankEl = document.getElementById('blank-'+G.cellIdx);
+    if(blankEl){ blankEl.textContent=correct; blankEl.className='blank filled'; }
+
+    const outEl = document.getElementById('out-'+G.cellIdx);
+    outEl.style.display='block';
+    document.getElementById('out-content-'+G.cellIdx).innerHTML = renderOutput(cell);
+
+    const gain = 15;
+    G.xp += gain;
+    flashXP('+'+gain+' XP', true);
+    document.getElementById('run-hint-'+G.cellIdx).textContent = '✓ 正解！';
+
+    const revealRow = document.getElementById('opts-reveal-row-'+G.cellIdx);
+    if(revealRow) revealRow.style.display='none';
+    const optsGrid = document.getElementById('options-grid-'+G.cellIdx);
+    if(optsGrid) optsGrid.style.display='none';
+
+    const nextBtn = document.getElementById('next-btn-'+G.cellIdx);
+    nextBtn.style.display='inline-flex';
+    nextBtn.textContent = G.cellIdx+1>=ch.cells.length ? 'チャプター完了 ✓' : '次のセル ▶';
+    updateTopbar();
+  } else {
+    SFX.wrong();
+    G.retries++;
+    G.xp = Math.max(0, G.xp-3);
+    flashXP('-3 XP', false);
+
+    const blankEl = document.getElementById('blank-'+G.cellIdx);
+    if(blankEl) blankEl.className='blank wrong-fill';
+
+    inputEl.classList.add('input-wrong');
+    document.getElementById('run-hint-'+G.cellIdx).textContent = 'エラー！違います。もう一度入力してください';
+
+    if(G.retries>=2){
+      const lbl = document.getElementById('hint-label-'+G.cellIdx);
+      if(lbl) lbl.textContent = '← 選択肢を参考にしてみましょう';
+    }
+
+    setTimeout(()=>{
+      inputEl.classList.remove('input-wrong');
+      inputEl.value='';
+      inputEl.focus();
+      if(blankEl) blankEl.className='blank';
+      document.getElementById('run-hint-'+G.cellIdx).textContent='答えを入力して実行してください';
+    }, 900);
+  }
+}
+
+function revealOptions(){
+  const optsGrid = document.getElementById('options-grid-'+G.cellIdx);
+  if(optsGrid) optsGrid.style.display='flex';
+  G.inputMode='options';
+  G.selected=null;
+
+  const inputEl = document.getElementById('code-input');
+  if(inputEl){ inputEl.disabled=true; }
+
+  document.getElementById('run-btn-'+G.cellIdx).disabled=true;
+  document.getElementById('run-hint-'+G.cellIdx).textContent='選択肢からコードを選んでください';
+
+  const revealRow = document.getElementById('opts-reveal-row-'+G.cellIdx);
+  if(revealRow) revealRow.style.display='none';
+}
+
+function selectOpt(i){
+  if(document.getElementById('next-btn-'+G.cellIdx).style.display==='inline-flex') return;
+  G.selected = i;
+  document.querySelectorAll('.opt-btn').forEach((b,j)=>{
+    b.classList.toggle('selected', j===i);
+  });
+  const runBtnEl = document.getElementById('run-btn-'+G.cellIdx);
+  if(runBtnEl) runBtnEl.disabled = false;
+  document.getElementById('run-hint-'+G.cellIdx).textContent = '選択完了。実行してください';
+}
+
+function runCell(){
+  if(G.selected===null) return;
+  const ch = CHAPTERS[G.chId];
+  const cell = ch.cells[G.cellIdx];
+  const btns = document.querySelectorAll('.opt-btn');
+
+  if(G.selected===cell.ok){
+    // CORRECT
+    SFX.correct();
+    btns[G.selected].classList.remove('selected');
+    btns[G.selected].classList.add('correct');
+    btns.forEach(b=>b.setAttribute('disabled',''));
+    document.getElementById('run-btn-'+G.cellIdx).disabled = true;
+
+    const blankEl = document.getElementById('blank-'+G.cellIdx);
+    if(blankEl){ blankEl.textContent=cell.opts[cell.ok]; blankEl.className='blank filled'; }
+
+    const outEl = document.getElementById('out-'+G.cellIdx);
+    outEl.style.display='block';
+    document.getElementById('out-content-'+G.cellIdx).innerHTML = renderOutput(cell);
+
+    const gain = 15;
+    G.xp += gain;
+    flashXP('+'+gain+' XP', true);
+    document.getElementById('run-hint-'+G.cellIdx).textContent = '✓ 正解！';
+
+    const nextBtn = document.getElementById('next-btn-'+G.cellIdx);
+    nextBtn.style.display='inline-flex';
+    nextBtn.textContent = G.cellIdx+1>=ch.cells.length ? 'チャプター完了 ✓' : '次のセル ▶';
+    updateTopbar();
+  } else {
+    // WRONG
+    SFX.wrong();
+    btns[G.selected].classList.remove('selected');
+    btns[G.selected].classList.add('wrong');
+
+    const blankEl = document.getElementById('blank-'+G.cellIdx);
+    if(blankEl) blankEl.className='blank wrong-fill';
+
+    G.retries++;
+    G.xp = Math.max(0, G.xp-3);
+    flashXP('-3 XP', false);
+    document.getElementById('run-hint-'+G.cellIdx).textContent = 'エラー！もう一度選んでください';
+
+    setTimeout(()=>{
+      btns[G.selected].classList.remove('wrong');
+      G.selected=null;
+      document.querySelectorAll('.opt-btn').forEach(b=>b.removeAttribute('disabled'));
+      document.getElementById('run-btn-'+G.cellIdx).disabled=true;
+      if(blankEl) blankEl.className='blank';
+      document.getElementById('run-hint-'+G.cellIdx).textContent='選択肢からコードを選んでください';
+    }, 1000);
+  }
+}
+
+function renderOutput(cell){
+  if(cell.outType==='text'){
+    return `<div class="out-text">${escHtml(cell.out)}</div>`;
+  }
+  if(cell.outType==='table'){
+    const o = cell.out;
+    let h = `<div class="out-table-wrap"><table class="out-table"><thead><tr>`;
+    o.cols.forEach(c=>{ h+=`<th>${escHtml(c)}</th>`; });
+    h+=`</tr></thead><tbody>`;
+    o.rows.forEach(r=>{ h+=`<tr>`; r.forEach(c=>{ h+=`<td>${escHtml(c)}</td>`; }); h+=`</tr>`; });
+    h+=`</tbody></table></div>`;
+    return h;
+  }
+  if(cell.outType==='chart'){
+    const o = cell.out;
+    const maxVal = Math.max(...o.bars.map(b=>b.val));
+    let h = `<div class="out-text" style="margin-bottom:6px">${escHtml(o.title)}</div><div class="out-chart">`;
+    o.bars.forEach(b=>{
+      const w = Math.round(b.val/maxVal*160);
+      h+=`<div class="chart-row">
+        <div class="chart-label">${escHtml(b.label)}</div>
+        <div class="chart-bar" style="width:${w}px"></div>
+        <div class="chart-val">${b.val}</div>
+      </div>`;
+    });
+    h+=`</div>`;
+    return h;
+  }
+  return '';
+}
+
+function nextCell(){
+  const ch = CHAPTERS[G.chId];
+  const oldNext = document.getElementById('next-btn-'+G.cellIdx);
+  if(oldNext) oldNext.style.display='none';
+  if(G.cellIdx+1>=ch.cells.length){
+    finishChapter();
+  } else {
+    G.cellIdx++;
+    updateTopbar();
+    renderCurrentCell();
+    // scroll to new cell
+    setTimeout(()=>{
+      const el = document.getElementById('cell-'+G.cellIdx);
+      if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+    },50);
+  }
+}
+
+function finishChapter(){
+  const retries = G.retries;
+  const stars = retries===0?3:retries<=3?2:1;
+  const bonus = stars===3?60:stars===2?35:20;
+  G.xp += bonus;
+  S.totalXP += G.xp;
+
+  const prev = S.progress[G.chId];
+  if(!prev||prev.stars<stars) S.progress[G.chId]={stars,xp:G.xp};
+  save();
+
+  BGM.stop();
+  SFX.clear(stars===3);
+  document.getElementById('done-icon').textContent = stars===3?'🎉':'✨';
+  document.getElementById('done-title').textContent = stars===3?'パーフェクト！':'チャプタークリア！';
+  document.getElementById('done-stars').textContent='⭐'.repeat(stars)+'☆'.repeat(3-stars);
+  document.getElementById('done-xp').textContent='+'+G.xp+' XP';
+  document.getElementById('d-ok').textContent=CHAPTERS[G.chId].cells.length+' / '+CHAPTERS[G.chId].cells.length;
+  document.getElementById('d-retry').textContent=retries+' 回';
+  document.getElementById('d-xp').textContent=G.xp+' XP';
+  document.getElementById('d-total').textContent=S.totalXP+' XP';
+
+  const nextBtn=document.getElementById('next-ch-btn');
+  if(G.chId+1<CHAPTERS.length){
+    nextBtn.textContent='次のチャプター ▶';
+    nextBtn.onclick=goNextChapter;
+  } else {
+    nextBtn.textContent='全チャプター完了！🎓';
+    nextBtn.onclick=showAllDone;
+  }
+  show('screen-ch-done');
+}
+
+function goNextChapter(){
+  startChapter(G.chId+1);
+}
+
+function showAllDone(){
+  document.getElementById('all-xp').textContent='総XP：'+S.totalXP;
+  show('screen-all-done');
+}
+
+// =====================================================
+// UTIL
+// =====================================================
+function escHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function flashXP(text, pos){
+  const el=document.getElementById('xp-flash');
+  el.textContent=text;
+  el.className='xp-flash '+(pos?'pos':'neg');
+  void el.offsetWidth;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),1100);
+}
+
+// =====================================================
+// INIT
+// =====================================================
+load();
+showTitle();
+</script>
+</body>
+</html>

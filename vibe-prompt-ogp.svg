@@ -1,0 +1,37 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF8F0"/>
+      <stop offset="100%" stop-color="#FFF0DC"/>
+    </linearGradient>
+    <linearGradient id="titleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#F97316"/>
+      <stop offset="100%" stop-color="#FBBF24"/>
+    </linearGradient>
+    <linearGradient id="barGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#F97316"/>
+      <stop offset="100%" stop-color="#FBBF24"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGrad)"/>
+
+  <!-- Decorative circles -->
+  <circle cx="100" cy="100" r="180" fill="rgba(249,115,22,0.06)"/>
+  <circle cx="1100" cy="530" r="200" fill="rgba(251,191,36,0.08)"/>
+
+  <!-- Top gradient bar -->
+  <rect width="1200" height="6" fill="url(#barGrad)"/>
+  <circle cx="600" cy="210" r="90" fill="rgba(249,115,22,0.1)"/>
+
+  <!-- Title -->
+  <text x="600" y="355" font-size="72" font-weight="900" text-anchor="middle" fill="url(#titleGrad)" font-family="-apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic UI', sans-serif">Vibe Coding</text>
+  <text x="600" y="445" font-size="72" font-weight="900" text-anchor="middle" fill="url(#titleGrad)" font-family="-apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic UI', sans-serif">プロンプトビルダー</text>
+
+  <!-- Subtitle -->
+  <text x="600" y="528" font-size="28" text-anchor="middle" fill="#A0845C" font-family="-apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic UI', sans-serif">プログラミング知識ゼロ  16問に答えるだけ  Claude / Cursor / Bolt 対応</text>
+
+  <!-- Bottom bar -->
+  <rect y="624" width="1200" height="6" fill="url(#barGrad)"/>
+</svg>

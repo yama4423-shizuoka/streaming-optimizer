@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vibe Coding プロンプトビルダー</title>
   <meta name="description" content="プログラミング知識ゼロでOK！16問に答えるだけで、Claude・ChatGPT・Cursor・Bolt向けの完璧なAI指示書を自動生成します。">
-  <meta property="og:title" content="✨ Vibe Coding プロンプトビルダー">
+  <meta property="og:title" content="Vibe Coding プロンプトビルダー">
   <meta property="og:description" content="プログラミング知識ゼロでOK！16問に答えるだけでAIへの完璧な指示書を自動生成。Claude・ChatGPT・Cursor・Bolt対応。">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://streaming-optimizer-sigma.vercel.app/vibe-prompt.html">
@@ -15,7 +15,7 @@
   <meta property="og:site_name" content="Vibe Coding プロンプトビルダー">
   <meta property="og:locale" content="ja_JP">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="✨ Vibe Coding プロンプトビルダー">
+  <meta name="twitter:title" content="Vibe Coding プロンプトビルダー">
   <meta name="twitter:description" content="プログラミング知識ゼロでOK！16問に答えるだけでAIへの完璧な指示書を自動生成。Claude・ChatGPT・Cursor・Bolt対応。">
   <meta name="twitter:image" content="https://streaming-optimizer-sigma.vercel.app/vibe-prompt-ogp.svg">
   <script defer src="/_vercel/insights/script.js"></script>
@@ -773,7 +773,7 @@ function renderStep() {
   back.style.display = step === 0 ? 'none' : '';
   if (s.freeText || s.multi || s.freeExtra) {
     next.style.display = 'inline-block';
-    next.textContent = step === total - 1 ? 'プロンプトを生成 ✨' : '次へ →';
+    next.textContent = step === total - 1 ? 'プロンプトを生成 ' : '次へ →';
   } else {
     next.style.display = 'none';
   }
@@ -941,7 +941,7 @@ function buildPrompt(s) {
   if (s.data) {
     L.push('## データ管理');
     L.push(MAP.data[s.data] || '');
-    if (s.data !== 'none') L.push('⚠️ サンプルデータや初期値を絶対にコードにハードコードしないこと。データは必ず上記の方法で実際に保存・読み込みすること。');
+    if (s.data !== 'none') L.push(' サンプルデータや初期値を絶対にコードにハードコードしないこと。データは必ず上記の方法で実際に保存・読み込みすること。');
     L.push('');
   }
   if (s.data_model) {
@@ -953,7 +953,7 @@ function buildPrompt(s) {
   if (s.auth) {
     L.push('## 認証・アクセス制御');
     L.push(MAP.auth[s.auth] || '');
-    if (s.auth === 'multi' || s.auth === 'roles') L.push('⚠️ ユーザーAが他のユーザーBのデータにアクセスできないよう、データアクセス制御を必ず実装すること。');
+    if (s.auth === 'multi' || s.auth === 'roles') L.push(' ユーザーAが他のユーザーBのデータにアクセスできないよう、データアクセス制御を必ず実装すること。');
     L.push('');
   }
 
@@ -962,7 +962,7 @@ function buildPrompt(s) {
   if (integrations.length > 0) {
     L.push('## 外部サービス連携');
     integrations.forEach(i => L.push(`- ${i}`));
-    L.push('⚠️ 各サービスのAPIキー・シークレットは必ず環境変数（.env等）で管理し、コードに直接書かないこと。');
+    L.push(' 各サービスのAPIキー・シークレットは必ず環境変数（.env等）で管理し、コードに直接書かないこと。');
     L.push('');
   }
 
