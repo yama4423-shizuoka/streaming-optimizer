@@ -1,0 +1,42 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#07070f"/>
+      <stop offset="100%" stop-color="#13131f"/>
+    </linearGradient>
+    <linearGradient id="titleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7c6ff5"/>
+      <stop offset="100%" stop-color="#a89cf7"/>
+    </linearGradient>
+    <linearGradient id="barGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7c6ff5"/>
+      <stop offset="100%" stop-color="#34d399"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGrad)"/>
+
+  <!-- Decorative circles -->
+  <circle cx="100" cy="100" r="180" fill="rgba(124,111,245,0.08)"/>
+  <circle cx="1100" cy="530" r="200" fill="rgba(52,211,153,0.06)"/>
+
+  <!-- Top gradient bar -->
+  <rect width="1200" height="6" fill="url(#barGrad)"/>
+
+  <!-- Glow behind emoji -->
+  <circle cx="600" cy="210" r="90" fill="rgba(124,111,245,0.12)"/>
+
+  <!-- Emoji -->
+  <text x="600" y="255" font-size="110" text-anchor="middle" font-family="Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif">🎬</text>
+
+  <!-- Title -->
+  <text x="600" y="370" font-size="80" font-weight="900" text-anchor="middle" fill="url(#titleGrad)" font-family="-apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic UI', sans-serif">サブスク診断</text>
+
+  <!-- Subtitle -->
+  <text x="600" y="460" font-size="34" text-anchor="middle" fill="#f0f0fa" font-family="-apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic UI', sans-serif">観たい作品で最安プランを自動計算</text>
+  <text x="600" y="528" font-size="26" text-anchor="middle" fill="#6868a0" font-family="-apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic UI', sans-serif">作品を選ぶだけ ✅ 最安の組み合わせ ✅ サブスク代を賢く節約</text>
+
+  <!-- Bottom bar -->
+  <rect y="624" width="1200" height="6" fill="url(#barGrad)"/>
+</svg>

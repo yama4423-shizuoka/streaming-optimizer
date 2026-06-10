@@ -4,6 +4,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>サブスク診断 | 観たい作品で最安プランを自動計算</title>
+  <meta name="description" content="観たい作品を選ぶだけで、動画サブスクの最安プラン組み合わせを自動計算。どのサービスに入るべきか一目でわかるサブスク診断ツール。">
+  <meta property="og:title" content="🎬 サブスク診断 | 観たい作品で最安プランを自動計算">
+  <meta property="og:description" content="観たい作品を選ぶだけで、動画サブスクの最安プラン組み合わせを自動計算。どのサービスに入るべきか一目でわかる。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://streaming-optimizer-sigma.vercel.app/">
+  <meta property="og:image" content="https://streaming-optimizer-sigma.vercel.app/subscription-ogp.svg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="サブスク診断">
+  <meta property="og:locale" content="ja_JP">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="🎬 サブスク診断 | 観たい作品で最安プランを自動計算">
+  <meta name="twitter:description" content="観たい作品を選ぶだけで、動画サブスクの最安プラン組み合わせを自動計算。">
+  <meta name="twitter:image" content="https://streaming-optimizer-sigma.vercel.app/subscription-ogp.svg">
+  <script defer src="/_vercel/insights/script.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
@@ -1008,7 +1023,10 @@ async function tmdbSearch(q) {
 // ─────────────────────────────────────────────────────
 // ポスター画像 遅延ロード
 // ─────────────────────────────────────────────────────
-const posterCache = JSON.parse(localStorage.getItem('poster_cache') || '{}');
+const POSTER_CACHE_V = 2;
+const _rawCache = JSON.parse(localStorage.getItem('poster_cache') || '{}');
+const posterCache = (_rawCache._v === POSTER_CACHE_V) ? _rawCache : { _v: POSTER_CACHE_V };
+if (_rawCache._v !== POSTER_CACHE_V) localStorage.setItem('poster_cache', JSON.stringify(posterCache));
 let posterObserver = null;
 let posterConcurrent = 0;
 const posterPending = [];

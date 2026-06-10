@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vibe Coding プロンプトビルダー</title>
+  <meta name="description" content="プログラミング知識ゼロでOK！16問に答えるだけで、Claude・ChatGPT・Cursor・Bolt向けの完璧なAI指示書を自動生成します。">
+  <meta property="og:title" content="✨ Vibe Coding プロンプトビルダー">
+  <meta property="og:description" content="プログラミング知識ゼロでOK！16問に答えるだけでAIへの完璧な指示書を自動生成。Claude・ChatGPT・Cursor・Bolt対応。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://streaming-optimizer-sigma.vercel.app/vibe-prompt.html">
+  <meta property="og:image" content="https://streaming-optimizer-sigma.vercel.app/vibe-prompt-ogp.svg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Vibe Coding プロンプトビルダー">
+  <meta property="og:locale" content="ja_JP">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="✨ Vibe Coding プロンプトビルダー">
+  <meta name="twitter:description" content="プログラミング知識ゼロでOK！16問に答えるだけでAIへの完璧な指示書を自動生成。Claude・ChatGPT・Cursor・Bolt対応。">
+  <meta name="twitter:image" content="https://streaming-optimizer-sigma.vercel.app/vibe-prompt-ogp.svg">
+  <script defer src="/_vercel/insights/script.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root {
+      --bg: #FFF8F0;
+      --surface: #FFFFFF;
+      --surface2: #FFF4E6;
+      --surface3: #FFECD2;
+      --border: #E8D5B4;
+      --accent: #F97316;
+      --accent-glow: rgba(249,115,22,0.15);
+      --accent2: #059669;
+      --text: #1C1009;
+      --muted: #A0845C;
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic UI', 'Segoe UI', sans-serif;
+      min-height: 100vh; display: flex; align-items: flex-start; justify-content: center;
+      padding: 24px 16px 48px;
+    }
+    .app { width: 100%; max-width: 620px; }
+
+    .screen { display: none; }
+    .screen.active { display: block; animation: fadeUp 0.35s ease; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Welcome ── */
+    .welcome { text-align: center; padding: 56px 8px 0; }
+    .welcome .hero-icon-wrap { display: flex; justify-content: center; margin-bottom: 20px; }
+    .welcome .hero-icon-wrap .hero-icon-bg { width: 80px; height: 80px; border-radius: 22px; background: linear-gradient(135deg, #FEF3C7, #FDE68A); display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 24px rgba(249,115,22,0.22); }
+    .welcome .hero-icon-wrap svg { width: 40px; height: 40px; stroke: #92400E; stroke-width: 1.6; fill: none; }
+    .welcome h1 { font-size: 2.2rem; font-weight: 900; line-height: 1.2; background: linear-gradient(135deg, #F97316, #FBBF24); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 14px; }
+    .welcome .subtitle { color: var(--muted); font-size: 0.95rem; line-height: 1.7; margin-bottom: 36px; }
+    .welcome .chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 40px; }
+    .chip { border-radius: 99px; padding: 6px 14px; font-size: 0.82rem; font-weight: 500; border: none; display: inline-flex; align-items: center; gap: 6px; }
+    .chip svg { width: 14px; height: 14px; stroke-width: 2; stroke: currentColor; fill: none; flex-shrink: 0; }
+    .chip:nth-child(1) { background: #FEF3C7; color: #92400E; }
+    .chip:nth-child(2) { background: #FCE7F3; color: #9D174D; }
+    .chip:nth-child(3) { background: #D1FAE5; color: #065F46; }
+    .chip:nth-child(4) { background: #DBEAFE; color: #1E40AF; }
+
+    /* ── Card ── */
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 22px; padding: 32px 28px; box-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.03); }
+    @media (max-width: 480px) { .card { padding: 24px 18px; border-radius: 18px; } }
+
+    /* ── Progress ── */
+    .progress-wrap { margin-bottom: 28px; }
+    .progress-track { height: 5px; background: var(--surface3); border-radius: 3px; overflow: hidden; margin-bottom: 10px; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, #F97316, #FBBF24); border-radius: 3px; transition: width 0.4s cubic-bezier(0.4,0,0.2,1); }
+    .progress-meta { display: flex; justify-content: space-between; align-items: center; }
+    .step-badge { font-size: 0.72rem; color: var(--accent); font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
+    .step-frac { font-size: 0.72rem; color: var(--muted); }
+
+    /* ── Question ── */
+    .question-text { font-size: 1.45rem; font-weight: 800; line-height: 1.3; white-space: pre-line; margin-bottom: 4px; }
+    .question-hint { font-size: 0.78rem; color: #0D9488; min-height: 20px; margin-bottom: 20px; font-weight: 500; }
+
+    /* ── Options ── */
+    .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+    .options-grid.list { grid-template-columns: 1fr; }
+    .option-card {
+      background: var(--surface2); border: 2px solid var(--border); border-radius: 16px;
+      padding: 16px 12px; cursor: pointer;
+      transition: border-color 0.15s, background 0.15s, transform 0.12s, box-shadow 0.15s;
+      text-align: center; user-select: none; -webkit-tap-highlight-color: transparent;
+      display: flex; flex-direction: column; align-items: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .option-card:active { transform: scale(0.97); }
+    .option-card:hover { border-color: var(--accent); background: var(--surface3); box-shadow: 0 4px 12px var(--accent-glow); }
+    .option-card.selected { border-color: var(--accent); background: rgba(249,115,22,0.07); box-shadow: 0 0 0 1px var(--accent), 0 4px 12px var(--accent-glow); }
+    .option-icon-bg {
+      width: 52px; height: 52px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 10px; flex-shrink: 0;
+      transition: transform 0.12s;
+    }
+    .option-card:hover .option-icon-bg,
+    .option-card.selected .option-icon-bg { transform: scale(1.08); }
+    .option-icon-bg svg { width: 24px; height: 24px; stroke-width: 1.8; stroke: currentColor; fill: none; }
+    .option-label { font-size: 0.8rem; font-weight: 600; line-height: 1.35; }
+    .option-desc { font-size: 0.68rem; color: var(--muted); line-height: 1.3; margin-top: 5px; }
+    .options-grid.list .option-card { flex-direction: row; text-align: left; padding: 12px 16px; gap: 14px; align-items: center; }
+    .options-grid.list .option-icon-bg { margin-bottom: 0; width: 44px; height: 44px; }
+    .options-grid.list .option-label { font-size: 0.85rem; }
+    .options-grid:not(.list) .option-card:last-child:nth-child(odd) { grid-column: span 2; max-width: 280px; margin: 0 auto; width: 100%; }
+
+    /* ── Free text ── */
+    .free-ta { width: 100%; background: var(--surface2); border: 2px solid var(--border); border-radius: 14px; padding: 14px 16px; color: var(--text); font-size: 0.92rem; font-family: inherit; line-height: 1.65; resize: none; min-height: 84px; outline: none; transition: border-color 0.15s, box-shadow 0.15s; margin-bottom: 14px; }
+    .free-ta:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+    .free-ta::placeholder { color: var(--muted); }
+    .ex-label { font-size: 0.72rem; color: var(--muted); margin-bottom: 8px; letter-spacing: 0.03em; }
+    .ex-chips-row { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 24px; }
+    .ex-chip { background: var(--surface); border: 1px solid var(--border); border-radius: 99px; padding: 5px 10px 5px 8px; font-size: 0.78rem; cursor: pointer; transition: border-color 0.15s, background 0.15s, color 0.15s; user-select: none; -webkit-tap-highlight-color: transparent; box-shadow: 0 1px 2px rgba(0,0,0,0.04); display: inline-flex; align-items: center; gap: 5px; }
+    .ex-chip svg { width: 13px; height: 13px; stroke-width: 2; stroke: currentColor; fill: none; flex-shrink: 0; }
+    .ex-chip:hover { border-color: var(--accent); background: rgba(249,115,22,0.07); color: #C2570F; }
+
+    /* ── Free extra ── */
+    .free-extra-wrap { margin-bottom: 24px; }
+    .free-extra-label { font-size: 0.72rem; color: var(--muted); margin-bottom: 7px; letter-spacing: 0.03em; }
+    .free-extra-inp { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; color: var(--text); font-size: 0.85rem; font-family: inherit; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
+    .free-extra-inp:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+    .free-extra-inp::placeholder { color: var(--muted); }
+
+    /* ── Nav ── */
+    .nav-buttons { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .btn { padding: 11px 22px; border-radius: 11px; font-size: 0.88rem; font-weight: 700; cursor: pointer; border: none; transition: all 0.15s; line-height: 1; }
+    .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+    .btn-ghost:hover { border-color: #C2A882; color: var(--text); }
+    .btn-next { background: var(--accent); color: #fff; margin-left: auto; }
+    .btn-next:hover { background: #EA6C0A; transform: translateY(-1px); box-shadow: 0 4px 14px var(--accent-glow); }
+    .btn-primary { background: linear-gradient(135deg, #F97316, #FBBF24); color: #fff; padding: 15px 36px; font-size: 1rem; border-radius: 14px; box-shadow: 0 4px 18px rgba(249,115,22,0.35); font-weight: 800; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(249,115,22,0.4); }
+
+    /* ── Result ── */
+    .result-top { text-align: center; padding-bottom: 24px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+    .result-top .check-icon { display: flex; justify-content: center; margin-bottom: 14px; }
+    .result-top .check-icon .result-icon-bg { width: 64px; height: 64px; border-radius: 18px; background: linear-gradient(135deg, #D1FAE5, #A7F3D0); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(5,150,105,0.18); }
+    .result-top .check-icon svg { width: 32px; height: 32px; stroke: #065F46; stroke-width: 2; fill: none; }
+    .btn-icon { display: inline-flex; align-items: center; justify-content: center; gap: 7px; }
+    .btn-icon svg { width: 16px; height: 16px; stroke-width: 2; stroke: currentColor; fill: none; flex-shrink: 0; }
+    .prompt-edit-note { display: flex; align-items: center; gap: 5px; }
+    .prompt-edit-note svg { width: 13px; height: 13px; stroke-width: 2; stroke: var(--muted); fill: none; flex-shrink: 0; }
+    .result-top h2 { font-size: 1.6rem; font-weight: 900; margin-bottom: 8px; }
+    .result-top p { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+    .result-top p strong { color: var(--text); }
+    .prompt-edit { width: 100%; background: #FEFCF8; border: 1px solid var(--border); border-radius: 12px; padding: 20px; height: 380px; overflow-y: auto; margin-bottom: 6px; font-family: 'Courier New','Menlo',monospace; font-size: 0.78rem; line-height: 1.8; color: #4A3728; resize: vertical; outline: none; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+    .prompt-edit:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+    .prompt-edit::-webkit-scrollbar { width: 4px; }
+    .prompt-edit::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    .prompt-edit-note { font-size: 0.72rem; color: var(--muted); margin-bottom: 14px; text-align: right; }
+    .result-actions { display: flex; gap: 10px; }
+    .btn-copy { flex: 1; background: var(--accent2); color: #fff; font-weight: 800; border: none; padding: 14px; border-radius: 12px; font-size: 0.9rem; cursor: pointer; transition: all 0.15s; }
+    .btn-copy:hover { background: #047857; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(5,150,105,0.3); }
+    .btn-copy.copied { background: #065F46; }
+    .btn-redo { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 14px 18px; border-radius: 12px; font-size: 0.85rem; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+    .btn-redo:hover { border-color: #C2A882; color: var(--text); }
+
+    /* ── Templates ── */
+    .template-section { margin-top: 28px; }
+    .template-sep { font-size: 0.72rem; color: var(--muted); margin-bottom: 14px; letter-spacing: 0.06em; }
+    .template-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+    .template-chip { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 9px 14px; font-size: 0.82rem; cursor: pointer; transition: border-color 0.15s, background 0.15s, color 0.15s; display: inline-flex; align-items: center; gap: 7px; user-select: none; -webkit-tap-highlight-color: transparent; color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .template-chip svg { width: 15px; height: 15px; stroke-width: 2; stroke: currentColor; fill: none; flex-shrink: 0; }
+    .template-chip:hover { border-color: var(--accent); background: rgba(249,115,22,0.06); color: #C2570F; }
+    .template-chip:active { transform: scale(0.97); }
+    .template-badge { display: inline-block; background: rgba(249,115,22,0.12); color: var(--accent); font-size: 0.65rem; font-weight: 700; padding: 2px 7px; border-radius: 99px; margin-left: 4px; letter-spacing: 0.04em; }
+
+    @media (max-width: 480px) {
+      .welcome h1 { font-size: 1.8rem; }
+      .question-text { font-size: 1.25rem; }
+      .options-grid { gap: 8px; }
+      .option-card { padding: 12px 10px; }
+      .option-icon-bg { width: 44px; height: 44px; border-radius: 12px; }
+      .option-icon-bg svg { width: 20px; height: 20px; }
+      .option-label { font-size: 0.75rem; }
+      .option-desc { font-size: 0.64rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <div id="screen-welcome" class="screen active">
+    <div class="welcome">
+      <div class="hero-icon-wrap">
+        <div class="hero-icon-bg"><i data-lucide="sparkles"></i></div>
+      </div>
+      <h1>Vibe Coding<br>プロンプトビルダー</h1>
+      <p class="subtitle">プログラミング知識ゼロでOK！<br>質問に答えるだけで、AIへの完璧な指示書が完成します</p>
+      <div class="chips">
+        <span class="chip"><i data-lucide="list-checks"></i>全16問・選ぶだけ</span>
+        <span class="chip"><i data-lucide="bot"></i>Claude / Cursor / Bolt 対応</span>
+        <span class="chip"><i data-lucide="clipboard-copy"></i>そのままコピペOK</span>
+        <span class="chip"><i data-lucide="rocket"></i>プログラミング知識不要</span>
+      </div>
+      <button class="btn btn-primary" onclick="startWizard()">はじめる →</button>
+      <div class="template-section">
+        <div class="template-sep">── または テンプレートから始める ──</div>
+        <div class="template-grid" id="template-chips"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="screen-wizard" class="screen">
+    <div class="card" id="wizard-card">
+      <div class="progress-wrap">
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+        </div>
+        <div class="progress-meta">
+          <span class="step-badge" id="step-badge">STEP 1</span>
+          <span class="step-frac" id="step-frac">1 / 16</span>
+        </div>
+      </div>
+      <div class="question-text" id="question-text"></div>
+      <div class="question-hint" id="question-hint"></div>
+      <div id="step-body"></div>
+      <div class="nav-buttons">
+        <button class="btn btn-ghost" id="btn-back" onclick="goBack()">← 戻る</button>
+        <button class="btn btn-next" id="btn-next" onclick="goNext()" style="display:none">次へ →</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="screen-result" class="screen">
+    <div class="card">
+      <div class="result-top">
+        <div class="check-icon"><div class="result-icon-bg"><i data-lucide="check"></i></div></div>
+        <h2>プロンプト完成！</h2>
+        <p><strong>Claude・ChatGPT・Cursor</strong> などのAIにそのままコピペして使ってください</p>
+      </div>
+      <textarea class="prompt-edit" id="prompt-output" spellcheck="false"></textarea>
+      <div class="prompt-edit-note"><i data-lucide="pencil"></i>直接編集できます</div>
+      <div class="result-actions">
+        <button class="btn btn-copy btn-icon" id="btn-copy" onclick="copyPrompt()"><i data-lucide="clipboard"></i>コピーする</button>
+        <button class="btn btn-redo btn-icon" onclick="resetWizard()"><i data-lucide="rotate-ccw"></i>やり直す</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script>
+// ── Icon palette ───────────────────────────────────────
+const ICON_PALETTE = [
+  { bg: '#FEF3C7', color: '#92400E' },
+  { bg: '#FCE7F3', color: '#9D174D' },
+  { bg: '#D1FAE5', color: '#065F46' },
+  { bg: '#DBEAFE', color: '#1E40AF' },
+  { bg: '#EDE9FE', color: '#5B21B6' },
+  { bg: '#FEE2E2', color: '#991B1B' },
+  { bg: '#CCFBF1', color: '#134E4A' },
+  { bg: '#FEF9C3', color: '#713F12' },
+];
+
+function iconBg(i) { return ICON_PALETTE[i % ICON_PALETTE.length]; }
+
+// ── Templates ─────────────────────────────────────────
+const TEMPLATES = [
+  {
+    key: 'task', icon: 'check-square', name: 'タスク管理',
+    sel: {
+      purpose: 'チームでタスクを共有して、進捗をリアルタイムで確認・管理したい',
+      users: 'team', scale: 'small',
+      actions: ['input', 'search', 'task'],
+      screens: ['dashboard', 'list', 'form'],
+      data: 'cloud',
+      data_model: 'タスク（タイトル・説明・期限・完了フラグ・担当者名・優先度）\nプロジェクト（名前・色・メンバー一覧）',
+      auth: 'multi', design: 'modern', output: 'web', scope: 'standard',
+    }
+  },
+  {
+    key: 'diary', icon: 'book-open', name: '日記・メモ',
+    sel: {
+      purpose: '毎日の出来事や気持ちを記録して、後から日付・タグで振り返れるようにしたい',
+      users: 'self', scale: 'solo',
+      actions: ['input', 'search'],
+      screens: ['list', 'form'],
+      data: 'local',
+      data_model: '日記（タイトル・本文・日付・気分スコア・タグ）',
+      auth: 'none', design: 'simple', output: 'file', scope: 'mvp',
+    }
+  },
+  {
+    key: 'inventory', icon: 'package', name: '在庫管理',
+    sel: {
+      purpose: '商品や備品の在庫数を管理して、残り少なくなったらアラートを出したい',
+      users: 'team', scale: 'small',
+      actions: ['input', 'search'],
+      screens: ['list', 'form', 'dashboard'],
+      data: 'cloud',
+      data_model: '商品（名前・カテゴリ・現在在庫数・最低在庫数・単価・保管場所）\nカテゴリ（名前・色）\n入出庫履歴（商品ID・数量・種別・日時・担当者）',
+      auth: 'basic', design: 'professional', output: 'web', scope: 'standard',
+    }
+  },
+  {
+    key: 'budget', icon: 'wallet', name: '家計簿',
+    sel: {
+      purpose: '毎月の収入と支出を記録して、カテゴリ別にグラフで見える化したい',
+      users: 'self', scale: 'solo',
+      actions: ['input', 'chart', 'search'],
+      screens: ['dashboard', 'list', 'form', 'chart'],
+      data: 'local',
+      data_model: '収支記録（日付・金額・カテゴリ・メモ・収入か支出か）\nカテゴリ（名前・色・アイコン・種別）',
+      auth: 'none', design: 'modern', output: 'file', scope: 'standard',
+      quality: ['chart'],
+    }
+  },
+  {
+    key: 'habit', icon: 'activity', name: '習慣トラッカー',
+    sel: {
+      purpose: '毎日の習慣を記録して、継続日数・達成率をグラフで確認したい',
+      users: 'self', scale: 'solo',
+      actions: ['input', 'chart', 'task'],
+      screens: ['dashboard', 'list', 'form'],
+      data: 'local',
+      data_model: '習慣（名前・目標頻度・カラー・アイコン・作成日）\n記録（習慣ID・日付・完了フラグ・メモ）',
+      auth: 'none', design: 'colorful', output: 'file', scope: 'standard',
+      quality: ['performance'],
+    }
+  },
+  {
+    key: 'booking', icon: 'calendar', name: '予約管理',
+    sel: {
+      purpose: 'お客様や利用者がオンラインで予約を入れられるシステムを作りたい',
+      users: 'public', scale: 'medium',
+      actions: ['input', 'search'],
+      screens: ['dashboard', 'list', 'form'],
+      data: 'cloud',
+      data_model: '予約（名前・メール・希望日時・メニュー・メモ・ステータス）\nメニュー（名前・所要時間・価格・説明）\n営業時間（曜日・開始時刻・終了時刻）',
+      auth: 'roles', design: 'professional', output: 'web', scope: 'standard',
+    }
+  },
+];
+
+// ── Steps ─────────────────────────────────────────────
+const STEPS = [
+  {
+    id: 'purpose',
+    q: 'このアプリで\n何をしたい？',
+    hint: '自由に書いてください。例から選んでもOK',
+    freeText: true,
+    placeholder: '例：友達とタスクを共有して、進捗をリアルタイムで確認したい',
+    exChips: [
+      { icon:'bar-chart-2', l:'情報を見る・整理する' },
+      { icon:'pencil',      l:'データを入力・管理する' },
+      { icon:'users',       l:'人とつながる・共有する' },
+      { icon:'settings',    l:'作業を自動化・効率化する' },
+      { icon:'smile',       l:'楽しむ・体験する' },
+    ]
+  },
+  {
+    id: 'users',
+    q: '誰が使いますか？',
+    multi: false,
+    opts: [
+      { icon:'user',      l:'自分だけ',       v:'self' },
+      { icon:'users',     l:'特定のメンバー', v:'team' },
+      { icon:'globe',     l:'誰でも使える',   v:'public' },
+      { icon:'briefcase', l:'業務・仕事用',   v:'business' },
+    ]
+  },
+  {
+    id: 'scale',
+    q: '何人くらいが\n使いますか？',
+    hint: 'アプリの設計・性能要件が変わります',
+    multi: false,
+    opts: [
+      { icon:'user',       l:'自分だけ（1〜2人）',  d:'シンプルな構成でOK',                v:'solo' },
+      { icon:'users',      l:'数人〜10人くらい',    d:'基本的なDB設計が必要',              v:'small' },
+      { icon:'building-2', l:'数十〜数百人',        d:'パフォーマンスを考慮した設計が必要', v:'medium' },
+      { icon:'globe',      l:'1000人以上・大規模',  d:'スケールできるアーキテクチャが必要', v:'large' },
+    ]
+  },
+  {
+    id: 'actions',
+    q: 'ユーザーに\nしてほしいことは？',
+    hint: '選択 ＋ 自由記述もOK（複数可）',
+    multi: true,
+    freeExtra: true,
+    freeExtraPlaceholder: '例：スワイプでカードを削除できる、他のユーザーに通知を送れる',
+    opts: [
+      { icon:'file-pen',      l:'情報を入力・投稿する',   v:'input' },
+      { icon:'search',        l:'検索・絞り込みをする',   v:'search' },
+      { icon:'bar-chart-2',   l:'グラフや統計を見る',     v:'chart' },
+      { icon:'message-square',l:'コメント・メッセージ',   v:'message' },
+      { icon:'upload',        l:'ファイルをアップロード', v:'upload' },
+      { icon:'check-square',  l:'タスク・チェックリスト', v:'task' },
+    ]
+  },
+  {
+    id: 'screens',
+    q: 'どんな画面が必要？',
+    hint: '複数選択 ＋ 自由記述もOK',
+    multi: true,
+    freeExtra: true,
+    freeExtraPlaceholder: '例：ウィザード形式の入力画面、印刷用レイアウト、管理者ダッシュボード',
+    opts: [
+      { icon:'layout-dashboard', l:'トップ・ダッシュボード', v:'dashboard' },
+      { icon:'list',             l:'一覧・リスト画面',       v:'list' },
+      { icon:'clipboard-list',   l:'データ入力フォーム',     v:'form' },
+      { icon:'bar-chart-2',      l:'グラフ・統計画面',       v:'chart' },
+      { icon:'user-cog',         l:'プロフィール・設定',     v:'profile' },
+      { icon:'search',           l:'検索・絞り込み画面',     v:'search' },
+    ]
+  },
+  {
+    id: 'data',
+    q: 'データはどこに\n保存する？',
+    multi: false,
+    opts: [
+      { icon:'wind',       l:'保存しない（表示だけ）',      d:'ページを閉じると消える',               v:'none' },
+      { icon:'smartphone', l:'このブラウザに保存',          d:'このデバイスのみ・無料',               v:'local' },
+      { icon:'cloud',      l:'どこからでもアクセスしたい',  d:'クラウドDB使用・複数デバイス対応',     v:'cloud' },
+      { icon:'table-2',    l:'Googleスプレッドシート連携',  d:'既存のスプレッドシートをDBとして使う', v:'sheets' },
+    ]
+  },
+  {
+    id: 'data_model',
+    q: 'どんなデータを\n保存しますか？',
+    hint: '保存するデータの種類・項目を教えてください（なければスキップOK）',
+    freeText: true,
+    placeholder: '例：\nタスク（タイトル・期限・完了フラグ・担当者名）\nユーザー（名前・メールアドレス・アイコン）',
+    exChips: [
+      { icon:'check-square',  l:'タスク（タイトル・期限・ステータス）' },
+      { icon:'user',          l:'ユーザー（名前・メール・プロフィール）' },
+      { icon:'file-text',     l:'テキスト（メモ・投稿・記事）' },
+      { icon:'calendar',      l:'予定（日時・場所・タイトル）' },
+      { icon:'message-square',l:'メッセージ（送信者・内容・時刻）' },
+      { icon:'shopping-cart', l:'商品（名前・価格・在庫数）' },
+      { icon:'trending-up',   l:'数値・スコア（カウント・金額）' },
+      { icon:'image',         l:'画像・ファイル（名前・URL）' },
+    ]
+  },
+  {
+    id: 'auth',
+    q: 'ログインは\n必要ですか？',
+    multi: false,
+    opts: [
+      { icon:'lock-open', l:'不要・誰でもOK',               d:'URLを開けば誰でも使える',              v:'none' },
+      { icon:'log-in',    l:'ログイン機能が欲しい',         d:'メール＋パスワードで会員登録',         v:'basic' },
+      { icon:'users',     l:'複数ユーザーで別々のデータ',   d:'ログインした人ごとに独立したデータ',  v:'multi' },
+      { icon:'key',       l:'管理者と一般ユーザーを分ける', d:'管理画面と一般画面を分離',            v:'roles' },
+    ]
+  },
+  {
+    id: 'design',
+    q: 'デザインの\n雰囲気は？',
+    hint: '選択 ＋ 詳細も自由に書けます',
+    multi: false,
+    freeExtra: true,
+    freeExtraPlaceholder: '例：角丸多め・柔らかい印象、アニメーション少なめ、フォントはゴシック系',
+    opts: [
+      { icon:'layout',     l:'シンプル・使いやすさ重視', v:'simple' },
+      { icon:'sparkles',   l:'モダン・スタイリッシュ',   v:'modern' },
+      { icon:'palette',    l:'カラフル・ポップ',         v:'colorful' },
+      { icon:'moon',       l:'ダーク・クール',           v:'dark' },
+      { icon:'briefcase',  l:'プロフェッショナル',       v:'professional' },
+    ]
+  },
+  {
+    id: 'reference',
+    q: '参考にしたい\nサービスは？',
+    hint: 'なくてもOK。あるとデザインの完成度が上がります',
+    freeText: true,
+    placeholder: '例：Notionのようなレイアウト、Twitterのようなタイムライン形式',
+    exChips: [
+      { icon:'layout',        l:'Notion（ドキュメント管理）' },
+      { icon:'twitter',       l:'Twitter/X（タイムライン）' },
+      { icon:'instagram',     l:'Instagram（グリッド・カード）' },
+      { icon:'columns',       l:'Trello（カンバンボード）' },
+      { icon:'calendar',      l:'Googleカレンダー（カレンダー）' },
+      { icon:'message-circle',l:'LINE / Slack（チャット）' },
+      { icon:'shopping-cart', l:'Amazon（商品一覧・カート）' },
+      { icon:'play',          l:'YouTube（動画一覧）' },
+    ]
+  },
+  {
+    id: 'integrations',
+    q: '外部サービスとの\n連携は必要？',
+    hint: '必要なものを選んでください（なければスキップOK）',
+    multi: true,
+    freeExtra: true,
+    freeExtraPlaceholder: '例：QRコード生成、バーコード読み取り、YouTube動画埋め込み',
+    opts: [
+      { icon:'map-pin',      l:'地図・位置情報',      d:'Google Mapsなどで地図表示・ピン立て',   v:'maps' },
+      { icon:'credit-card',  l:'オンライン決済',       d:'Stripe等でクレジットカード払いを実装',  v:'payment' },
+      { icon:'mail',         l:'メール送信',           d:'確認メール・通知メール等を送る',        v:'email' },
+      { icon:'bot',          l:'AI機能',              d:'ChatGPT等で文章生成・チャットボット',   v:'ai' },
+      { icon:'bell',         l:'プッシュ通知・SMS',    d:'スマホやブラウザへの通知を送る',        v:'push' },
+      { icon:'line-chart',   l:'グラフ・チャート',     d:'棒グラフ・円グラフ等の高度な可視化',   v:'charts' },
+      { icon:'share-2',      l:'SNS連携',             d:'Twitter/Instagram等へのシェア・投稿',  v:'sns' },
+      { icon:'calendar',     l:'カレンダー連携',       d:'Googleカレンダー等と同期・表示',       v:'calendar' },
+    ]
+  },
+  {
+    id: 'constraints',
+    q: '避けてほしいことは？',
+    hint: '制約をAIに伝えることで、より使いやすい実装になります（なければスキップOK）',
+    multi: true,
+    freeExtra: true,
+    freeExtraPlaceholder: '例：英語UIは使わないで、古いブラウザは対応不要、アニメーションは最小限に',
+    opts: [
+      { icon:'dollar-sign', l:'有料サービスは使わないで',   d:'Firebase・AWSなど月額費用が発生するものを避ける',  v:'no_paid' },
+      { icon:'terminal',    l:'コマンド操作不要にして',     d:'ターミナル/npm installなしで使える構成にする',     v:'no_install' },
+      { icon:'user-x',      l:'外部アカウント登録不要',     d:'GoogleログインやSNS認証は使わない',               v:'no_signup' },
+      { icon:'zap',         l:'軽量・シンプルに',           d:'重いフレームワークより動作の速さを優先する',       v:'lightweight' },
+      { icon:'wifi-off',    l:'オフラインでも動くように',   d:'インターネットなしでも基本機能が使えるようにする', v:'offline' },
+    ]
+  },
+  {
+    id: 'output',
+    q: '完成形は\nどんなイメージ？',
+    multi: false,
+    opts: [
+      { icon:'file',       l:'ファイルをもらってすぐ開く', d:'HTMLファイルをダブルクリックで起動',    v:'file' },
+      { icon:'globe',      l:'URLでいつでもアクセス',      d:'VercelやNetlify等に公開する',          v:'web' },
+      { icon:'smartphone', l:'スマホ中心で使いたい',       d:'スマホ操作を最優先に設計・PWA対応',    v:'mobile' },
+      { icon:'laptop',     l:'自分のPCだけで動けばいい',   d:'Node.js/Python等でローカル起動',       v:'local' },
+    ]
+  },
+  {
+    id: 'scope',
+    q: '最初のバージョンに\n何を含める？',
+    multi: false,
+    opts: [
+      { icon:'target',     l:'動けばいい・最速で',         d:'コア機能のみ。余分な機能は後回し',          v:'mvp' },
+      { icon:'package',    l:'よく使う機能は一通り',       d:'標準的な完成度を目指す',                    v:'standard' },
+      { icon:'star',       l:'できる限り完成度高く',       d:'エラー処理・UXまで丁寧に実装',             v:'full' },
+      { icon:'refresh-cw', l:'小さく作って少しずつ追加',   d:'拡張しやすい設計で段階的に機能を追加',     v:'iterative' },
+    ]
+  },
+  {
+    id: 'quality',
+    q: 'こだわりポイントは？',
+    hint: '選択 ＋ 自由記述もOK（なければそのまま次へ）',
+    multi: true,
+    freeExtra: true,
+    freeExtraPlaceholder: '例：オフラインでも動く、ダークモード対応、多言語対応',
+    opts: [
+      { icon:'zap',          l:'とにかく速く動く',       v:'performance' },
+      { icon:'smartphone',   l:'スマホでも快適',         v:'responsive' },
+      { icon:'paintbrush',   l:'デザインにこだわる',     v:'design' },
+      { icon:'wrench',       l:'後で機能を追加しやすい', v:'extensible' },
+      { icon:'shield',       l:'セキュリティをしっかり', v:'security' },
+      { icon:'heart',        l:'誰でも使いやすい',       v:'accessibility' },
+    ]
+  },
+  {
+    id: 'target_ai',
+    q: 'どのAIに\n貼り付けますか？',
+    hint: 'AIごとに最適な形式でプロンプトを出力します',
+    multi: false,
+    opts: [
+      { icon:'message-circle', l:'Claude',         d:'claude.ai・長文・高精度・最もおすすめ',     v:'claude' },
+      { icon:'message-square', l:'ChatGPT',        d:'chatgpt.com・万能タイプ',                  v:'chatgpt' },
+      { icon:'code-2',         l:'Cursor',         d:'コードエディタ・ファイル単位で直接実装',    v:'cursor' },
+      { icon:'zap',            l:'Bolt / Lovable', d:'URLを開くだけでアプリを自動生成するツール', v:'bolt' },
+    ]
+  },
+];
+
+// ── MAP ───────────────────────────────────────────────
+const MAP = {
+  users: {
+    self:     '個人利用（作成者自身のみ）',
+    team:     '特定のメンバー・チーム内',
+    public:   '一般ユーザー向け（誰でも使える公開サービス）',
+    business: 'ビジネス・業務利用',
+  },
+  scale: {
+    solo:   '個人利用（1〜2人）。シンプルな構成・localStorageや軽量DBで十分',
+    small:  '少人数利用（〜10人程度）。基本的なDB設計とユーザー管理が必要',
+    medium: '中規模（〜1000人程度）。パフォーマンスを考慮した設計・適切なインデックスが必要',
+    large:  '大規模（1000人以上）。スケーラブルなアーキテクチャ・キャッシュ・負荷分散を考慮すること',
+  },
+  actions: {
+    input:   '情報を入力・投稿できる',
+    search:  '検索・絞り込みができる',
+    chart:   'グラフや統計データを見ることができる',
+    message: 'コメント・メッセージのやり取りができる',
+    upload:  'ファイルのアップロード・ダウンロードができる',
+    task:    'タスク・チェックリストを作成・管理できる',
+  },
+  screens: {
+    dashboard: 'ダッシュボード・トップ画面（全体の状況を一目で把握）',
+    list:      '一覧・リスト画面（データをリスト形式で表示・管理）',
+    form:      'データ入力フォーム（情報を入力・編集できる）',
+    chart:     'グラフ・統計画面（データを視覚的に表示）',
+    profile:   'プロフィール・設定画面（ユーザー情報や設定の変更）',
+    search:    '検索・絞り込み画面（条件を指定してデータを探せる）',
+  },
+  data: {
+    none:   'データの永続化は不要（ページ再読み込みでリセットされてよい）',
+    local:  'ブラウザの localStorage にデータを保存すること（このデバイスのみ）',
+    cloud:  'クラウドデータベース（Firebase / Supabase / PocketBaseなど、実装が簡単なものを選ぶ）を使い、どのデバイスからでも同じデータにアクセスできるようにすること',
+    sheets: 'Google Sheets API を使い、Googleスプレッドシートをデータベース代わりとすること。読み書き両方に対応すること',
+  },
+  auth: {
+    none:  '認証は不要。URLにアクセスすれば誰でも使える',
+    basic: 'メールアドレス＋パスワードによるサインアップ・ログイン機能を実装すること。ログイン状態はセッションで維持すること',
+    multi: '複数ユーザー対応。ログインしたユーザーごとに独立したデータを持つこと（他のユーザーのデータは絶対に見えないようにすること）',
+    roles: '管理者（admin）と一般ユーザー（user）の2種類の権限を設けること。管理者は全データの管理・ユーザー管理ができること',
+  },
+  design: {
+    simple:       'シンプルで直感的なUI。余白を十分に取り、迷わず操作できる設計。色数を絞り見やすさを最優先にする',
+    modern:       'モダンでスタイリッシュなデザイン。ガラスモーフィズムやグラデーション、滑らかなアニメーションを活用し一貫したデザインシステムで統一する',
+    colorful:     'カラフルでポップなデザイン。明るくフレンドリーな色使いで、ユーザーが楽しく使えるビジュアルにする',
+    dark:         'ダークテーマ。黒・深いグレーを基調とし、アクセントカラー（紫・青・緑系）を効果的に使用したクールなデザイン',
+    professional: 'プロフェッショナルなビジネス向けデザイン。信頼感・清潔感を重視し、落ち着いた色調と整ったレイアウトにする',
+  },
+  output: {
+    file:   '単一のHTMLファイルとして完結させること。外部ライブラリはCDN経由で読み込み、ファイルをブラウザで開くだけで動作するようにすること（サーバー不要）',
+    web:    'Webアプリとしてデプロイ可能な構成で作成すること。フレームワーク（React / Vue / Next.jsなど）を適切に選択し、npm run dev および npm run build で動作するようにすること',
+    mobile: 'モバイルファーストのレスポンシブWebアプリとして作成すること。スマートフォンでの操作を最優先に設計し、PWA対応（manifest.json）も含めること',
+    local:  'ローカル環境で実行できるアプリとして作成すること。起動コマンドを明記し、必要なパッケージのインストール方法も含めること（Node.js / Python等）',
+  },
+  scope: {
+    mvp:       'コア機能のみに絞った最小限のMVP（Minimum Viable Product）を作ること。「あると便利」な機能は今回は追加しないこと。まず動く状態を最速で作ることを最優先にすること',
+    standard:  '一般的なアプリに期待される機能を過不足なく実装すること。凝りすぎず、かつ中途半端にもならない標準的な完成度を目指すこと',
+    full:      'できる限り高い完成度で実装すること。UX・エラー処理・エッジケース・パフォーマンス最適化まで丁寧に実装すること',
+    iterative: 'コア機能から始め、後から機能を追加しやすい設計にすること。今回は第1フェーズとして最低限動くものを作り、拡張しやすいアーキテクチャにすること',
+  },
+  integrations: {
+    maps:     '地図・位置情報機能（Google Maps API等を使用）',
+    payment:  'オンライン決済機能（Stripe等の決済サービスを使用。テスト環境での動作確認方法も含めること）',
+    email:    'メール送信機能（確認メール・通知メール等。SendGrid / Nodemailerなど実装が簡単なものを使用）',
+    ai:       'AI機能（OpenAI API等を使用したテキスト生成・チャットボット・画像認識等）',
+    push:     'プッシュ通知またはSMS通知機能（Web Push API / Twilio等を使用）',
+    charts:   'グラフ・データ可視化（Chart.js / Recharts / D3.jsなどのライブラリを使用）',
+    sns:      'SNS連携（Twitter/Instagram等へのシェア・投稿機能）',
+    calendar: 'カレンダー連携（Googleカレンダー等との同期・表示）',
+  },
+  constraints: {
+    no_paid:    '有料のサードパーティサービスは使用しないこと（Firebase / AWS / Stripe等、月額費用が発生するサービスを避け、無料で代替できるものを選ぶこと）',
+    no_install: 'ユーザーにコマンド操作・追加インストールを要求しないこと（npm installなどターミナル操作が不要な構成にすること）',
+    no_signup:  '外部サービスへのアカウント登録が必要な実装は使わないこと（GoogleログインやSNS認証等は含めないこと）',
+    lightweight:'軽量・シンプルな構成を保つこと。大規模フレームワークより動作の速さを優先し、不要な依存関係を追加しないこと',
+    offline:    'オフラインでも動作するようにすること（Service Worker・キャッシュAPIを活用し、インターネット接続がなくても基本機能が使えるようにすること）',
+  },
+  quality: {
+    performance:   'パフォーマンスを最適化する（遅延読み込み・不要な再レンダリングの防止・軽量なライブラリの選択）',
+    responsive:    'スマートフォン・タブレット・PCすべての画面サイズで快適に動作するレスポンシブデザインにする。タッチ操作にも対応する',
+    design:        'UIの細部にこだわる。アイコン・フォント・余白・色の一貫性を保ち、マイクロアニメーションやホバーエフェクトを加えて完成度を高める',
+    extensible:    '後から機能を追加・変更しやすい設計にする。コンポーネントを適切に分割し、コードの再利用性を高める',
+    security:      'セキュリティを重視する（XSS対策・入力値のサニタイズ・APIキーのクライアント側露出禁止・ユーザーが他人のデータにアクセスできないよう適切に制御する）',
+    accessibility: 'アクセシビリティに配慮する（キーボードナビゲーション・スクリーンリーダー対応・十分な色のコントラスト・ARIA属性の適切な使用）',
+  },
+};
+
+// ── Helpers ───────────────────────────────────────────
+function buildErrorScenarios(s) {
+  const scenarios = [
+    'フォームに未入力・不正な値が送信された場合：バリデーションエラーを即座にわかりやすく表示する',
+    'データが1件もない初期状態・空の検索結果：「まだデータがありません」などのempty stateを表示する',
+    'ページ読み込み中・処理中：ローディングスピナーやスケルトンUIを表示する',
+  ];
+  if (s.data === 'cloud' || s.data === 'sheets') scenarios.push('データの読み込み・保存に失敗した場合（ネットワークエラー等）：エラーメッセージを表示し、可能であればリトライ手段を提供する');
+  if (s.auth && s.auth !== 'none') {
+    scenarios.push('ログインしていないユーザーがログイン必須ページにアクセスした場合：ログイン画面にリダイレクトする');
+    scenarios.push('セッションが期限切れになった場合：ユーザーに通知し、再ログインを促す');
+  }
+  if (s.actions && s.actions.includes('upload')) scenarios.push('許可外のファイル形式・サイズ超過のアップロード：エラーメッセージを表示し、アップロードを拒否する');
+  if (s.integrations && s.integrations.includes('payment')) scenarios.push('決済に失敗した場合：具体的なエラー理由を表示し、入力内容は消去しないようにする');
+  if (s.integrations && s.integrations.includes('ai')) scenarios.push('AI APIがタイムアウト・エラーになった場合：ユーザーに通知し、再試行ボタンを表示する');
+  return scenarios;
+}
+
+function buildDoneConditions(s) {
+  const base = [
+    'すべての画面が意図通り表示される',
+    'ユーザーストーリーに記載した各機能が実際に動作する',
+    '上記エラーシナリオに適切に対応している',
+  ];
+  const outputCondition = {
+    file:   'ファイルをダブルクリックしてブラウザで開くだけで動作する（追加インストール不要）',
+    web:    'npm run dev で起動し、ブラウザで全機能を確認できる',
+    mobile: 'スマホのブラウザで開いてタッチ操作で快適に使える',
+    local:  'READMEの手順通りに起動でき、全機能が動作する',
+  };
+  if (s.output && outputCondition[s.output]) base.push(outputCondition[s.output]);
+  return base;
+}
+
+// ── Wizard state ──────────────────────────────────────
+let step = 0;
+let sel  = {};
+
+function startWizard() { step = 0; sel = {}; show('screen-wizard'); renderStep(); }
+
+function loadTemplate(key) {
+  const t = TEMPLATES.find(t => t.key === key);
+  if (!t) return;
+  step = 0;
+  sel = JSON.parse(JSON.stringify(t.sel));
+  show('screen-wizard');
+  renderStep();
+}
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function anim() {
+  const c = document.getElementById('wizard-card');
+  c.style.animation = 'none'; void c.offsetWidth; c.style.animation = 'fadeUp 0.25s ease';
+}
+
+function saveFreeInputs() {
+  const s = STEPS[step];
+  if (s.freeText) { const ta = document.getElementById('free-ta'); if (ta) sel[s.id] = ta.value.trim(); }
+  if (s.freeExtra) { const inp = document.getElementById('free-extra-inp'); if (inp) sel[s.id + '_free'] = inp.value.trim(); }
+}
+
+// ── Render ────────────────────────────────────────────
+function mkIcon(name) {
+  return `<i data-lucide="${name}"></i>`;
+}
+
+function renderStep() {
+  const s = STEPS[step];
+  const total = STEPS.length;
+
+  document.getElementById('progress-fill').style.width = `${(step / total) * 100}%`;
+  document.getElementById('step-badge').textContent = `STEP ${step + 1}`;
+  document.getElementById('step-frac').textContent = `${step + 1} / ${total}`;
+  document.getElementById('question-text').textContent = s.q;
+  document.getElementById('question-hint').textContent = s.hint || '';
+
+  const body = document.getElementById('step-body');
+
+  if (s.freeText) {
+    const prev = sel[s.id] || '';
+    body.innerHTML = `
+      <textarea class="free-ta" id="free-ta" placeholder="${s.placeholder || ''}" rows="3">${esc(prev)}</textarea>
+      <div class="ex-label">例から選ぶ（クリックで追加）</div>
+      <div class="ex-chips-row">
+        ${s.exChips.map(c => `<span class="ex-chip" onclick="appendToTA(${JSON.stringify(c.l)})">${mkIcon(c.icon)}${c.l}</span>`).join('')}
+      </div>`;
+  } else {
+    const isList = s.opts.length === 5;
+    const cur = sel[s.id];
+    const chips = s.opts.map((o, i) => {
+      const on = s.multi ? Array.isArray(cur) && cur.includes(o.v) : cur === o.v;
+      const p = iconBg(i);
+      return `<div class="option-card${on ? ' selected' : ''}" onclick="pick('${s.id}','${o.v}',${!!s.multi})">
+        <span class="option-icon-bg" style="background:${p.bg};color:${p.color}">${mkIcon(o.icon)}</span>
+        <div class="option-label">${o.l}</div>
+        ${o.d ? `<div class="option-desc">${o.d}</div>` : ''}
+      </div>`;
+    }).join('');
+    body.innerHTML = `<div class="options-grid${isList ? ' list' : ''}">${chips}</div>`;
+
+    if (s.freeExtra) {
+      const prevFree = sel[s.id + '_free'] || '';
+      body.innerHTML += `
+        <div class="free-extra-wrap">
+          <div class="free-extra-label">他にあれば自由に記入（任意）</div>
+          <input class="free-extra-inp" id="free-extra-inp" type="text"
+            placeholder="${s.freeExtraPlaceholder || ''}" value="${esc(prevFree)}">
+        </div>`;
+    }
+  }
+
+  const back = document.getElementById('btn-back');
+  const next = document.getElementById('btn-next');
+  back.style.display = step === 0 ? 'none' : '';
+  if (s.freeText || s.multi || s.freeExtra) {
+    next.style.display = 'inline-block';
+    next.textContent = step === total - 1 ? 'プロンプトを生成 ✨' : '次へ →';
+  } else {
+    next.style.display = 'none';
+  }
+
+  lucide.createIcons();
+}
+
+function appendToTA(text) {
+  const ta = document.getElementById('free-ta');
+  if (!ta) return;
+  ta.value = ta.value.trim() ? ta.value.trim() + '\n' + text : text;
+  ta.focus();
+}
+
+function pick(id, v, multi) {
+  if (multi) {
+    if (!sel[id]) sel[id] = [];
+    const i = sel[id].indexOf(v);
+    i >= 0 ? sel[id].splice(i, 1) : sel[id].push(v);
+    saveFreeInputs(); renderStep();
+  } else {
+    sel[id] = v; renderStep();
+    if (!STEPS[step].freeExtra) {
+      setTimeout(() => {
+        if (step < STEPS.length - 1) { step++; anim(); renderStep(); } else finish();
+      }, 200);
+    }
+  }
+}
+
+function goNext() { saveFreeInputs(); if (step < STEPS.length - 1) { step++; anim(); renderStep(); } else finish(); }
+function goBack() { saveFreeInputs(); if (step > 0) { step--; anim(); renderStep(); } }
+
+function finish() {
+  document.getElementById('prompt-output').value = buildPrompt(sel);
+  show('screen-result');
+  lucide.createIcons();
+}
+
+function copyPrompt() {
+  navigator.clipboard.writeText(document.getElementById('prompt-output').value).then(() => {
+    const btn = document.getElementById('btn-copy');
+    btn.innerHTML = '<i data-lucide="check"></i>コピーしました！'; btn.classList.add('copied'); lucide.createIcons();
+    setTimeout(() => { btn.innerHTML = '<i data-lucide="clipboard"></i>コピーする'; btn.classList.remove('copied'); lucide.createIcons(); }, 2500);
+  });
+}
+
+function resetWizard() { show('screen-welcome'); }
+function esc(s) { return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+// ── Prompt Builder ─────────────────────────────────────
+function buildBoltPrompt(s) {
+  const L = [];
+  L.push('以下の仕様でWebアプリを生成してください。\n');
+  L.push('## 技術スタック');
+  if (s.output === 'file') {
+    L.push('- 単一HTMLファイル（外部ライブラリはCDN経由・サーバー不要）');
+  } else {
+    L.push('- React + Vite + TypeScript + Tailwind CSS');
+    if (s.data === 'cloud') L.push('- データベース: Supabase');
+    else if (s.data === 'sheets') L.push('- データ: Google Sheets API');
+    else if (s.data === 'local') L.push('- データ保存: localStorage');
+    if (s.auth && s.auth !== 'none') L.push('- 認証: Supabase Auth');
+  }
+  L.push('');
+  const purpose = s.purpose || 'アプリを作りたい';
+  const users   = MAP.users[s.users] || 'ユーザー';
+  L.push('## アプリ概要');
+  L.push(`「${purpose}」`);
+  L.push(`対象ユーザー: ${users}`);
+  if (s.scale) L.push(`想定規模: ${MAP.scale[s.scale].split('。')[0]}`);
+  L.push('');
+  const actions = (s.actions || []).map(v => MAP.actions[v]).filter(Boolean);
+  if (s.actions_free) s.actions_free.split(/[,、\n]/).map(x => x.trim()).filter(Boolean).forEach(x => actions.push(x));
+  if (actions.length > 0) { L.push('## 機能'); actions.forEach(a => L.push(`- ${a}`)); L.push(''); }
+  const screenItems = (s.screens || []).map(v => MAP.screens[v]).filter(Boolean);
+  if (s.screens_free) s.screens_free.split(/[,、\n]/).map(x => x.trim()).filter(Boolean).forEach(x => screenItems.push(x));
+  if (screenItems.length > 0) { L.push('## 画面'); screenItems.forEach(v => L.push(`- ${v}`)); L.push(''); }
+  if (s.data_model) { L.push('## データ構造'); L.push(s.data_model); L.push(''); }
+  if (s.auth && s.auth !== 'none') {
+    const authShort = { basic: 'メール＋パスワード認証', multi: 'マルチユーザー（ユーザーごとに独立したデータ）', roles: '管理者・一般ユーザーの2権限' };
+    L.push('## 認証'); L.push(authShort[s.auth] || ''); L.push('');
+  }
+  const integrations = (s.integrations || []).map(v => MAP.integrations[v]).filter(Boolean);
+  if (s.integrations_free) s.integrations_free.split(/[,、\n]/).map(x => x.trim()).filter(Boolean).forEach(x => integrations.push(x));
+  if (integrations.length > 0) { L.push('## 外部サービス連携'); integrations.forEach(i => L.push(`- ${i}`)); L.push(''); }
+  if (s.design || s.design_free || s.reference) {
+    const designShort = { simple: 'シンプル・ミニマル', modern: 'モダン・スタイリッシュ', colorful: 'カラフル・ポップ', dark: 'ダークテーマ', professional: 'プロフェッショナル・ビジネス' };
+    L.push('## デザイン');
+    if (s.design) L.push(designShort[s.design] || '');
+    if (s.design_free) L.push(s.design_free);
+    if (s.reference) L.push(`参考: ${s.reference}`);
+    L.push('');
+  }
+  if (s.scope) {
+    const scopeShort = { mvp: '最小限の機能のみ（MVP）', standard: '標準的な完成度', full: '高い完成度・エラー処理まで丁寧に', iterative: '拡張しやすい設計' };
+    L.push('## 実装方針'); L.push(scopeShort[s.scope] || ''); L.push('');
+  }
+  const quality = (s.quality || []).map(v => MAP.quality[v]).filter(Boolean);
+  if (s.quality_free) s.quality_free.split(/[,、\n]/).map(x => x.trim()).filter(Boolean).forEach(x => quality.push(x));
+  if (quality.length > 0) { L.push('## こだわり'); quality.forEach(q => L.push(`- ${q}`)); L.push(''); }
+  const constraints = (s.constraints || []).map(v => MAP.constraints[v]).filter(Boolean);
+  if (s.constraints_free) s.constraints_free.split(/[,、\n]/).map(x => x.trim()).filter(Boolean).forEach(x => constraints.push(x));
+  if (constraints.length > 0) { L.push('## 制約・禁止事項'); constraints.forEach(c => L.push(`- ${c}`)); L.push(''); }
+  L.push('---');
+  L.push('UIのテキスト・ラベル・ボタンはすべて日本語で統一すること。コードのコメントは日本語で書くこと。');
+  return L.join('\n');
+}
+
+function buildPrompt(s) {
+  const L = [];
+  const ai = s.target_ai || 'claude';
+  const isCursor = ai === 'cursor';
+  if (ai === 'bolt') return buildBoltPrompt(s);
+
+  if (isCursor) {
+    L.push('あなたは経験豊富なフルスタック開発者です。');
+    L.push('このプロジェクトは **CursorのAgentモードまたはComposerモード** を使って実装します。');
+    L.push('以下の仕様書をもとに、完全に動作するアプリを作成してください。\n');
+  } else {
+    L.push('あなたは経験豊富なフルスタックWebアプリケーション開発者です。');
+    L.push('以下の仕様書をもとに、完全に動作するアプリを作成してください。\n');
+  }
+  L.push('---');
+  if (isCursor) {
+    L.push('【Cursor Agentモードでの実装手順】');
+    L.push('1. 作成するファイルの一覧（ファイルパス付き）を最初に提示してください');
+    L.push('2. ファイルは1つずつ、省略なく完全な状態で作成してください');
+    L.push('3. 途中で止まらず、すべてのファイルを実装しきってください');
+    L.push('4. 不明な点がある場合は実装前に質問してください');
+  } else {
+    L.push('【実装前に必ずやること】');
+    L.push('1. 使用する技術スタック・ライブラリとその選定理由を日本語で説明してください');
+    L.push('2. ファイル構成・コンポーネント設計の概要を示してください');
+    L.push('3. 不明な点や設計上の重要な選択肢がある場合は、実装前に質問してください');
+  }
+  L.push('');
+  L.push('【実装全体を通じて守ること】');
+  L.push('- UIのすべてのテキスト・ラベル・ボタン・メッセージ・エラー文は日本語で統一すること');
+  L.push('- コードのコメントは日本語で書くこと');
+  L.push('---\n');
+
+  L.push('# 仕様書\n');
+  L.push('## プロジェクト概要');
+  const purpose = s.purpose || 'アプリを作りたい';
+  const users   = MAP.users[s.users] || 'ユーザー';
+  const scale   = MAP.scale[s.scale];
+  L.push(`「${purpose}」を実現するアプリを作成してください。`);
+  L.push(`対象ユーザー：${users}`);
+  if (scale) L.push(`想定利用規模：${scale}`);
+  L.push('');
+
+  const constraints = (s.constraints || []).map(v => MAP.constraints[v]).filter(Boolean);
+  if (s.constraints_free) s.constraints_free.split(/[,、\n]/).map(x => x.trim()).filter(Boolean).forEach(x => constraints.push(x));
+  if (constraints.length > 0) { L.push('## 制約・禁止事項（必ず守ること）'); constraints.forEach(c => L.push(`- ${c}`)); L.push(''); }
+
+  const actions = (s.actions || []).map(v => MAP.actions[v]).filter(Boolean);
+  if (s.actions_free) s.actions_free.split(/[,、\n]/).map(x => x.trim()).filter(Boolean).forEach(x => actions.push(x));
+  if (actions.length > 0) { L.push('## ユーザーストーリー（できること）'); actions.forEach(a => L.push(`- ユーザーは${a}`)); L.push(''); }
+
+  const screenItems = (s.screens || []).map(v => MAP.screens[v]).filter(Boolean);
+  if (s.screens_free) s.screens_free.split(/[,、\n]/).map(x => x.trim()).filter(Boolean).forEach(x => screenItems.push(x));
+  if (screenItems.length > 0) { L.push('## 必要な画面'); screenItems.forEach(v => L.push(`- ${v}`)); L.push(''); }
+
+  if (s.data) {
+    L.push('## データ管理');
+    L.push(MAP.data[s.data] || '');
+    if (s.data !== 'none') L.push('⚠️ サンプルデータや初期値を絶対にコードにハードコードしないこと。データは必ず上記の方法で実際に保存・読み込みすること。');
+    L.push('');
+  }
+  if (s.data_model) {
+    L.push('## データモデル（保存するデータの構造）');
+    L.push(s.data_model);
+    L.push('上記の構造に従ってデータスキーマを設計すること。各フィールドの名前・型・必須/任意をコードのコメントで明示すること。');
+    L.push('');
+  }
+  if (s.auth) {
+    L.push('## 認証・アクセス制御');
+    L.push(MAP.auth[s.auth] || '');
+    if (s.auth === 'multi' || s.auth === 'roles') L.push('⚠️ ユーザーAが他のユーザーBのデータにアクセスできないよう、データアクセス制御を必ず実装すること。');
+    L.push('');
+  }
+
+  const integrations = (s.integrations || []).map(v => MAP.integrations[v]).filter(Boolean);
+  if (s.integrations_free) s.integrations_free.split(/[,、\n]/).map(x => x.trim()).filter(Boolean).forEach(x => integrations.push(x));
+  if (integrations.length > 0) {
+    L.push('## 外部サービス連携');
+    integrations.forEach(i => L.push(`- ${i}`));
+    L.push('⚠️ 各サービスのAPIキー・シークレットは必ず環境変数（.env等）で管理し、コードに直接書かないこと。');
+    L.push('');
+  }
+
+  if (s.design || s.design_free || s.reference) {
+    L.push('## デザイン・UI方針');
+    if (s.design) L.push(MAP.design[s.design] || '');
+    if (s.design_free) L.push(`追加のデザイン指定：${s.design_free}`);
+    if (s.reference) { L.push(`参考サービス・イメージ：${s.reference}`); L.push('上記サービスのUI/UXレイアウトを参考にしながら、独自のデザインで実装すること。'); }
+    L.push('');
+  }
+  if (s.output) { L.push('## 技術要件・成果物の形式'); L.push(MAP.output[s.output] || ''); L.push(''); }
+  if (s.scope) { L.push('## スコープ・実装方針'); L.push(MAP.scope[s.scope] || ''); L.push(''); }
+
+  const quality = (s.quality || []).map(v => MAP.quality[v]).filter(Boolean);
+  if (s.quality_free) s.quality_free.split(/[,、\n]/).map(x => x.trim()).filter(Boolean).forEach(x => quality.push(x));
+  if (quality.length > 0) { L.push('## 品質・こだわり'); quality.forEach(q => L.push(`- ${q}`)); L.push(''); }
+
+  L.push('## 必ず対応すること：エラーシナリオ');
+  buildErrorScenarios(s).forEach(e => L.push(`- ${e}`));
+  L.push('');
+  L.push('## 完了条件（これが全て満たされたら完成）');
+  buildDoneConditions(s).forEach(c => L.push(`- ${c}`));
+  L.push('');
+  L.push('---');
+  L.push('実装完了後、以下を日本語で説明してください：');
+  L.push('- 起動方法・使い方');
+  L.push('- 実装した機能の一覧');
+  L.push('- 今後追加できる機能のアイデア（任意）');
+  return L.join('\n');
+}
+
+// ── Init ──────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  const el = document.getElementById('template-chips');
+  TEMPLATES.forEach(t => {
+    const btn = document.createElement('button');
+    btn.className = 'template-chip';
+    btn.innerHTML = `<i data-lucide="${t.icon}"></i>${t.name}<span class="template-badge">自動入力</span>`;
+    btn.onclick = () => loadTemplate(t.key);
+    el.appendChild(btn);
+  });
+  lucide.createIcons();
+});
+</script>
+</body>
+</html>
