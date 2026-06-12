@@ -514,9 +514,7 @@
         解約スケジュール管理
       </div>
       <div class="sub-add-row">
-        <select class="sub-select" id="subSvcSelect">
-          ${Object.entries(SVC).map(([k,v])=>`<option value="${k}">${v.name}</option>`).join('')}
-        </select>
+        <select class="sub-select" id="subSvcSelect"></select>
         <input type="date" class="sub-date" id="subStartDate">
         <button class="sub-add-btn" onclick="addSub()">追加</button>
       </div>
@@ -1444,6 +1442,7 @@ function allItems() { return [...DB, ...customItems]; }
     if (!e.target.closest('.add-wrap') && !e.target.closest('.add-manual')) closeDD();
   });
 
+  document.getElementById('subSvcSelect').innerHTML = Object.entries(SVC).map(([k,v])=>`<option value="${k}">${v.name}</option>`).join('');
   buildSvcCheckGrid();
   initTmdbUI();
   initPosterObserver();
