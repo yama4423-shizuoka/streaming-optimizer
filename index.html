@@ -385,7 +385,7 @@
         transition:color .15s; padding:3px 2px; position:relative; letter-spacing:.1px;
       }
       .mobile-tab.active { color:var(--acc2); }
-      .mobile-tab-icon { font-size:20px; line-height:1.3; }
+      .mobile-tab-icon { line-height:0; }
       .mobile-tab-badge {
         position:absolute; top:5px; right:calc(50% - 21px);
         background:linear-gradient(135deg,#7c6ff5,#a89cf7); color:#fff;
@@ -592,20 +592,20 @@
 <!-- モバイル ボトムナビ -->
 <nav class="mobile-tabbar" id="mobileTabbar">
   <button class="mobile-tab active" id="mTabGrid" onclick="mobileGoGrid()">
-    <span class="mobile-tab-icon"></span>
+    <span class="mobile-tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></span>
     作品
   </button>
   <button class="mobile-tab" id="mTabSel" onclick="mobileOpenSheet('selected')">
-    <span class="mobile-tab-icon"></span>
+    <span class="mobile-tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg></span>
     <span class="mobile-tab-badge" id="mSelBadge"></span>
     選択中
   </button>
   <button class="mobile-tab" id="mTabCalc" onclick="mobileCalc()">
-    <span class="mobile-tab-icon"></span>
+    <span class="mobile-tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
     最安計算
   </button>
   <button class="mobile-tab" id="mTabMore" onclick="mobileOpenSheet('more')">
-    <span class="mobile-tab-icon"></span>
+    <span class="mobile-tab-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg></span>
     設定
   </button>
 </nav>
