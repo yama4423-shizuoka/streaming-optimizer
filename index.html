@@ -515,7 +515,7 @@
       </div>
       <div class="sub-add-row">
         <select class="sub-select" id="subSvcSelect"></select>
-        <input type="date" class="sub-date" id="subStartDate">
+        <input type="date" class="sub-date" id="subStartDate" aria-label="開始日">
         <button class="sub-add-btn" onclick="addSub()">追加</button>
       </div>
       <label class="sub-trial-chk">
@@ -2042,7 +2042,7 @@ function buildMobileRankHTML() {
 function buildMobileSchedHTML() {
   return `<div class="sub-add-row">
     <select class="sub-select" id="mSubSel">${Object.entries(SVC).map(([k,v])=>`<option value="${k}">${v.name}</option>`).join('')}</select>
-    <input type="date" class="sub-date" id="mSubDate">
+    <input type="date" class="sub-date" id="mSubDate" aria-label="開始日">
     <button class="sub-add-btn" onclick="addSubMobile()">追加</button>
   </div>
   <label class="sub-trial-chk"><input type="checkbox" id="mSubTrial"> 無料トライアル中</label>
