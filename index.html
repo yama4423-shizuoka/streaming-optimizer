@@ -1773,7 +1773,7 @@ function closeAdd() {
   closeDD();
   document.getElementById('addInput').value = '';
   document.getElementById('addManual').className = 'add-manual';
-  document.getElementById('addHint').textContent = '入力するとJustWatchで配信サービスを自動検索します';
+  document.getElementById('addHint').textContent = '作品名を入力するとTMDbで配信サービスを自動検索します';
   checkedSvcs.clear();
   document.querySelectorAll('.svc-chk').forEach(el => el.classList.remove('on'));
   document.getElementById('addEmoji').value = '';
