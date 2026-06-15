@@ -2069,7 +2069,7 @@ function buildSubListHTML() {
     return `<div class="sub-item ${uc}">
       <div class="sub-item-head">
         <span class="sub-dot" style="background:${svc.color}"></span>
-        <span class="sub-name">${svc.name}${sub.isTrial?' ':''}</span>
+        <span class="sub-name">${svc.name}${sub.isTrial?' <span class="badge-trial">無料体験</span>':''}</span>
         <button class="sub-rm" onclick="removeSub('${sub.id}');document.getElementById('mSubListWrap').innerHTML=buildSubListHTML()">✕</button>
       </div>
       <div class="sub-deadline">${info.label} — ${dt}</div>
