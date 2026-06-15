@@ -1238,12 +1238,12 @@ function renderSubList() {
     const dc   = daysClass(info.daysLeft);
     const uc   = urgencyClass(info.daysLeft);
     const daysText = info.daysLeft < 0
-      ? `<span class="${dc}"> 期限切れ</span>`
+      ? `<span class="${dc}">期限切れ</span>`
       : `<span class="${dc}">あと${info.daysLeft}日</span>`;
     return `<div class="sub-item ${uc}">
       <div class="sub-item-head">
         <span class="sub-dot" style="background:${svc.color}"></span>
-        <span class="sub-name">${svc.name}${sub.isTrial ? ' ' : ''}</span>
+        <span class="sub-name">${svc.name}${sub.isTrial ? ' <span class="badge-trial">無料体験</span>' : ''}</span>
         <button class="sub-rm" onclick="removeSub('${sub.id}')">✕</button>
       </div>
       <div class="sub-deadline">
@@ -1251,7 +1251,7 @@ function renderSubList() {
       </div>
       <div class="sub-actions">
         <a href="${svc.url}" target="_blank" rel="noopener" class="sub-action-btn cancel">解約ページへ →</a>
-        <button class="sub-action-btn ical" onclick="exportICS(mySubs.find(s=>s.id==='${sub.id}'))"> カレンダーに追加</button>
+        <button class="sub-action-btn ical" onclick="exportICS(mySubs.find(s=>s.id==='${sub.id}'))">カレンダーに追加</button>
       </div>
     </div>`;
   }).join('');
