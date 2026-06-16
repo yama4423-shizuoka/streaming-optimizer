@@ -477,14 +477,14 @@
 <main class="layout">
   <div>
     <div class="filter-row" id="filterRow">
-      <button class="fb active" data-genre="all">すべて</button>
-      <button class="fb" data-genre="foreign">海外ドラマ</button>
-      <button class="fb" data-genre="anime">アニメ</button>
-      <button class="fb" data-genre="movie">映画</button>
-      <button class="fb" data-genre="kdrama">韓国ドラマ</button>
-      <button class="fb" data-genre="jdrama">日本ドラマ</button>
-      <button class="fb" data-genre="sports">スポーツ</button>
-      <button class="fb" data-genre="variety">バラエティ</button>
+      <button class="fb active" data-genre="all" aria-pressed="true">すべて</button>
+      <button class="fb" data-genre="foreign" aria-pressed="false">海外ドラマ</button>
+      <button class="fb" data-genre="anime" aria-pressed="false">アニメ</button>
+      <button class="fb" data-genre="movie" aria-pressed="false">映画</button>
+      <button class="fb" data-genre="kdrama" aria-pressed="false">韓国ドラマ</button>
+      <button class="fb" data-genre="jdrama" aria-pressed="false">日本ドラマ</button>
+      <button class="fb" data-genre="sports" aria-pressed="false">スポーツ</button>
+      <button class="fb" data-genre="variety" aria-pressed="false">バラエティ</button>
     </div>
     <div class="grid" id="grid"></div>
   </div>
@@ -1429,8 +1429,9 @@ function allItems() { return [...DB, ...customItems]; }
   document.getElementById('filterRow').addEventListener('click', e => {
     const btn = e.target.closest('.fb');
     if (!btn) return;
-    document.querySelectorAll('.fb').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.fb').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
     btn.classList.add('active');
+    btn.setAttribute('aria-pressed', 'true');
     activeGenre = btn.dataset.genre;
     renderGrid();
   });
