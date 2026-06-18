@@ -1844,7 +1844,7 @@ function renderPlan(plan, isBest, allSel, idx, naiveCost) {
   plan.combo.forEach(svc => { cov[svc] = allSel.filter(it => it.s && it.s.includes(svc)); });
   const did = `d${idx}`;
   return `<div class="result-plan${isBest?' best':''}">
-    ${isBest ? '<div class="best-badge"> 最安プラン</div>' : `<div class="plan-alt-label">代替プラン ${idx+1}</div>`}
+    ${isBest ? '<div class="best-badge">最安プラン</div>' : `<div class="plan-alt-label">代替プラン ${idx}</div>`}
     <div class="plan-svcs">
       ${plan.combo.map(k=>`<div class="plan-svc-row">
         <div class="plan-dot" style="background:${SVC[k].color}"></div>
