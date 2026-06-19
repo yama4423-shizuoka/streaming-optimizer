@@ -522,7 +522,7 @@
         <input type="checkbox" id="subIsTrial"> 無料トライアル中
       </label>
       <div class="sub-list" id="subList"></div>
-      <button class="sub-notif-btn" id="subNotifBtn" onclick="requestNotifPermission()"> ブラウザ通知を有効にする</button>
+      <button class="sub-notif-btn" id="subNotifBtn" onclick="requestNotifPermission()">ブラウザ通知を有効にする</button>
     </div>
 
     <div class="panel">
@@ -543,7 +543,7 @@
 
       <!-- TMDb 未設定時 -->
       <div id="tmdbSetup" class="tmdb-setup">
-        <div class="tmdb-setup-title"> 配信サービスを自動検索するには</div>
+        <div class="tmdb-setup-title">配信サービスを自動検索するには</div>
         <div class="tmdb-setup-steps">
           1. <a href="https://www.themoviedb.org/" target="_blank" rel="noopener">themoviedb.org</a> で無料アカウント作成<br>
           2. 設定 → API → 「APIキーをリクエスト」<br>
@@ -563,8 +563,8 @@
       </div>
 
       <div class="search-mode">
-        <button class="mode-btn active" id="modeTitle" onclick="setSearchMode('title')"> 作品名</button>
-        <button class="mode-btn" id="modePerson" onclick="setSearchMode('person')"> 出演者</button>
+        <button class="mode-btn active" id="modeTitle" onclick="setSearchMode('title')">作品名</button>
+        <button class="mode-btn" id="modePerson" onclick="setSearchMode('person')">出演者</button>
       </div>
       <div class="add-wrap">
         <input class="add-input" id="addInput" type="text" placeholder="作品名を入力（日本語・英語）" autocomplete="off" spellcheck="false">
@@ -1268,7 +1268,7 @@ function checkDeadlineAlerts() {
   el.className = 'deadline-alert';
   el.innerHTML = `
     <button class="alert-close" onclick="this.parentElement.remove()">✕</button>
-    <div class="alert-ttl"> 解約期限が近づいています</div>
+    <div class="alert-ttl">解約期限が近づいています</div>
     ${urgent.map(x => `<div class="alert-item">・${x.svc.name} — あと${x.info.daysLeft}日</div>`).join('')}
   `;
   document.body.appendChild(el);
@@ -1599,13 +1599,13 @@ async function performPersonSearch(q) {
 
     const dd = document.getElementById('addDd');
     if (!data.person) {
-      dd.innerHTML = `<div class="dd-section"><div class="dd-status"> 「${esc(q)}」という出演者が見つかりませんでした</div></div>`;
+      dd.innerHTML = `<div class="dd-section"><div class="dd-status">「${esc(q)}」という出演者が見つかりませんでした</div></div>`;
       dd.className = 'add-dd open';
       return;
     }
 
     const parts = [`<div class="dd-section">
-      <div class="dd-section-hd"> ${esc(data.person.name)} の出演作品</div>
+      <div class="dd-section-hd">${esc(data.person.name)} の出演作品</div>
       ${(data.results || []).map(item => {
         const cid = 'tc' + (tmdbCacheSeq++);
         tmdbCache.set(cid, { ...item, svcs: [...new Set((item.providers || []).map(nameToSvcKey).filter(Boolean))] });
@@ -1627,7 +1627,7 @@ async function performPersonSearch(q) {
     dd.className = 'add-dd open';
   } catch(e) {
     const dd = document.getElementById('addDd');
-    dd.innerHTML = `<div class="dd-section"><div class="dd-status"> 検索に失敗しました</div></div>`;
+    dd.innerHTML = `<div class="dd-section"><div class="dd-status">検索に失敗しました</div></div>`;
     dd.className = 'add-dd open';
   }
 }
@@ -1639,7 +1639,7 @@ function renderDD(localHits, tmdbItems, q, status, errMsg) {
   // ── ローカルDB結果
   if (localHits.length) {
     parts.push(`<div class="dd-section">
-      <div class="dd-section-hd"> 登録済み作品</div>
+      <div class="dd-section-hd">登録済み作品</div>
       ${localHits.map(it => {
         const alr = selected.has(it.id);
         return `<div class="dd-item" onclick="addFromDD_db(${it.id})">
@@ -1658,7 +1658,7 @@ function renderDD(localHits, tmdbItems, q, status, errMsg) {
 
   } else if (status === 'nokey') {
     parts.push(`<div class="dd-section"><div class="dd-status" style="font-size:11px;flex-direction:column;align-items:flex-start;gap:2px">
-      <span> APIキー未設定のためネット検索できません</span>
+      <span>APIキー未設定のためネット検索できません</span>
       <span style="color:var(--tx2)">上の設定フォームでキーを登録してください</span>
     </div></div>`);
 
@@ -1669,7 +1669,7 @@ function renderDD(localHits, tmdbItems, q, status, errMsg) {
     );
     if (fresh.length) {
       parts.push(`<div class="dd-section">
-        <div class="dd-section-hd"> TMDb検索結果</div>
+        <div class="dd-section-hd">TMDb検索結果</div>
         ${fresh.map(item => {
           const cid = 'tc' + (tmdbCacheSeq++);
           tmdbCache.set(cid, item);
@@ -1694,7 +1694,7 @@ function renderDD(localHits, tmdbItems, q, status, errMsg) {
 
   } else if (status === 'error') {
     if (!localHits.length) { showManualFallback(q); return; }
-    parts.push(`<div class="dd-section"><div class="dd-status" style="font-size:11px"> ${errMsg || 'TMDb検索に失敗しました'}</div></div>`);
+    parts.push(`<div class="dd-section"><div class="dd-status" style="font-size:11px">${errMsg || 'TMDb検索に失敗しました'}</div></div>`);
   }
 
   if (!parts.length) { closeDD(); return; }
@@ -1815,7 +1815,7 @@ function calculate() {
 function renderResults(plans, allSel, uncoverable, overBudget) {
   const area = document.getElementById('resultArea');
   if (!plans.length) {
-    area.innerHTML = `<div class="panel"><div class="no-result-box"> 選択された作品を全て視聴できるプランが見つかりませんでした</div></div>`;
+    area.innerHTML = `<div class="panel"><div class="no-result-box">選択された作品を全て視聴できるプランが見つかりませんでした</div></div>`;
     return;
   }
   const naiveCost = (() => {
@@ -1832,8 +1832,8 @@ function renderResults(plans, allSel, uncoverable, overBudget) {
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
       最適プラン
     </div>
-    ${overBudget ? `<div class="warn"> 予算内に収まるプランが見つかりません。予算を上げるか、作品を減らしてみてください。</div>` : ''}
-    ${uncoverable.length ? `<div class="warn"> 配信情報なし: ${uncoverable.map(i=>esc(i.t)).join('、')}</div>` : ''}
+    ${overBudget ? `<div class="warn">予算内に収まるプランが見つかりません。予算を上げるか、作品を減らしてみてください。</div>` : ''}
+    ${uncoverable.length ? `<div class="warn">配信情報なし: ${uncoverable.map(i=>esc(i.t)).join('、')}</div>` : ''}
     ${plans.map((p,i) => renderPlan(p, i===0, allSel, i, naiveCost)).join('')}
   </div>`;
 }
@@ -1858,7 +1858,7 @@ function renderPlan(plan, isBest, allSel, idx, naiveCost) {
       const monthlyTotal = plan.cost * 12;
       const save = monthlyTotal - annualTotal;
       return save > 0
-        ? `<div class="plan-annual-total"><span> 年払いに切替</span><div style="text-align:right"><span class="plan-annual-val">¥${Math.round(annualTotal/12).toLocaleString()}/月相当</span><div class="plan-annual-save">年間 ¥${save.toLocaleString()} お得</div></div></div>`
+        ? `<div class="plan-annual-total"><span>年払いに切替</span><div style="text-align:right"><span class="plan-annual-val">¥${Math.round(annualTotal/12).toLocaleString()}/月相当</span><div class="plan-annual-save">年間 ¥${save.toLocaleString()} お得</div></div></div>`
         : '';
     })()}
     <div class="plan-total">
@@ -1937,7 +1937,7 @@ function mobileOpenSheet(view) {
     content.innerHTML = buildMobileSelectedHTML();
   } else if (view === 'results') {
     const resultArea = document.getElementById('resultArea');
-    content.innerHTML = `<div class="mobile-sheet-ttl">最安計算結果</div><div class="mob-result-area">${resultArea.innerHTML || '<div class="no-result-box"> 計算結果がありません</div>'}</div>`;
+    content.innerHTML = `<div class="mobile-sheet-ttl">最安計算結果</div><div class="mob-result-area">${resultArea.innerHTML || '<div class="no-result-box">計算結果がありません</div>'}</div>`;
   } else if (view === 'more') {
     content.innerHTML = buildMobileMoreHTML();
   }
@@ -1996,9 +1996,9 @@ function buildMobileMoreHTML() {
   moreCurrentTab = 'rank';
   return `<div class="mobile-sheet-ttl">設定 / ランキング</div>
     <div class="mob-inner-tabs">
-      <button class="mob-inner-tab active" id="miTabRank" onclick="switchMoreTab('rank')"> ランキング</button>
-      <button class="mob-inner-tab" id="miTabSched" onclick="switchMoreTab('sched')"> 解約管理</button>
-      <button class="mob-inner-tab" id="miTabAdd" onclick="switchMoreTab('add')"> 作品追加</button>
+      <button class="mob-inner-tab active" id="miTabRank" onclick="switchMoreTab('rank')">ランキング</button>
+      <button class="mob-inner-tab" id="miTabSched" onclick="switchMoreTab('sched')">解約管理</button>
+      <button class="mob-inner-tab" id="miTabAdd" onclick="switchMoreTab('add')">作品追加</button>
     </div>
     <div id="moreTabContent">${buildMobileRankHTML()}</div>`;
 }
@@ -2048,7 +2048,7 @@ function buildMobileSchedHTML() {
   </div>
   <label class="sub-trial-chk"><input type="checkbox" id="mSubTrial"> 無料トライアル中</label>
   <div id="mSubListWrap">${buildSubListHTML()}</div>
-  <button class="sub-notif-btn" onclick="requestNotifPermission()"> 通知を有効にする</button>`;
+  <button class="sub-notif-btn" onclick="requestNotifPermission()">通知を有効にする</button>`;
 }
 
 function addSubMobile() {
@@ -2066,7 +2066,7 @@ function buildSubListHTML() {
   return mySubs.map(sub => {
     const svc = SVC[sub.svcKey], info = getDeadlineInfo(sub);
     const dc = daysClass(info.daysLeft), uc = urgencyClass(info.daysLeft);
-    const dt = info.daysLeft < 0 ? `<span class="${dc}"> 期限切れ</span>` : `<span class="${dc}">あと${info.daysLeft}日</span>`;
+    const dt = info.daysLeft < 0 ? `<span class="${dc}">期限切れ</span>` : `<span class="${dc}">あと${info.daysLeft}日</span>`;
     return `<div class="sub-item ${uc}">
       <div class="sub-item-head">
         <span class="sub-dot" style="background:${svc.color}"></span>
@@ -2076,7 +2076,7 @@ function buildSubListHTML() {
       <div class="sub-deadline">${info.label} — ${dt}</div>
       <div class="sub-actions">
         <a href="${svc.url}" target="_blank" rel="noopener" class="sub-action-btn cancel">解約ページへ →</a>
-        <button class="sub-action-btn ical" onclick="exportICS(mySubs.find(s=>s.id==='${sub.id}'))"> カレンダー</button>
+        <button class="sub-action-btn ical" onclick="exportICS(mySubs.find(s=>s.id==='${sub.id}'))">カレンダー</button>
       </div>
     </div>`;
   }).join('');
@@ -2133,7 +2133,7 @@ function renderAuthUI() {
       <button class="logout-btn" onclick="signOut()">ログアウト</button>
     </div>`;
   } else {
-    area.innerHTML = `<button class="login-btn" onclick="signIn()"> Googleでログイン</button>`;
+    area.innerHTML = `<button class="login-btn" onclick="signIn()">Googleでログイン</button>`;
   }
 }
 
