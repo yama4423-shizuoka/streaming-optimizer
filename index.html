@@ -1523,7 +1523,7 @@ function renderSelList() {
     `<li class="sel-item">
       <span class="sel-em">${it.e}</span>
       <span class="sel-name">${esc(it.t)}</span>
-      <button class="sel-rm" onclick="removeItem(${it.id})">✕</button>
+      <button class="sel-rm" onclick="removeItem(${it.id})" aria-label="${esc(it.t)}を削除">✕</button>
     </li>`
   ).join('');
 }
@@ -1968,7 +1968,7 @@ function buildMobileSelectedHTML() {
       selItems.map(it => `<li class="sel-item">
         <span class="sel-em">${it.e}</span>
         <span class="sel-name">${esc(it.t)}</span>
-        <button class="sel-rm" onclick="removeItemMobile(${it.id})">✕</button>
+        <button class="sel-rm" onclick="removeItemMobile(${it.id})" aria-label="${esc(it.t)}を削除">✕</button>
       </li>`).join('') + `</ul>`;
   }
   const bv = budget;
