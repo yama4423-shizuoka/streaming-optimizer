@@ -1478,7 +1478,7 @@ function renderGrid() {
     const col = SVC[it.s[0]]?.color || '#555';
     const wikiAttr = it.wiki ? ` data-wiki="${encodeURIComponent(it.wiki)}"` : '';
     const posterAttr = it.g !== 'sports' ? ` data-poster-q="${encodeURIComponent(it.t)}"` : '';
-    return `<div class="card${sel?' sel':''}" onclick="toggle(${it.id})">
+    return `<div class="card${sel?' sel':''}" onclick="toggle(${it.id})" role="checkbox" aria-checked="${sel}" tabindex="0" aria-label="${esc(it.t)}" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggle(${it.id})}">
       <div class="card-thumb" style="background:linear-gradient(160deg,${col}22,${col}44)"${posterAttr}${wikiAttr}>
         <img class="card-poster" src="" alt="${esc(it.t)}のポスター">
         <span class="card-emoji">${it.e}</span>
