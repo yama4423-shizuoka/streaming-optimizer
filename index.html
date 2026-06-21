@@ -547,7 +547,7 @@
       <div id="tmdbSetup" class="tmdb-setup">
         <div class="tmdb-setup-title">配信サービスを自動検索するには</div>
         <div class="tmdb-setup-steps">
-          1. <a href="https://www.themoviedb.org/" target="_blank" rel="noopener">themoviedb.org</a> で無料アカウント作成<br>
+          1. <a href="https://www.themoviedb.org/" target="_blank" rel="noopener noreferrer">themoviedb.org</a> で無料アカウント作成<br>
           2. 設定 → API → 「APIキーをリクエスト」<br>
           3. 発行されたAPIキーを下に貼り付け
         </div>
@@ -588,7 +588,7 @@
 
 <footer class="footer">
   ※ 料金は掲載時点の月額（税込）。配信状況・価格は変更される場合があります。<br>
-  配信情報: <a href="https://www.themoviedb.org/" target="_blank" rel="noopener" style="color:var(--tx2)">TMDb</a> / 各サービスにてご確認ください。
+  配信情報: <a href="https://www.themoviedb.org/" target="_blank" rel="noopener noreferrer" style="color:var(--tx2)">TMDb</a> / 各サービスにてご確認ください。
 </footer>
 
 <!-- モバイル ボトムナビ -->
@@ -1253,7 +1253,7 @@ function renderSubList() {
         ${info.label} — ${daysText}
       </div>
       <div class="sub-actions">
-        <a href="${svc.url}" target="_blank" rel="noopener" class="sub-action-btn cancel">解約ページへ →</a>
+        <a href="${svc.url}" target="_blank" rel="noopener noreferrer" class="sub-action-btn cancel">解約ページへ →</a>
         <button class="sub-action-btn ical" onclick="exportICS(mySubs.find(s=>s.id==='${sub.id}'))">カレンダーに追加</button>
       </div>
     </div>`;
@@ -1626,7 +1626,7 @@ async function performPersonSearch(q) {
       }).join('')}
     </div>`];
 
-    dd.innerHTML = parts.join('') + `<div class="dd-footer">配信情報: <a href="https://www.themoviedb.org/" target="_blank" rel="noopener">TMDb</a></div>`;
+    dd.innerHTML = parts.join('') + `<div class="dd-footer">配信情報: <a href="https://www.themoviedb.org/" target="_blank" rel="noopener noreferrer">TMDb</a></div>`;
     dd.className = 'add-dd open';
   } catch(e) {
     const dd = document.getElementById('addDd');
@@ -1693,7 +1693,7 @@ function renderDD(localHits, tmdbItems, q, status, errMsg) {
       showManualFallback(q);
       return;
     }
-    parts.push(`<div class="dd-footer">配信情報: <a href="https://www.themoviedb.org/" target="_blank" rel="noopener">TMDb</a></div>`);
+    parts.push(`<div class="dd-footer">配信情報: <a href="https://www.themoviedb.org/" target="_blank" rel="noopener noreferrer">TMDb</a></div>`);
 
   } else if (status === 'error') {
     if (!localHits.length) { showManualFallback(q); return; }
@@ -1886,7 +1886,7 @@ function renderPlan(plan, isBest, allSel, idx, naiveCost) {
       <div class="plan-register-lbl">このプランに登録する</div>
       <div class="plan-register-btns">
         ${plan.combo.map(k=>`
-        <a href="${SVC[k].url}" target="_blank" rel="noopener" class="plan-register-btn" style="background:${SVC[k].color}">
+        <a href="${SVC[k].url}" target="_blank" rel="noopener noreferrer" class="plan-register-btn" style="background:${SVC[k].color}">
           <span class="plan-register-btn-name">${SVC[k].name}${SVC[k].trial ? `<span style="font-size:9px;font-weight:700;opacity:.85;margin-left:6px;background:rgba(255,255,255,.2);padding:1px 5px;border-radius:3px">${SVC[k].trial}日間無料</span>` : ''}</span>
           <span class="plan-register-btn-price">¥${SVC[k].price.toLocaleString()}/月</span>
           <span class="plan-register-btn-arrow">→</span>
@@ -2080,7 +2080,7 @@ function buildSubListHTML() {
       </div>
       <div class="sub-deadline">${info.label} — ${dt}</div>
       <div class="sub-actions">
-        <a href="${svc.url}" target="_blank" rel="noopener" class="sub-action-btn cancel">解約ページへ →</a>
+        <a href="${svc.url}" target="_blank" rel="noopener noreferrer" class="sub-action-btn cancel">解約ページへ →</a>
         <button class="sub-action-btn ical" onclick="exportICS(mySubs.find(s=>s.id==='${sub.id}'))">カレンダー</button>
       </div>
     </div>`;
