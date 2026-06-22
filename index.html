@@ -1300,6 +1300,8 @@ async function requestNotifPermission() {
 function onBudgetChange(val) {
   budget = parseInt(val) || 0;
   document.getElementById('budgetVal').textContent = budget ? `¥${budget.toLocaleString()}/月` : '上限なし';
+  cloudSaveDebounced();
+  if (!currentUser) saveLocalData();
 }
 
 // ─────────────────────────────────────────────────────
