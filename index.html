@@ -1453,6 +1453,17 @@ function allItems() { return [...DB, ...customItems]; }
   document.getElementById('heroStatCount').textContent  = _dbN;
   initTmdbUI();
   initPosterObserver();
+  try {
+    const saved = JSON.parse(localStorage.getItem('local_sel') || 'null');
+    if (saved) {
+      selected    = new Set((saved.selected || []).map(Number));
+      customItems = saved.customItems || [];
+      budget      = saved.budget || 0;
+      if (saved.customSeq) customSeq = saved.customSeq;
+      document.getElementById('budgetSlider').value = budget;
+      onBudgetChange(budget);
+    }
+  } catch {}
   renderGrid();
   renderRanking();
   renderSubList();
@@ -1517,6 +1528,7 @@ function syncUI() {
     badge.classList.toggle('show', selected.size > 0);
   }
   cloudSaveDebounced();
+  if (!currentUser) saveLocalData();
 }
 
 function renderSelList() {
@@ -2195,6 +2207,17 @@ function cloudSaveDebounced() {
   if (!currentUser) return;
   clearTimeout(saveTimer);
   saveTimer = setTimeout(saveCloudData, 2000);
+}
+
+function saveLocalData() {
+  try {
+    localStorage.setItem('local_sel', JSON.stringify({
+      selected: [...selected],
+      customItems,
+      budget,
+      customSeq,
+    }));
+  } catch {}
 }
 
 initSupabase();
