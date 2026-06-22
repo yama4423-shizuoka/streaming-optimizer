@@ -1247,7 +1247,7 @@ function renderSubList() {
       <div class="sub-item-head">
         <span class="sub-dot" style="background:${svc.color}"></span>
         <span class="sub-name">${svc.name}${sub.isTrial ? ' <span class="badge-trial">無料体験</span>' : ''}</span>
-        <button class="sub-rm" onclick="removeSub('${sub.id}')">✕</button>
+        <button class="sub-rm" onclick="removeSub('${sub.id}')" aria-label="${esc(svc.name)}を削除">✕</button>
       </div>
       <div class="sub-deadline">
         ${info.label} — ${daysText}
@@ -2076,7 +2076,7 @@ function buildSubListHTML() {
       <div class="sub-item-head">
         <span class="sub-dot" style="background:${svc.color}"></span>
         <span class="sub-name">${svc.name}${sub.isTrial?' <span class="badge-trial">無料体験</span>':''}</span>
-        <button class="sub-rm" onclick="removeSub('${sub.id}');document.getElementById('mSubListWrap').innerHTML=buildSubListHTML()">✕</button>
+        <button class="sub-rm" onclick="removeSub('${sub.id}');document.getElementById('mSubListWrap').innerHTML=buildSubListHTML()" aria-label="${esc(svc.name)}を削除">✕</button>
       </div>
       <div class="sub-deadline">${info.label} — ${dt}</div>
       <div class="sub-actions">
