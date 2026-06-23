@@ -524,7 +524,7 @@
         解約スケジュール管理
       </h2>
       <div class="sub-add-row">
-        <select class="sub-select" id="subSvcSelect"></select>
+        <select class="sub-select" id="subSvcSelect" aria-label="サービスを選択"></select>
         <input type="date" class="sub-date" id="subStartDate" aria-label="開始日">
         <button class="sub-add-btn" onclick="addSub()">追加</button>
       </div>
@@ -2072,7 +2072,7 @@ function buildMobileRankHTML() {
 
 function buildMobileSchedHTML() {
   return `<div class="sub-add-row">
-    <select class="sub-select" id="mSubSel">${Object.entries(SVC).map(([k,v])=>`<option value="${k}">${v.name}</option>`).join('')}</select>
+    <select class="sub-select" id="mSubSel" aria-label="サービスを選択">${Object.entries(SVC).map(([k,v])=>`<option value="${k}">${v.name}</option>`).join('')}</select>
     <input type="date" class="sub-date" id="mSubDate" aria-label="開始日">
     <button class="sub-add-btn" onclick="addSubMobile()">追加</button>
   </div>
