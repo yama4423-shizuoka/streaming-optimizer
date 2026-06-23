@@ -2000,7 +2000,7 @@ function buildMobileSelectedHTML() {
       <span class="budget-val" id="mBudgetDisp">${bv ? '¥'+bv.toLocaleString()+'/月' : '上限なし'}</span>
     </div>
     <input type="range" class="budget-slider" min="0" max="15000" step="500" value="${bv}" aria-label="月額予算上限"
-      oninput="budget=parseInt(this.value)||0;document.getElementById('mBudgetDisp').textContent=budget?'¥'+budget.toLocaleString()+'/月':'上限なし';document.getElementById('budgetVal').textContent=budget?'¥'+budget.toLocaleString()+'/月':'上限なし';document.getElementById('budgetSlider').value=budget">
+      oninput="onBudgetChange(this.value);document.getElementById('mBudgetDisp').textContent=budget?'¥'+budget.toLocaleString()+'/月':'上限なし';document.getElementById('budgetSlider').value=budget">
   </div>
   <button class="calc-btn" ${!selItems.length?'disabled':''} onclick="closeMobileSheet();mobileCalc()">最安プランを計算する →</button>`;
   return html;
