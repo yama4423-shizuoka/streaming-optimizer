@@ -1769,7 +1769,7 @@ function addFromDD_tmdb(cid) {
 // ─ 手動追加（フォールバック）
 function buildSvcCheckGrid() {
   document.getElementById('svcCheckGrid').innerHTML = Object.entries(SVC).map(([k,v]) =>
-    `<div class="svc-chk" id="chk-${k}" onclick="toggleSvcChk('${k}')">
+    `<div class="svc-chk" id="chk-${k}" role="checkbox" aria-checked="false" tabindex="0" onclick="toggleSvcChk('${k}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleSvcChk('${k}')}">
       <span class="svc-chk-dot" style="background:${v.color}"></span>
       <span class="svc-chk-name">${v.name}</span>
       <span class="svc-chk-tick">✓</span>
@@ -1779,7 +1779,9 @@ function buildSvcCheckGrid() {
 
 function toggleSvcChk(k) {
   checkedSvcs.has(k) ? checkedSvcs.delete(k) : checkedSvcs.add(k);
-  document.getElementById('chk-'+k).classList.toggle('on', checkedSvcs.has(k));
+  const el = document.getElementById('chk-'+k);
+  el.classList.toggle('on', checkedSvcs.has(k));
+  el.setAttribute('aria-checked', checkedSvcs.has(k) ? 'true' : 'false');
 }
 
 function addCustomManual() {
