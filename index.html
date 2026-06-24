@@ -1496,7 +1496,10 @@ function renderGrid() {
     return gOk && sOk;
   });
   if (!items.length) {
-    grid.innerHTML = `<div class="grid-empty">「${esc(searchQ)}」に一致する作品が見つかりません<span style="display:block;font-size:12px;margin-top:10px;opacity:.8">サイドバーの「リストにない作品を追加」からTMDb検索で探せます</span></div>`;
+    const emptyHint = window.innerWidth <= 768
+      ? '下の「設定」タブ → 「作品追加」からTMDb検索で探せます'
+      : 'サイドバーの「リストにない作品を追加」からTMDb検索で探せます';
+    grid.innerHTML = `<div class="grid-empty">「${esc(searchQ)}」に一致する作品が見つかりません<span style="display:block;font-size:12px;margin-top:10px;opacity:.8">${emptyHint}</span></div>`;
     return;
   }
   grid.innerHTML = items.map(it => {
