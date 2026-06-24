@@ -2163,7 +2163,7 @@ function renderAuthUI() {
     const avatar = currentUser.user_metadata?.avatar_url || '';
     area.innerHTML = `<div class="user-menu">
       <span class="sync-dot" title="クラウド同期中"></span>
-      ${avatar ? `<img class="user-avatar" src="${avatar}" alt="">` : ''}
+      ${avatar ? `<img class="user-avatar" src="${esc(avatar)}" alt="${esc(name)}のプロフィール画像">` : ''}
       <span class="user-name">${esc(name)}</span>
       <button class="logout-btn" onclick="signOut()">ログアウト</button>
     </div>`;
