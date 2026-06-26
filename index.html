@@ -1328,7 +1328,7 @@ let currentMetric = 'cospa';
 
 function buildMetricTabs() {
   document.getElementById('metricTabs').innerHTML = METRICS.map(m =>
-    `<button class="metric-tab${currentMetric === m.key ? ' active' : ''}" onclick="switchMetric('${m.key}')">${m.label}</button>`
+    `<button class="metric-tab${currentMetric === m.key ? ' active' : ''}" onclick="switchMetric('${m.key}')" aria-pressed="${currentMetric === m.key}">${m.label}</button>`
   ).join('');
 }
 
