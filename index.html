@@ -1532,6 +1532,7 @@ function toggle(id) {
 
 function removeItem(id) {
   selected.delete(id);
+  customItems = customItems.filter(it => it.id !== id);
   renderGrid(); renderSelList(); syncUI(); renderRanking();
 }
 
