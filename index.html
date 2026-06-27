@@ -1162,6 +1162,8 @@ function addSub() {
   saveSubs();
   renderSubList();
   checkDeadlineAlerts();
+  document.getElementById('subStartDate').value = '';
+  document.getElementById('subIsTrial').checked = false;
 }
 
 function removeSub(id) {
@@ -2094,6 +2096,8 @@ function addSubMobile() {
   if (!startRaw) { alert('開始日を選択してください'); return; }
   mySubs.push({ id:'sub'+(subSeq++), svcKey, startDate:startRaw, isTrial });
   saveSubs(); renderSubList();
+  document.getElementById('mSubDate').value = '';
+  document.getElementById('mSubTrial').checked = false;
   document.getElementById('mSubListWrap').innerHTML = buildSubListHTML();
 }
 
