@@ -2076,6 +2076,7 @@ function buildMobileRankHTML() {
 }
 
 function buildMobileSchedHTML() {
+  const notifGranted = 'Notification' in window && Notification.permission === 'granted';
   return `<div class="sub-add-row">
     <select class="sub-select" id="mSubSel" aria-label="サービスを選択">${Object.entries(SVC).map(([k,v])=>`<option value="${k}">${v.name}</option>`).join('')}</select>
     <input type="date" class="sub-date" id="mSubDate" aria-label="開始日">
@@ -2083,7 +2084,7 @@ function buildMobileSchedHTML() {
   </div>
   <label class="sub-trial-chk"><input type="checkbox" id="mSubTrial"> 無料トライアル中</label>
   <div id="mSubListWrap">${buildSubListHTML()}</div>
-  <button class="sub-notif-btn" onclick="requestNotifPermission()">通知を有効にする</button>`;
+  <button class="sub-notif-btn" ${notifGranted ? 'disabled' : ''} onclick="requestNotifPermission()">${notifGranted ? '通知が有効です' : '通知を有効にする'}</button>`;
 }
 
 function addSubMobile() {
