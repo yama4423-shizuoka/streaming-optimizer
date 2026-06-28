@@ -574,8 +574,8 @@
       </div>
 
       <div class="search-mode">
-        <button class="mode-btn active" id="modeTitle" onclick="setSearchMode('title')">作品名</button>
-        <button class="mode-btn" id="modePerson" onclick="setSearchMode('person')">出演者</button>
+        <button class="mode-btn active" id="modeTitle" onclick="setSearchMode('title')" aria-pressed="true">作品名</button>
+        <button class="mode-btn" id="modePerson" onclick="setSearchMode('person')" aria-pressed="false">出演者</button>
       </div>
       <div class="add-wrap">
         <input class="add-input" id="addInput" type="text" placeholder="作品名を入力（日本語・英語）" autocomplete="off" spellcheck="false">
@@ -1426,6 +1426,8 @@ function setSearchMode(mode) {
   searchMode = mode;
   document.getElementById('modeTitle').classList.toggle('active', mode === 'title');
   document.getElementById('modePerson').classList.toggle('active', mode === 'person');
+  document.getElementById('modeTitle').setAttribute('aria-pressed', String(mode === 'title'));
+  document.getElementById('modePerson').setAttribute('aria-pressed', String(mode === 'person'));
   document.getElementById('addInput').placeholder = mode === 'person'
     ? '出演者名を入力（日本語・英語）'
     : '作品名を入力（日本語・英語）';
