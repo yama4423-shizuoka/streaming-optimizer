@@ -2069,7 +2069,7 @@ function buildMobileRankHTML() {
   const annSave = v => v.annual ? Math.round((v.price*12-v.annual)/12) : 0;
   const m = METRICS.find(x => x.key === currentMetric);
   return `<div class="metric-tabs">${METRICS.map(me =>
-    `<button class="metric-tab${currentMetric===me.key?' active':''}" onclick="currentMetric='${me.key}';document.getElementById('moreTabContent').innerHTML=buildMobileRankHTML()">${me.label}</button>`
+    `<button class="metric-tab${currentMetric===me.key?' active':''}" onclick="currentMetric='${me.key}';document.getElementById('moreTabContent').innerHTML=buildMobileRankHTML()" aria-pressed="${currentMetric===me.key}">${me.label}</button>`
   ).join('')}</div>
   <div class="rank-metric" style="margin-bottom:12px">${m.desc}</div>
   <div class="rank-list-wrap">${ranked.map((r,i) => `
