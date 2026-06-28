@@ -421,6 +421,13 @@
       .mob-inner-tab.active { background:rgba(124,111,245,.18); border-color:var(--acc); color:var(--acc2); }
       .mob-result-area .panel-ttl { display:none; }
     }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
   </style>
   <script type="application/ld+json">
   {
