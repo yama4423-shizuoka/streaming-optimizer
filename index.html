@@ -521,7 +521,7 @@
           <span>月額予算上限</span>
           <span class="budget-val" id="budgetVal">上限なし</span>
         </div>
-        <input type="range" class="budget-slider" id="budgetSlider" min="0" max="15000" step="500" value="0" aria-label="月額予算上限" oninput="onBudgetChange(this.value)">
+        <input type="range" class="budget-slider" id="budgetSlider" min="0" max="15000" step="500" value="0" aria-label="月額予算上限" aria-valuetext="上限なし" oninput="onBudgetChange(this.value)">
       </div>
       <button class="calc-btn" id="calcBtn" disabled onclick="calculate()">最安プランを計算する →</button>
     </div>
@@ -1317,7 +1317,10 @@ async function requestNotifPermission() {
 // ─────────────────────────────────────────────────────
 function onBudgetChange(val) {
   budget = parseInt(val) || 0;
-  document.getElementById('budgetVal').textContent = budget ? `¥${budget.toLocaleString()}/月` : '上限なし';
+  const txt = budget ? `¥${budget.toLocaleString()}/月` : '上限なし';
+  document.getElementById('budgetVal').textContent = txt;
+  const sl = document.getElementById('budgetSlider');
+  if (sl) sl.setAttribute('aria-valuetext', txt);
   cloudSaveDebounced();
   if (!currentUser) saveLocalData();
 }
