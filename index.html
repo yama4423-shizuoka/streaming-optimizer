@@ -587,7 +587,7 @@
         <button class="mode-btn" id="modePerson" onclick="setSearchMode('person')" aria-pressed="false">出演者</button>
       </div>
       <div class="add-wrap">
-        <input class="add-input" id="addInput" type="text" placeholder="作品名を入力（日本語・英語）" autocomplete="off" spellcheck="false">
+        <input class="add-input" id="addInput" type="text" placeholder="作品名を入力（日本語・英語）" autocomplete="off" spellcheck="false" aria-label="作品名を検索">
         <div class="add-dd" id="addDd"></div>
       </div>
       <div class="add-hint" id="addHint">作品名を入力するとTMDbで配信サービスを自動検索します</div>
@@ -1443,6 +1443,7 @@ function setSearchMode(mode) {
   document.getElementById('addInput').placeholder = mode === 'person'
     ? '出演者名を入力（日本語・英語）'
     : '作品名を入力（日本語・英語）';
+  document.getElementById('addInput').setAttribute('aria-label', mode === 'person' ? '出演者名を検索' : '作品名を検索');
   closeAdd();
   document.getElementById('addInput').focus();
 }
