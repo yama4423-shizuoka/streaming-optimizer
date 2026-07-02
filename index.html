@@ -2050,17 +2050,19 @@ function buildMobileMoreHTML() {
   moreCurrentTab = 'rank';
   return `<div class="mobile-sheet-ttl">設定 / ランキング</div>
     <div class="mob-inner-tabs">
-      <button class="mob-inner-tab active" id="miTabRank" onclick="switchMoreTab('rank')">ランキング</button>
-      <button class="mob-inner-tab" id="miTabSched" onclick="switchMoreTab('sched')">解約管理</button>
-      <button class="mob-inner-tab" id="miTabAdd" onclick="switchMoreTab('add')">作品追加</button>
+      <button class="mob-inner-tab active" id="miTabRank" onclick="switchMoreTab('rank')" aria-pressed="true">ランキング</button>
+      <button class="mob-inner-tab" id="miTabSched" onclick="switchMoreTab('sched')" aria-pressed="false">解約管理</button>
+      <button class="mob-inner-tab" id="miTabAdd" onclick="switchMoreTab('add')" aria-pressed="false">作品追加</button>
     </div>
     <div id="moreTabContent">${buildMobileRankHTML()}</div>`;
 }
 
 function switchMoreTab(tab) {
   moreCurrentTab = tab;
-  document.querySelectorAll('.mob-inner-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('miTab'+tab.charAt(0).toUpperCase()+tab.slice(1)).classList.add('active');
+  document.querySelectorAll('.mob-inner-tab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-pressed', 'false'); });
+  const activeTab = document.getElementById('miTab'+tab.charAt(0).toUpperCase()+tab.slice(1));
+  activeTab.classList.add('active');
+  activeTab.setAttribute('aria-pressed', 'true');
   const c = document.getElementById('moreTabContent');
   if (tab === 'rank') c.innerHTML = buildMobileRankHTML();
   else if (tab === 'sched') c.innerHTML = buildMobileSchedHTML();
