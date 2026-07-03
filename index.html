@@ -1522,7 +1522,7 @@ function renderGrid() {
   });
   if (!items.length) {
     const emptyHint = window.innerWidth <= 768
-      ? '下の「設定」タブ → 「作品追加」からTMDb検索で探せます'
+      ? '下の「設定」タブ → 「作品追加」でリスト内を検索できます'
       : 'サイドバーの「リストにない作品を追加」からTMDb検索で探せます';
     grid.innerHTML = `<div class="grid-empty">「${esc(searchQ)}」に一致する作品が見つかりません<span style="display:block;font-size:12px;margin-top:10px;opacity:.8">${emptyHint}</span></div>`;
     return;
@@ -2161,10 +2161,49 @@ function buildSubListHTML() {
 }
 
 function buildMobileAddHTML() {
-  return `<div style="font-size:12px;color:var(--tx2);line-height:1.8;padding:12px;background:rgba(124,111,245,.06);border-radius:var(--r2);">
-    作品追加は <strong style="color:var(--tx)">横画面</strong> またはPCブラウザから利用できます。<br>
-    タブレットや大きい画面では通常のUIが表示されます。
+  return `<div style="margin-bottom:8px">
+    <input type="text" id="mAddInput" class="add-input" placeholder="作品名でリスト内を検索..." autocomplete="off" oninput="onMobileAddSearch(this.value)">
+  </div>
+  <div id="mAddResults"></div>
+  <div style="font-size:11px;color:var(--tx2);margin-top:10px;padding:9px 11px;background:rgba(124,111,245,.06);border-radius:var(--r2);line-height:1.7;">
+    ここではリスト内の作品を検索して追加できます。リストにない新規作品の追加はPCブラウザをご利用ください。
   </div>`;
+}
+
+function onMobileAddSearch(q) {
+  const results = document.getElementById('mAddResults');
+  if (!results) return;
+  const trimmed = q.trim();
+  if (!trimmed || trimmed.length < 2) { results.innerHTML = ''; return; }
+  const hits = localSearch(trimmed);
+  const genreLabel = { foreign:'海外ドラマ', anime:'アニメ', movie:'映画', kdrama:'韓国ドラマ', jdrama:'日本ドラマ', sports:'スポーツ', variety:'バラエティ' };
+  if (!hits.length) {
+    results.innerHTML = `<div style="border:1px solid rgba(124,111,245,.18);border-radius:var(--r2)"><div class="dd-status">「${esc(trimmed)}」はリストにありません</div></div>`;
+    return;
+  }
+  results.innerHTML = `<div style="border:1px solid rgba(124,111,245,.18);border-radius:var(--r2);overflow:hidden;margin-top:4px">` +
+    hits.map(it => {
+      const alr = selected.has(it.id);
+      return `<div class="dd-item" onclick="mobileAddFromDB(${it.id})">
+        <div class="dd-info">
+          <div class="dd-title">${hlText(it.t, trimmed)}</div>
+          <div class="dd-meta">${genreLabel[it.g] || ''}</div>
+        </div>
+        <div class="dd-svcs">${it.s.map(k=>`<span class="svc-tag" style="background:${SVC[k].color};font-size:8px;padding:1px 4px">${SVC[k].abbr}</span>`).join('')}</div>
+        ${alr ? '<span class="dd-added">選択済</span>' : ''}
+      </div>`;
+    }).join('') +
+    `</div>`;
+}
+
+function mobileAddFromDB(id) {
+  if (!selected.has(id)) {
+    selected.add(id);
+    renderSelList();
+    syncUI();
+  }
+  const inp = document.getElementById('mAddInput');
+  if (inp) onMobileAddSearch(inp.value);
 }
 
 // ─────────────────────────────────────────────────────
