@@ -430,6 +430,13 @@
         transition-duration: 0.01ms !important;
       }
     }
+    button:focus-visible,
+    a:focus-visible,
+    select:focus-visible,
+    [role="checkbox"]:focus-visible {
+      outline: 2px solid var(--acc);
+      outline-offset: 2px;
+    }
   </style>
   <script type="application/ld+json">
   {
