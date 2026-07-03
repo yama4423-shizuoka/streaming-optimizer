@@ -1535,7 +1535,7 @@ function renderGrid() {
     return `<div class="card${sel?' sel':''}" data-id="${it.id}" onclick="toggle(${it.id})" role="checkbox" aria-checked="${sel}" tabindex="0" aria-label="${esc(it.t)}" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggle(${it.id})}">
       <div class="card-thumb" style="background:linear-gradient(160deg,${col}22,${col}44)"${posterAttr}${wikiAttr}>
         <img class="card-poster" src="" alt="${esc(it.t)}のポスター">
-        <span class="card-emoji">${it.e}</span>
+        <span class="card-emoji">${esc(it.e)}</span>
         <div class="card-chk">✓</div>
       </div>
       <div class="card-body">
@@ -1589,7 +1589,7 @@ function renderSelList() {
   }
   ul.innerHTML = allItems().filter(c => selected.has(c.id)).map(it =>
     `<li class="sel-item">
-      <span class="sel-em">${it.e}</span>
+      <span class="sel-em">${esc(it.e)}</span>
       <span class="sel-name">${esc(it.t)}</span>
       <button class="sel-rm" onclick="removeItem(${it.id})" aria-label="${esc(it.t)}を削除">✕</button>
     </li>`
@@ -1711,7 +1711,7 @@ function renderDD(localHits, tmdbItems, q, status, errMsg) {
       ${localHits.map(it => {
         const alr = selected.has(it.id);
         return `<div class="dd-item" onclick="addFromDD_db(${it.id})">
-          <span class="dd-em">${it.e}</span>
+          <span class="dd-em">${esc(it.e)}</span>
           <div class="dd-info"><div class="dd-title">${hlText(it.t, q)}</div></div>
           <div class="dd-svcs">${it.s.map(k=>`<span class="svc-tag" style="background:${SVC[k].color};font-size:8px;padding:1px 4px">${SVC[k].abbr}</span>`).join('')}</div>
           ${alr ? '<span class="dd-added">✓済</span>' : ''}
@@ -2039,7 +2039,7 @@ function buildMobileSelectedHTML() {
   } else {
     html += `<ul class="sel-list" style="max-height:none;margin-bottom:0">` +
       selItems.map(it => `<li class="sel-item">
-        <span class="sel-em">${it.e}</span>
+        <span class="sel-em">${esc(it.e)}</span>
         <span class="sel-name">${esc(it.t)}</span>
         <button class="sel-rm" onclick="removeItemMobile(${it.id})" aria-label="${esc(it.t)}を削除">✕</button>
       </li>`).join('') + `</ul>`;
