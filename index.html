@@ -1679,7 +1679,7 @@ async function performPersonSearch(q) {
         const cid = 'tc' + (tmdbCacheSeq++);
         tmdbCache.set(cid, { ...item, svcs: [...new Set((item.providers || []).map(nameToSvcKey).filter(Boolean))] });
         const svcs = [...new Set((item.providers || []).map(nameToSvcKey).filter(Boolean))];
-        return `<div class="dd-item" onclick="addFromDD_tmdb('${cid}')">
+        return `<div class="dd-item" onclick="addFromDD_tmdb('${cid}')" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();addFromDD_tmdb('${cid}')}">
           <span class="dd-em"></span>
           <div class="dd-info">
             <div class="dd-title">${esc(item.title)}</div>
