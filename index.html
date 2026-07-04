@@ -2133,7 +2133,7 @@ function addSubMobile() {
   const isTrial = document.getElementById('mSubTrial').checked;
   if (!startRaw) { alert('開始日を選択してください'); return; }
   mySubs.push({ id:'sub'+(subSeq++), svcKey, startDate:startRaw, isTrial });
-  saveSubs(); renderSubList();
+  saveSubs(); renderSubList(); checkDeadlineAlerts();
   document.getElementById('mSubDate').value = '';
   document.getElementById('mSubTrial').checked = false;
   document.getElementById('mSubListWrap').innerHTML = buildSubListHTML();
