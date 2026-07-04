@@ -2,6 +2,15 @@
 
 ## バグ修正
 
+### [軽微] performPersonSearch()内のdd-itemにキーボードアクセシビリティが未設定 (QA検出 2026-07-04)
+
+114227c(renderDDとonMobileAddSearchへのキーボードアクセシビリティ追加)で対応されなかったパス。
+`performPersonSearch()` 関数内でレンダリングされる出演者検索結果の `dd-item` div に
+`tabindex="0"` および `onkeydown(Enter/Space)` が付与されていない。
+`renderDD()` の TMDb キーワード検索パス(L1746)と同様にキーボードで作品を選択できない状態。
+修正方針: performPersonSearch() 内 `<div class="dd-item" onclick="addFromDD_tmdb('${cid}')">` に
+`tabindex="0"` と `onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();addFromDD_tmdb('${cid}')}"` を追加する(114227c の L1746 パターンを踏襲)。
+
 ### [軽微] mobileAddFromDB()がrenderRanking()を呼ばないためモバイル追加時にランキング表示が即時更新されない (QA検出 2026-07-03)
 
 953d917a(モバイル「作品追加」タブ実装)で追加された `mobileAddFromDB()` が
