@@ -1785,6 +1785,7 @@ function addFromDD_db(id) {
     selected.add(id);
     renderSelList();
     syncUI();
+    renderRanking();
   }
   closeAdd();
 }
@@ -1803,6 +1804,7 @@ function addFromDD_tmdb(cid) {
   selected.add(custom.id);
   renderSelList();
   syncUI();
+  renderRanking();
   closeAdd();
 }
 
@@ -1832,7 +1834,7 @@ function addCustomManual() {
   const item = { id: customSeq++, t: q, g:'custom', e: emoji, s: [...checkedSvcs] };
   customItems.push(item);
   selected.add(item.id);
-  renderSelList(); syncUI(); closeAdd();
+  renderSelList(); syncUI(); renderRanking(); closeAdd();
 }
 
 function closeDD() {
