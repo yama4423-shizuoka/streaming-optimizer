@@ -262,6 +262,7 @@
     .dd-item { display:flex; align-items:center; gap:9px; padding:9px 12px; cursor:pointer; font-size:12.5px; transition:background .1s; border-top:1px solid rgba(255,255,255,.04); }
     .dd-item:first-of-type { border-top:none; }
     .dd-item:hover { background:rgba(124,111,245,.08); }
+    .dd-item:focus-visible { background:rgba(124,111,245,.1); outline:2px solid var(--acc); outline-offset:-2px; }
     .dd-em { font-size:16px; flex-shrink:0; }
     .dd-info { flex:1; min-width:0; }
     .dd-title { font-weight:600; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -1710,7 +1711,7 @@ function renderDD(localHits, tmdbItems, q, status, errMsg) {
       <div class="dd-section-hd">登録済み作品</div>
       ${localHits.map(it => {
         const alr = selected.has(it.id);
-        return `<div class="dd-item" onclick="addFromDD_db(${it.id})">
+        return `<div class="dd-item" onclick="addFromDD_db(${it.id})" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();addFromDD_db(${it.id})}">
           <span class="dd-em">${esc(it.e)}</span>
           <div class="dd-info"><div class="dd-title">${hlText(it.t, q)}</div></div>
           <div class="dd-svcs">${it.s.map(k=>`<span class="svc-tag" style="background:${SVC[k].color};font-size:8px;padding:1px 4px">${SVC[k].abbr}</span>`).join('')}</div>
@@ -1742,7 +1743,7 @@ function renderDD(localHits, tmdbItems, q, status, errMsg) {
           const cid = 'tc' + (tmdbCacheSeq++);
           tmdbCache.set(cid, item);
           const hasSvcs = item.svcs.length > 0;
-          return `<div class="dd-item" onclick="addFromDD_tmdb('${cid}')">
+          return `<div class="dd-item" onclick="addFromDD_tmdb('${cid}')" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();addFromDD_tmdb('${cid}')}">
             <span class="dd-em"></span>
             <div class="dd-info">
               <div class="dd-title">${hlText(item.title, q)}</div>
@@ -2186,7 +2187,7 @@ function onMobileAddSearch(q) {
   results.innerHTML = `<div style="border:1px solid rgba(124,111,245,.18);border-radius:var(--r2);overflow:hidden;margin-top:4px">` +
     hits.map(it => {
       const alr = selected.has(it.id);
-      return `<div class="dd-item" onclick="mobileAddFromDB(${it.id})">
+      return `<div class="dd-item" onclick="mobileAddFromDB(${it.id})" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mobileAddFromDB(${it.id})}">
         <div class="dd-info">
           <div class="dd-title">${hlText(it.t, trimmed)}</div>
           <div class="dd-meta">${genreLabel[it.g] || ''}</div>
