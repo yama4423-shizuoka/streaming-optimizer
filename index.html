@@ -1564,11 +1564,16 @@ function toggle(id) {
 
 function removeItem(id) {
   selected.delete(id);
+  const prevLen = customItems.length;
   customItems = customItems.filter(it => it.id !== id);
-  const card = document.querySelector(`#grid .card[data-id="${id}"]`);
-  if (card) {
-    card.classList.remove('sel');
-    card.setAttribute('aria-checked', 'false');
+  if (customItems.length !== prevLen) {
+    renderGrid();
+  } else {
+    const card = document.querySelector(`#grid .card[data-id="${id}"]`);
+    if (card) {
+      card.classList.remove('sel');
+      card.setAttribute('aria-checked', 'false');
+    }
   }
   renderSelList(); syncUI(); renderRanking();
 }
