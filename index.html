@@ -1543,7 +1543,7 @@ function renderGrid() {
         <div class="card-chk">✓</div>
       </div>
       <div class="card-body">
-        <div class="card-title">${esc(it.t)}</div>
+        <div class="card-title">${hlText(it.t, q)}</div>
         <div class="svc-tags">${it.s.map(k=>`<span class="svc-tag" style="background:${SVC[k].color}">${SVC[k].abbr}</span>`).join('')}</div>
       </div>
     </div>`;
