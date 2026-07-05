@@ -1508,6 +1508,9 @@ function allItems() { return [...DB, ...customItems]; }
     document.getElementById('subNotifBtn').textContent = '通知が有効です';
     document.getElementById('subNotifBtn').disabled = true;
   }
+  const _d = new Date();
+  document.getElementById('subStartDate').value =
+    _d.getFullYear() + '-' + String(_d.getMonth()+1).padStart(2,'0') + '-' + String(_d.getDate()).padStart(2,'0');
 })();
 
 // ─────────────────────────────────────────────────────
@@ -2119,10 +2122,12 @@ function buildMobileRankHTML() {
 }
 
 function buildMobileSchedHTML() {
+  const _d = new Date();
+  const _today = _d.getFullYear() + '-' + String(_d.getMonth()+1).padStart(2,'0') + '-' + String(_d.getDate()).padStart(2,'0');
   const notifGranted = 'Notification' in window && Notification.permission === 'granted';
   return `<div class="sub-add-row">
     <select class="sub-select" id="mSubSel" aria-label="サービスを選択">${Object.entries(SVC).map(([k,v])=>`<option value="${k}">${v.name}</option>`).join('')}</select>
-    <input type="date" class="sub-date" id="mSubDate" aria-label="開始日">
+    <input type="date" class="sub-date" id="mSubDate" aria-label="開始日" value="${_today}">
     <button class="sub-add-btn" onclick="addSubMobile()">追加</button>
   </div>
   <label class="sub-trial-chk"><input type="checkbox" id="mSubTrial"> 無料トライアル中</label>
