@@ -1159,7 +1159,7 @@ let searchQ      = '';
 let checkedSvcs  = new Set();
 let addDebounce  = null;
 let searchMode   = 'title';
-let budget       = 0; // 'title' | 'person'
+let budget       = 0;
 
 // ─────────────────────────────────────────────────────
 // 解約スケジュール管理
@@ -1180,7 +1180,8 @@ function addSub() {
   saveSubs();
   renderSubList();
   checkDeadlineAlerts();
-  document.getElementById('subStartDate').value = '';
+  const _rd = new Date();
+  document.getElementById('subStartDate').value = _rd.getFullYear() + '-' + String(_rd.getMonth()+1).padStart(2,'0') + '-' + String(_rd.getDate()).padStart(2,'0');
   document.getElementById('subIsTrial').checked = false;
 }
 
@@ -2147,7 +2148,8 @@ function addSubMobile() {
   if (!startRaw) { alert('開始日を選択してください'); return; }
   mySubs.push({ id:'sub'+(subSeq++), svcKey, startDate:startRaw, isTrial });
   saveSubs(); renderSubList(); checkDeadlineAlerts();
-  document.getElementById('mSubDate').value = '';
+  const _rd = new Date();
+  document.getElementById('mSubDate').value = _rd.getFullYear() + '-' + String(_rd.getMonth()+1).padStart(2,'0') + '-' + String(_rd.getDate()).padStart(2,'0');
   document.getElementById('mSubTrial').checked = false;
   document.getElementById('mSubListWrap').innerHTML = buildSubListHTML();
 }
