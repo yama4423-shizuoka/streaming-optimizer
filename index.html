@@ -1793,6 +1793,11 @@ function showManualFallback(q) {
 function addFromDD_db(id) {
   if (!selected.has(id)) {
     selected.add(id);
+    const card = document.querySelector(`#grid .card[data-id="${id}"]`);
+    if (card) {
+      card.classList.add('sel');
+      card.setAttribute('aria-checked', 'true');
+    }
     renderSelList();
     syncUI();
     renderRanking();
