@@ -1290,6 +1290,7 @@ function renderSubList() {
 }
 
 function checkDeadlineAlerts() {
+  document.querySelectorAll('.deadline-alert').forEach(el => el.remove());
   const urgent = mySubs.map(s => {
     const info = getDeadlineInfo(s);
     return { svc: SVC[s.svcKey], info };
