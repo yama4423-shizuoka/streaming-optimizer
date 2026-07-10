@@ -2325,6 +2325,10 @@ async function loadCloudData() {
     if (!data) return;
     selected = new Set((data.selected_ids || []).map(Number));
     customItems = data.custom_items || [];
+    if (customItems.length) {
+      const maxId = Math.max(...customItems.map(it => it.id || 0));
+      if (maxId >= customSeq) customSeq = maxId + 1;
+    }
     budget = data.budget || 0;
     document.getElementById('budgetSlider').value = budget;
     onBudgetChange(budget);
