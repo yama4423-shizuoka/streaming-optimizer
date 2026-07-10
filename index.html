@@ -639,7 +639,7 @@
 </nav>
 
 <!-- モバイル ボトムシート -->
-<div class="mobile-sheet" id="mobileSheet">
+<div class="mobile-sheet" id="mobileSheet" role="dialog" aria-modal="true">
   <div class="mobile-sheet-bg" onclick="closeMobileSheet()"></div>
   <div class="mobile-sheet-card">
     <div class="mobile-sheet-inner">
@@ -1483,6 +1483,12 @@ function allItems() { return [...DB, ...customItems]; }
   document.addEventListener('click', e => {
     if (!e.target.closest('.add-wrap') && !e.target.closest('.add-manual')) closeDD();
   });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      const sheet = document.getElementById('mobileSheet');
+      if (sheet && sheet.classList.contains('open')) closeMobileSheet();
+    }
+  });
 
   document.getElementById('subSvcSelect').innerHTML = Object.entries(SVC).map(([k,v])=>`<option value="${k}">${v.name}</option>`).join('');
   buildSvcCheckGrid();
@@ -2041,6 +2047,8 @@ function mobileOpenSheet(view) {
   const sheet = document.getElementById('mobileSheet');
   const content = document.getElementById('mobileSheetContent');
   sheet.classList.add('open');
+  const _sheetLabels = { selected:'選択中の作品', results:'最安計算結果', more:'設定 / ランキング' };
+  sheet.setAttribute('aria-label', _sheetLabels[view] || '');
 
   if (view === 'selected') {
     content.innerHTML = buildMobileSelectedHTML();
