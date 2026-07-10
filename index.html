@@ -1633,7 +1633,12 @@ function onAddInput() {
   clearTimeout(addDebounce);
 
   if (q.length === 0) { closeAdd(); return; }
-  if (q.length < 2) { closeDD(); return; }
+  if (q.length < 2) {
+    closeDD();
+    document.getElementById('addManual').className = 'add-manual';
+    document.getElementById('addHint').textContent = '作品名を入力するとTMDbで配信サービスを自動検索します';
+    return;
+  }
 
   const localHits = localSearch(q);
   const canSearch = IS_DEPLOYED || !!getTmdbKey();
