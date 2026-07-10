@@ -1561,7 +1561,7 @@ function renderGrid() {
       <div class="card-thumb" style="background:linear-gradient(160deg,${col}22,${col}44)"${posterAttr}${wikiAttr}>
         <img class="card-poster" src="" alt="${esc(it.t)}のポスター">
         <span class="card-emoji">${esc(it.e)}</span>
-        <div class="card-chk">✓</div>
+        <div class="card-chk" aria-hidden="true">✓</div>
       </div>
       <div class="card-body">
         <div class="card-title">${hlText(it.t, q)}</div>
