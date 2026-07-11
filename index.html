@@ -124,6 +124,8 @@
     .svc-tag { font-size:9px; font-weight:800; padding:2px 6px; border-radius:4px; color:#fff; letter-spacing:.3px; }
     .grid-empty { grid-column:1/-1; text-align:center; padding:90px 20px; color:var(--tx2); }
     .grid-empty .e { font-size:48px; display:block; margin-bottom:12px; opacity:.6; }
+    .grid-empty-btn { display:inline-block; margin-top:14px; padding:7px 18px; border:1px solid rgba(124,111,245,.3); border-radius:20px; background:transparent; color:var(--acc2); font-size:12px; cursor:pointer; font-family:inherit; transition:all .15s; }
+    .grid-empty-btn:hover { background:rgba(124,111,245,.1); border-color:rgba(124,111,245,.5); }
 
     /* SIDEBAR */
     .sidebar { position:sticky; top:74px; display:flex; flex-direction:column; gap:14px; }
@@ -1524,6 +1526,13 @@ function allItems() { return [...DB, ...customItems]; }
 // ─────────────────────────────────────────────────────
 // Grid
 // ─────────────────────────────────────────────────────
+function clearSearch() {
+  searchQ = '';
+  const inp = document.getElementById('searchInput');
+  if (inp) inp.value = '';
+  renderGrid();
+}
+
 function renderGrid() {
   const grid = document.getElementById('grid');
   const q = searchQ.trim().toLowerCase();
@@ -1549,7 +1558,7 @@ function renderGrid() {
     } else {
       emptyHint = 'サイドバーの「リストにない作品を追加」からTMDb検索で探せます';
     }
-    grid.innerHTML = `<div class="grid-empty">「${esc(searchQ)}」に一致する作品が見つかりません<span style="display:block;font-size:12px;margin-top:10px;opacity:.8">${emptyHint}</span></div>`;
+    grid.innerHTML = `<div class="grid-empty">「${esc(searchQ)}」に一致する作品が見つかりません<span style="display:block;font-size:12px;margin-top:10px;opacity:.8">${emptyHint}</span>${q ? '<button class="grid-empty-btn" onclick="clearSearch()">検索をクリア</button>' : ''}</div>`;
     return;
   }
   grid.innerHTML = items.map(it => {
