@@ -1217,7 +1217,12 @@ function getDeadlineInfo(sub) {
 }
 
 function fmt(d) {
-  return `${d.getMonth()+1}/${d.getDate()}`;
+  const m = d.getMonth() + 1;
+  const day = d.getDate();
+  if (d.getFullYear() !== new Date().getFullYear()) {
+    return `${d.getFullYear()}/${m}/${day}`;
+  }
+  return `${m}/${day}`;
 }
 
 function daysClass(n) {
