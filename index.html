@@ -2012,7 +2012,7 @@ function renderPlan(plan, isBest, allSel, idx, naiveCost) {
         <a href="${SVC[k].url}" target="_blank" rel="noopener noreferrer" class="plan-register-btn" style="background:${SVC[k].color}">
           <span class="plan-register-btn-name">${SVC[k].name}${SVC[k].trial ? `<span style="font-size:9px;font-weight:700;opacity:.85;margin-left:6px;background:rgba(255,255,255,.2);padding:1px 5px;border-radius:3px">${SVC[k].trial}日間無料</span>` : ''}</span>
           <span class="plan-register-btn-price">¥${SVC[k].price.toLocaleString()}/月</span>
-          <span class="plan-register-btn-arrow">→</span>
+          <span class="plan-register-btn-arrow" aria-hidden="true">→</span>
         </a>`).join('')}
       </div>
     </div>
