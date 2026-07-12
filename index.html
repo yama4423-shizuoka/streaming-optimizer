@@ -606,6 +606,7 @@
         <div class="add-manual-name" id="addManualName"></div>
         <div class="svc-check-grid" id="svcCheckGrid"></div>
         <div class="add-row" style="display:none"><label>絵文字</label><input class="emoji-inp" id="addEmoji" type="text" value="" maxlength="4"></div>
+        <div id="manualErr" class="warn" style="display:none" role="alert">配信サービスを1つ以上選択してください</div>
         <button class="add-confirm" onclick="addCustomManual()">この作品を追加する</button>
       </div>
     </div>
@@ -1883,7 +1884,9 @@ function toggleSvcChk(k) {
 function addCustomManual() {
   const q = document.getElementById('addInput').value.trim();
   if (!q) return;
-  if (!checkedSvcs.size) { alert('配信サービスを1つ以上選択してください'); return; }
+  const manualErr = document.getElementById('manualErr');
+  if (!checkedSvcs.size) { if (manualErr) manualErr.style.display = 'block'; return; }
+  if (manualErr) manualErr.style.display = 'none';
   const emoji = document.getElementById('addEmoji').value.trim() || '';
   const item = { id: customSeq++, t: q, g:'custom', e: emoji, s: [...checkedSvcs] };
   customItems.push(item);
@@ -1901,6 +1904,8 @@ function closeAdd() {
   document.getElementById('addInput').value = '';
   document.getElementById('addManual').className = 'add-manual';
   document.getElementById('addHint').textContent = '作品名を入力するとTMDbで配信サービスを自動検索します';
+  const manualErr = document.getElementById('manualErr');
+  if (manualErr) manualErr.style.display = 'none';
   checkedSvcs.clear();
   document.querySelectorAll('.svc-chk').forEach(el => el.classList.remove('on'));
   document.getElementById('addEmoji').value = '';
