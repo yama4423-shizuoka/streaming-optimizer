@@ -1994,7 +1994,7 @@ function renderPlan(plan, isBest, allSel, idx, naiveCost) {
         ${saving > 0 && isBest ? `<div class="plan-saving">個別登録より ¥${saving.toLocaleString()} お得</div>` : ''}
       </div>
     </div>
-    <button class="cov-toggle" onclick="toggleCov('${did}',this)" aria-expanded="false" aria-controls="${did}">▶ 内訳を見る</button>
+    <button class="cov-toggle" onclick="toggleCov('${did}',this)" aria-expanded="false" aria-controls="${did}"><span aria-hidden="true">▶</span> 内訳を見る</button>
     <div class="cov-detail" id="${did}">
       ${plan.combo.map(svc => {
         const ts = cov[svc];
@@ -2023,7 +2023,7 @@ function toggleCov(id, btn) {
   const el = btn.nextElementSibling;
   if (!el) return;
   const open = el.classList.toggle('open');
-  btn.textContent = open ? '▼ 内訳を閉じる' : '▶ 内訳を見る';
+  btn.innerHTML = open ? '<span aria-hidden="true">▼</span> 内訳を閉じる' : '<span aria-hidden="true">▶</span> 内訳を見る';
   btn.setAttribute('aria-expanded', String(open));
 }
 
