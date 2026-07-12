@@ -2223,7 +2223,7 @@ function buildSubListHTML() {
 
 function buildMobileAddHTML() {
   return `<div style="margin-bottom:8px">
-    <input type="text" id="mAddInput" class="add-input" placeholder="作品名でリスト内を検索..." autocomplete="off" oninput="onMobileAddSearch(this.value)">
+    <input type="text" id="mAddInput" class="add-input" placeholder="作品名でリスト内を検索..." autocomplete="off" aria-label="作品名でリスト内を検索" oninput="onMobileAddSearch(this.value)">
   </div>
   <div id="mAddResults"></div>
   <div style="font-size:11px;color:var(--tx2);margin-top:10px;padding:9px 11px;background:rgba(124,111,245,.06);border-radius:var(--r2);line-height:1.7;">
