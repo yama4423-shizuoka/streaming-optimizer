@@ -480,7 +480,7 @@
     </div>
     <div class="search-wrap">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <input class="search-input" id="searchInput" type="text" placeholder="作品名で検索..." aria-label="作品名で検索" autocomplete="off" spellcheck="false">
+      <input class="search-input" id="searchInput" type="text" placeholder="作品名で検索..." aria-label="作品名で検索" autocomplete="off" spellcheck="false" enterkeyhint="search">
     </div>
     <div class="header-badge">選択中 <span class="hbadge-num" id="countBadge">0</span></div>
     <div id="authArea"></div>
@@ -597,7 +597,7 @@
         <button class="mode-btn" id="modePerson" onclick="setSearchMode('person')" aria-pressed="false">出演者</button>
       </div>
       <div class="add-wrap">
-        <input class="add-input" id="addInput" type="text" placeholder="作品名を入力（日本語・英語）" autocomplete="off" spellcheck="false" aria-label="作品名を検索">
+        <input class="add-input" id="addInput" type="text" placeholder="作品名を入力（日本語・英語）" autocomplete="off" spellcheck="false" aria-label="作品名を検索" enterkeyhint="search">
         <div class="add-dd" id="addDd"></div>
       </div>
       <div class="add-hint" id="addHint">作品名を入力するとTMDbで配信サービスを自動検索します</div>
@@ -2237,7 +2237,7 @@ function buildSubListHTML() {
 
 function buildMobileAddHTML() {
   return `<div style="margin-bottom:8px">
-    <input type="text" id="mAddInput" class="add-input" placeholder="作品名でリスト内を検索..." autocomplete="off" aria-label="作品名でリスト内を検索" oninput="onMobileAddSearch(this.value)">
+    <input type="text" id="mAddInput" class="add-input" placeholder="作品名でリスト内を検索..." autocomplete="off" aria-label="作品名でリスト内を検索" enterkeyhint="search" oninput="onMobileAddSearch(this.value)">
   </div>
   <div id="mAddResults"></div>
   <div style="font-size:11px;color:var(--tx2);margin-top:10px;padding:9px 11px;background:rgba(124,111,245,.06);border-radius:var(--r2);line-height:1.7;">
