@@ -1307,8 +1307,9 @@ function checkDeadlineAlerts() {
   if (!urgent.length) return;
   const el = document.createElement('div');
   el.className = 'deadline-alert';
+  el.setAttribute('role', 'alert');
   el.innerHTML = `
-    <button class="alert-close" onclick="this.parentElement.remove()">✕</button>
+    <button class="alert-close" onclick="this.parentElement.remove()" aria-label="通知を閉じる">✕</button>
     <div class="alert-ttl">解約期限が近づいています</div>
     ${urgent.map(x => `<div class="alert-item">・${x.svc.name} — あと${x.info.daysLeft}日</div>`).join('')}
   `;
