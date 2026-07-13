@@ -2049,6 +2049,7 @@ function hlText(text, q) {
 // モバイルナビゲーション
 // ─────────────────────────────────────────────────────
 let mobileSheetView = null;
+let _sheetOpener = null;
 
 function mobileGoGrid() {
   closeMobileSheet();
@@ -2057,6 +2058,7 @@ function mobileGoGrid() {
 }
 
 function mobileOpenSheet(view) {
+  _sheetOpener = document.activeElement;
   mobileSheetView = view;
   document.querySelectorAll('.mobile-tab').forEach(t => t.classList.remove('active'));
   const map = { selected:'mTabSel', results:'mTabCalc', more:'mTabMore' };
@@ -2077,6 +2079,10 @@ function mobileOpenSheet(view) {
   } else if (view === 'more') {
     content.innerHTML = buildMobileMoreHTML();
   }
+  requestAnimationFrame(() => {
+    const first = sheet.querySelector('button:not([disabled]),[href],input:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])');
+    if (first) first.focus();
+  });
 }
 
 function closeMobileSheet() {
@@ -2084,6 +2090,8 @@ function closeMobileSheet() {
   mobileSheetView = null;
   document.querySelectorAll('.mobile-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('mTabGrid').classList.add('active');
+  if (_sheetOpener && _sheetOpener.focus) { _sheetOpener.focus(); }
+  _sheetOpener = null;
 }
 
 function mobileCalc() {
