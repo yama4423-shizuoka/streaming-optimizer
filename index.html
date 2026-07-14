@@ -1325,11 +1325,14 @@ function checkDeadlineAlerts() {
 }
 
 async function requestNotifPermission() {
-  if (!('Notification' in window)) { alert('このブラウザは通知に対応していません'); return; }
+  const btn = document.getElementById('subNotifBtn');
+  if (!('Notification' in window)) {
+    if (btn) { btn.textContent = '通知はこのブラウザで未対応です'; btn.disabled = true; }
+    return;
+  }
   const perm = await Notification.requestPermission();
   if (perm === 'granted') {
-    document.getElementById('subNotifBtn').textContent = '通知が有効です';
-    document.getElementById('subNotifBtn').disabled = true;
+    if (btn) { btn.textContent = '通知が有効です'; btn.disabled = true; }
   }
 }
 
