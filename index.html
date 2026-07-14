@@ -535,7 +535,7 @@
         </div>
         <input type="range" class="budget-slider" id="budgetSlider" min="0" max="15000" step="500" value="0" aria-label="月額予算上限" aria-valuetext="上限なし" oninput="onBudgetChange(this.value)">
       </div>
-      <button class="calc-btn" id="calcBtn" disabled onclick="calculate()">最安プランを計算する →</button>
+      <button class="calc-btn" id="calcBtn" disabled onclick="calculate()">最安プランを計算する <span aria-hidden="true">→</span></button>
     </div>
 
     <div class="panel">
@@ -2125,7 +2125,7 @@ function buildMobileSelectedHTML() {
     <input type="range" class="budget-slider" min="0" max="15000" step="500" value="${bv}" aria-label="月額予算上限" aria-valuetext="${bv ? '¥'+bv.toLocaleString()+'/月' : '上限なし'}"
       oninput="onBudgetChange(this.value);const _t=budget?'¥'+budget.toLocaleString()+'/月':'上限なし';document.getElementById('mBudgetDisp').textContent=_t;document.getElementById('budgetSlider').value=budget;this.setAttribute('aria-valuetext',_t)">
   </div>
-  <button class="calc-btn" ${!selItems.length?'disabled':''} onclick="closeMobileSheet();mobileCalc()">最安プランを計算する →</button>`;
+  <button class="calc-btn" ${!selItems.length?'disabled':''} onclick="closeMobileSheet();mobileCalc()">最安プランを計算する <span aria-hidden="true">→</span></button>`;
   return html;
 }
 
