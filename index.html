@@ -653,7 +653,7 @@
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" onload="initSupabase()"></script>
 <script>
 // ─────────────────────────────────────────────────────
 // 環境検出（Vercel等サーバー配信 vs ローカルfile://）
@@ -2411,7 +2411,6 @@ function saveLocalData() {
   } catch {}
 }
 
-initSupabase();
 </script>
 </body>
 </html>
