@@ -548,6 +548,7 @@
         <input type="date" class="sub-date" id="subStartDate" aria-label="開始日">
         <button class="sub-add-btn" onclick="addSub()">追加</button>
       </div>
+      <div id="subDateErr" class="warn" style="display:none;margin-bottom:0" role="alert">開始日を選択してください</div>
       <label class="sub-trial-chk">
         <input type="checkbox" id="subIsTrial"> 無料トライアル中
       </label>
@@ -1178,7 +1179,9 @@ function addSub() {
   const svcKey   = document.getElementById('subSvcSelect').value;
   const startRaw = document.getElementById('subStartDate').value;
   const isTrial  = document.getElementById('subIsTrial').checked;
-  if (!startRaw) { alert('開始日を選択してください'); return; }
+  const _errEl = document.getElementById('subDateErr');
+  if (!startRaw) { if (_errEl) _errEl.style.display = 'block'; return; }
+  if (_errEl) _errEl.style.display = 'none';
   mySubs.push({ id: 'sub' + (subSeq++), svcKey, startDate: startRaw, isTrial });
   saveSubs();
   renderSubList();
@@ -2199,6 +2202,7 @@ function buildMobileSchedHTML() {
     <input type="date" class="sub-date" id="mSubDate" aria-label="開始日" value="${_today}">
     <button class="sub-add-btn" onclick="addSubMobile()">追加</button>
   </div>
+  <div id="mSubDateErr" class="warn" style="display:none;margin-bottom:0" role="alert">開始日を選択してください</div>
   <label class="sub-trial-chk"><input type="checkbox" id="mSubTrial"> 無料トライアル中</label>
   <div id="mSubListWrap">${buildSubListHTML()}</div>
   <button class="sub-notif-btn" ${notifGranted ? 'disabled' : ''} onclick="requestNotifPermission()">${notifGranted ? '通知が有効です' : '通知を有効にする'}</button>`;
@@ -2208,7 +2212,9 @@ function addSubMobile() {
   const svcKey = document.getElementById('mSubSel').value;
   const startRaw = document.getElementById('mSubDate').value;
   const isTrial = document.getElementById('mSubTrial').checked;
-  if (!startRaw) { alert('開始日を選択してください'); return; }
+  const _mErrEl = document.getElementById('mSubDateErr');
+  if (!startRaw) { if (_mErrEl) _mErrEl.style.display = 'block'; return; }
+  if (_mErrEl) _mErrEl.style.display = 'none';
   mySubs.push({ id:'sub'+(subSeq++), svcKey, startDate:startRaw, isTrial });
   saveSubs(); renderSubList(); checkDeadlineAlerts();
   const _rd = new Date();
