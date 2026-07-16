@@ -1290,8 +1290,8 @@ function renderSubList() {
         ${info.label} — ${daysText}
       </div>
       <div class="sub-actions">
-        <a href="${svc.url}" target="_blank" rel="noopener noreferrer" class="sub-action-btn cancel">解約ページへ →</a>
-        <button class="sub-action-btn ical" onclick="exportICS(mySubs.find(s=>s.id==='${sub.id}'))">カレンダーに追加</button>
+        <a href="${svc.url}" target="_blank" rel="noopener noreferrer" class="sub-action-btn cancel" aria-label="${esc(svc.name)}の解約ページへ">解約ページへ →</a>
+        <button class="sub-action-btn ical" onclick="exportICS(mySubs.find(s=>s.id==='${sub.id}'))" aria-label="${esc(svc.name)}の解約日をカレンダーに追加">カレンダーに追加</button>
       </div>
     </div>`;
   }).join('');
@@ -2231,8 +2231,8 @@ function buildSubListHTML() {
       </div>
       <div class="sub-deadline">${info.label} — ${dt}</div>
       <div class="sub-actions">
-        <a href="${svc.url}" target="_blank" rel="noopener noreferrer" class="sub-action-btn cancel">解約ページへ →</a>
-        <button class="sub-action-btn ical" onclick="exportICS(mySubs.find(s=>s.id==='${sub.id}'))">カレンダー</button>
+        <a href="${svc.url}" target="_blank" rel="noopener noreferrer" class="sub-action-btn cancel" aria-label="${esc(svc.name)}の解約ページへ">解約ページへ →</a>
+        <button class="sub-action-btn ical" onclick="exportICS(mySubs.find(s=>s.id==='${sub.id}'))" aria-label="${esc(svc.name)}の解約日をカレンダーに追加">カレンダー</button>
       </div>
     </div>`;
   }).join('');
