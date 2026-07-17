@@ -1524,6 +1524,8 @@ function allItems() { return [...DB, ...customItems]; }
     }
   } catch {}
   renderGrid();
+  renderSelList();
+  syncUI();
   renderRanking();
   renderSubList();
   setTimeout(checkDeadlineAlerts, 800);
