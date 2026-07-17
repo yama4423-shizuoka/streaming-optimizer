@@ -492,14 +492,14 @@
 <div class="orb orb3"></div>
 
 <div class="hero-section">
-  <div class="hero-badge"><span class="hero-badge-dot"></span><span id="heroBadgeCount">280</span>+ 作品対応 &nbsp;·&nbsp; 9サービス一括比較</div>
+  <div class="hero-badge"><span class="hero-badge-dot" aria-hidden="true"></span><span id="heroBadgeCount">280</span>+ 作品対応 &nbsp;·&nbsp; 9サービス一括比較</div>
   <h1 class="hero-title">観たい作品を選ぶだけで<br><span class="hero-gradient">最安のサブスクプラン</span>が見つかる</h1>
   <p class="hero-sub">Netflix・Disney+・U-NEXTなど9サービスを自動比較。<br>毎月のコストを賢く最小化しよう。</p>
   <div class="hero-stats">
     <div class="hero-stat"><span class="hero-stat-num"><span id="heroStatCount">280</span><span class="hero-stat-unit">+</span></span><span class="hero-stat-label">作品数</span></div>
-    <div class="hero-stat-div"></div>
+    <div class="hero-stat-div" aria-hidden="true"></div>
     <div class="hero-stat"><span class="hero-stat-num">9</span><span class="hero-stat-label">サービス</span></div>
-    <div class="hero-stat-div"></div>
+    <div class="hero-stat-div" aria-hidden="true"></div>
     <div class="hero-stat"><span class="hero-stat-num">無料</span><span class="hero-stat-label">で使える</span></div>
   </div>
 </div>
@@ -1449,7 +1449,7 @@ function renderRanking() {
       <span class="rank-dot" style="background:${r.svc.color}"></span>
       <div class="rank-info">
         <div class="rank-name">${r.svc.name}</div>
-        <div class="rank-bar-bg"><div class="rank-bar" style="width:${Math.round(r.score/maxScore*100)}%;background:${r.svc.color}"></div></div>
+        <div class="rank-bar-bg" aria-hidden="true"><div class="rank-bar" style="width:${Math.round(r.score/maxScore*100)}%;background:${r.svc.color}"></div></div>
         <div class="rank-badges">
           ${r.svc.trial ? `<span class="badge-trial">${r.svc.trial}日無料</span>` : ''}
           ${r.svc.annual ? `<span class="badge-annual">月${annualSave(r.svc).toLocaleString()}円節約</span>` : ''}
@@ -2183,7 +2183,7 @@ function buildMobileRankHTML() {
       <span class="rank-dot" style="background:${r.svc.color}"></span>
       <div class="rank-info">
         <div class="rank-name">${r.svc.name}</div>
-        <div class="rank-bar-bg"><div class="rank-bar" style="width:${Math.round(r.score/maxScore*100)}%;background:${r.svc.color}"></div></div>
+        <div class="rank-bar-bg" aria-hidden="true"><div class="rank-bar" style="width:${Math.round(r.score/maxScore*100)}%;background:${r.svc.color}"></div></div>
         <div class="rank-badges">
           ${r.svc.trial?`<span class="badge-trial">${r.svc.trial}日無料</span>`:''}
           ${r.svc.annual?`<span class="badge-annual">月${annSave(r.svc).toLocaleString()}円節約</span>`:''}
