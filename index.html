@@ -1664,7 +1664,9 @@ function onAddInput() {
   if (q.length < 2) {
     closeDD();
     document.getElementById('addManual').className = 'add-manual';
-    document.getElementById('addHint').textContent = '作品名を入力するとTMDbで配信サービスを自動検索します';
+    document.getElementById('addHint').textContent = searchMode === 'person'
+      ? '出演者名を入力するとTMDbで出演作品を検索します'
+      : '作品名を入力するとTMDbで配信サービスを自動検索します';
     return;
   }
 
@@ -1910,7 +1912,9 @@ function closeAdd() {
   closeDD();
   document.getElementById('addInput').value = '';
   document.getElementById('addManual').className = 'add-manual';
-  document.getElementById('addHint').textContent = '作品名を入力するとTMDbで配信サービスを自動検索します';
+  document.getElementById('addHint').textContent = searchMode === 'person'
+    ? '出演者名を入力するとTMDbで出演作品を検索します'
+    : '作品名を入力するとTMDbで配信サービスを自動検索します';
   const manualErr = document.getElementById('manualErr');
   if (manualErr) manualErr.style.display = 'none';
   checkedSvcs.clear();
