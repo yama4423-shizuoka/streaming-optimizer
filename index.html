@@ -440,6 +440,13 @@
       outline: 2px solid var(--acc);
       outline-offset: 2px;
     }
+    .skip-link {
+      position:fixed; top:-100px; left:0; z-index:9999;
+      background:var(--acc); color:#fff; padding:10px 18px;
+      border-radius:0 0 8px 0; font-size:14px; font-weight:700;
+      text-decoration:none; transition:top .15s;
+    }
+    .skip-link:focus { top:0; }
   </style>
   <script type="application/ld+json">
   {
@@ -468,6 +475,7 @@
   </script>
 </head>
 <body>
+<a href="#main-content" class="skip-link">コンテンツへスキップ</a>
 
 <header class="header">
   <div class="header-inner">
@@ -504,7 +512,7 @@
   </div>
 </div>
 
-<main class="layout">
+<main class="layout" id="main-content">
   <div>
     <div class="filter-row" id="filterRow" role="group" aria-label="ジャンルで絞り込む">
       <button class="fb active" data-genre="all" aria-pressed="true">すべて</button>
