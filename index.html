@@ -1747,7 +1747,7 @@ async function performPersonSearch(q) {
         const cid = 'tc' + (tmdbCacheSeq++);
         tmdbCache.set(cid, { ...item, svcs: [...new Set((item.providers || []).map(nameToSvcKey).filter(Boolean))] });
         const svcs = [...new Set((item.providers || []).map(nameToSvcKey).filter(Boolean))];
-        return `<div class="dd-item" onclick="addFromDD_tmdb('${cid}')" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();addFromDD_tmdb('${cid}')}">
+        return `<div class="dd-item" role="button" aria-label="${esc(item.title)}を追加" onclick="addFromDD_tmdb('${cid}')" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();addFromDD_tmdb('${cid}')}">
           <span class="dd-em"></span>
           <div class="dd-info">
             <div class="dd-title">${esc(item.title)}</div>
@@ -1779,7 +1779,7 @@ function renderDD(localHits, tmdbItems, q, status, errMsg) {
       <div class="dd-section-hd">登録済み作品</div>
       ${localHits.map(it => {
         const alr = selected.has(it.id);
-        return `<div class="dd-item" onclick="addFromDD_db(${it.id})" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();addFromDD_db(${it.id})}">
+        return `<div class="dd-item" role="button" aria-label="${esc(it.t)}を追加" onclick="addFromDD_db(${it.id})" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();addFromDD_db(${it.id})}">
           <span class="dd-em">${esc(it.e)}</span>
           <div class="dd-info"><div class="dd-title">${hlText(it.t, q)}</div></div>
           <div class="dd-svcs">${it.s.map(k=>`<span class="svc-tag" style="background:${SVC[k].color};font-size:8px;padding:1px 4px">${SVC[k].abbr}</span>`).join('')}</div>
@@ -1811,7 +1811,7 @@ function renderDD(localHits, tmdbItems, q, status, errMsg) {
           const cid = 'tc' + (tmdbCacheSeq++);
           tmdbCache.set(cid, item);
           const hasSvcs = item.svcs.length > 0;
-          return `<div class="dd-item" onclick="addFromDD_tmdb('${cid}')" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();addFromDD_tmdb('${cid}')}">
+          return `<div class="dd-item" role="button" aria-label="${esc(item.title)}を追加" onclick="addFromDD_tmdb('${cid}')" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();addFromDD_tmdb('${cid}')}">
             <span class="dd-em"></span>
             <div class="dd-info">
               <div class="dd-title">${hlText(item.title, q)}</div>
@@ -2282,7 +2282,7 @@ function onMobileAddSearch(q) {
   results.innerHTML = `<div style="border:1px solid rgba(124,111,245,.18);border-radius:var(--r2);overflow:hidden;margin-top:4px">` +
     hits.map(it => {
       const alr = selected.has(it.id);
-      return `<div class="dd-item" onclick="mobileAddFromDB(${it.id})" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mobileAddFromDB(${it.id})}">
+      return `<div class="dd-item" role="button" aria-label="${esc(it.t)}を追加" onclick="mobileAddFromDB(${it.id})" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mobileAddFromDB(${it.id})}">
         <div class="dd-info">
           <div class="dd-title">${hlText(it.t, trimmed)}</div>
           <div class="dd-meta">${genreLabel[it.g] || ''}</div>
