@@ -447,6 +447,7 @@
       text-decoration:none; transition:top .15s;
     }
     .skip-link:focus { top:0; }
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
   </style>
   <script type="application/ld+json">
   {
@@ -524,6 +525,7 @@
       <button class="fb" data-genre="sports" aria-pressed="false">スポーツ</button>
       <button class="fb" data-genre="variety" aria-pressed="false">バラエティ</button>
     </div>
+    <div class="sr-only" aria-live="polite" aria-atomic="true" id="gridStatus"></div>
     <div class="grid" id="grid" role="group" aria-label="観たい作品を選択"></div>
   </div>
 
@@ -1564,6 +1566,8 @@ function renderGrid() {
     const sOk = !q || it.t.toLowerCase().includes(q);
     return gOk && sOk;
   });
+  const _gst = document.getElementById('gridStatus');
+  if (_gst) _gst.textContent = (q || activeGenre !== 'all') ? (items.length ? `${items.length}件の作品が見つかりました` : '作品が見つかりません') : '';
   if (!items.length) {
     const GENRE_LABELS = { foreign:'海外ドラマ', anime:'アニメ', movie:'映画', kdrama:'韓国ドラマ', jdrama:'日本ドラマ', sports:'スポーツ', variety:'バラエティ' };
     let emptyHint;
