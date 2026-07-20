@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://streaming-optimizer-sigma.vercel.app/sitemap.xml
