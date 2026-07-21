@@ -1646,6 +1646,8 @@ function syncUI() {
     badge.textContent = selected.size || '';
     badge.classList.toggle('show', selected.size > 0);
   }
+  const ra = document.getElementById('resultArea');
+  if (ra && ra.innerHTML) ra.innerHTML = '';
   cloudSaveDebounced();
   if (!currentUser) saveLocalData();
 }
