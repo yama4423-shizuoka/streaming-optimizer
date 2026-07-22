@@ -1878,6 +1878,8 @@ function addFromDD_tmdb(cid) {
     document.getElementById('addHint').textContent = '配信サービスの情報が取得できませんでした。手動で選択してください：';
     return;
   }
+  const dup = customItems.find(c => c.t.toLowerCase() === item.title.toLowerCase());
+  if (dup) { selected.add(dup.id); renderSelList(); syncUI(); renderRanking(); closeAdd(); return; }
   const custom = { id: customSeq++, t: item.title, g:'custom', e:'', s: item.svcs };
   customItems.push(custom);
   selected.add(custom.id);
