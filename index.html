@@ -445,6 +445,8 @@
     }
     .skip-link:focus { top:0; }
     .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+    .search-input::-webkit-search-cancel-button,
+    .search-input::-webkit-search-decoration { display:none; }
   </style>
   <script type="application/ld+json">
   {
@@ -486,7 +488,7 @@
     </div>
     <div class="search-wrap" role="search">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <input class="search-input" id="searchInput" type="text" placeholder="作品名で検索..." aria-label="作品名で検索" autocomplete="off" spellcheck="false" enterkeyhint="search">
+      <input class="search-input" id="searchInput" type="search" placeholder="作品名で検索..." aria-label="作品名で検索" autocomplete="off" spellcheck="false" enterkeyhint="search">
     </div>
     <div class="header-badge">選択中 <span class="hbadge-num" id="countBadge">0</span></div>
     <div id="authArea"></div>
