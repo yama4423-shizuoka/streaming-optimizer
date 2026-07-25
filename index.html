@@ -1210,8 +1210,14 @@ function removeSub(id) {
 function getNextRenewal(startDate) {
   const start = new Date(startDate);
   const now   = new Date(); now.setHours(0,0,0,0);
+  const origDay = start.getDate();
   const d     = new Date(start);
-  while (d <= now) d.setMonth(d.getMonth() + 1);
+  while (d <= now) {
+    const m = d.getMonth() + 1;
+    const y = d.getFullYear() + (m > 11 ? 1 : 0);
+    const lastDay = new Date(y, (m % 12) + 1, 0).getDate();
+    d.setFullYear(y, m % 12, Math.min(origDay, lastDay));
+  }
   return d;
 }
 
