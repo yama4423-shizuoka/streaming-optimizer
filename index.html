@@ -1915,6 +1915,8 @@ function addCustomManual() {
   const manualErr = document.getElementById('manualErr');
   if (!checkedSvcs.size) { if (manualErr) manualErr.style.display = 'block'; return; }
   if (manualErr) manualErr.style.display = 'none';
+  const dup = customItems.find(c => c.t.toLowerCase() === q.toLowerCase());
+  if (dup) { selected.add(dup.id); renderSelList(); syncUI(); renderRanking(); closeAdd(); return; }
   const emoji = document.getElementById('addEmoji').value.trim() || '';
   const item = { id: customSeq++, t: q, g:'custom', e: emoji, s: [...checkedSvcs] };
   customItems.push(item);
