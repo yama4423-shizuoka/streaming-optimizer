@@ -2006,17 +2006,18 @@ function renderResults(plans, allSel, uncoverable, overBudget) {
     </h2>
     ${overBudget ? `<div class="warn">予算内に収まるプランが見つかりません。予算を上げるか、作品を減らしてみてください。</div>` : ''}
     ${uncoverable.length ? `<div class="warn">配信情報なし: ${uncoverable.map(i=>esc(i.t)).join('、')}</div>` : ''}
-    ${plans.map((p,i) => renderPlan(p, i===0, allSel, i, naiveCost)).join('')}
+    ${plans.map((p,i) => renderPlan(p, i===0, allSel, i, naiveCost, plans[0].cost)).join('')}
   </div>`;
 }
 
-function renderPlan(plan, isBest, allSel, idx, naiveCost) {
+function renderPlan(plan, isBest, allSel, idx, naiveCost, bestCost) {
   const saving = naiveCost - plan.cost;
+  const extra = !isBest && plan.cost > bestCost ? plan.cost - bestCost : 0;
   const cov = {};
   plan.combo.forEach(svc => { cov[svc] = allSel.filter(it => it.s && it.s.includes(svc)); });
   const did = `d${idx}`;
   return `<div class="result-plan${isBest?' best':''}">
-    ${isBest ? '<div class="best-badge">最安プラン</div>' : `<div class="plan-alt-label">代替プラン ${idx}</div>`}
+    ${isBest ? '<div class="best-badge">最安プラン</div>' : `<div class="plan-alt-label">代替プラン ${idx}${extra > 0 ? '<span style="color:var(--red);font-size:10px"> +¥' + extra.toLocaleString() + '/月</span>' : ''}</div>`}
     <div class="plan-svcs">
       ${plan.combo.map(k=>`<div class="plan-svc-row">
         <div class="plan-dot" style="background:${SVC[k].color}"></div>
