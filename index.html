@@ -614,6 +614,7 @@
         <input class="add-input" id="addInput" type="search" placeholder="作品名を入力（日本語・英語）" autocomplete="off" spellcheck="false" aria-label="作品名を検索" enterkeyhint="search">
         <div class="add-dd" id="addDd"></div>
       </div>
+      <div class="sr-only" aria-live="polite" aria-atomic="true" id="addDdStatus"></div>
       <div class="add-hint" id="addHint">作品名を入力するとTMDbで配信サービスを自動検索します</div>
       <div class="add-manual" id="addManual">
         <div class="add-manual-msg">自動検索で見つかりませんでした。<br>配信サービスを手動で選択してください：</div>
@@ -1853,6 +1854,8 @@ function renderDD(localHits, tmdbItems, q, status, errMsg) {
   if (!parts.length) { closeDD(); return; }
   dd.innerHTML = parts.join('');
   dd.className = 'add-dd open';
+  const _addSt = document.getElementById('addDdStatus');
+  if (_addSt) { const _c = dd.querySelectorAll('.dd-item').length; _addSt.textContent = _c ? `${_c}件の候補が見つかりました` : ''; }
 }
 
 function showManualFallback(q) {
@@ -1936,6 +1939,7 @@ function addCustomManual() {
 function closeDD() {
   const dd = document.getElementById('addDd');
   dd.className = 'add-dd'; dd.innerHTML = '';
+  const _addSt = document.getElementById('addDdStatus'); if (_addSt) _addSt.textContent = '';
 }
 
 function closeAdd() {
