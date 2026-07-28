@@ -1310,7 +1310,9 @@ function renderSubList() {
     const uc   = urgencyClass(info.daysLeft);
     const daysText = info.daysLeft < 0
       ? `<span class="${dc}">期限切れ</span>`
-      : `<span class="${dc}">あと${info.daysLeft}日</span>`;
+      : info.daysLeft === 0
+        ? `<span class="${dc}">本日期限</span>`
+        : `<span class="${dc}">あと${info.daysLeft}日</span>`;
     return `<div class="sub-item ${uc}">
       <div class="sub-item-head">
         <span class="sub-dot" style="background:${svc.color}"></span>
@@ -1342,7 +1344,7 @@ function checkDeadlineAlerts() {
   el.innerHTML = `
     <button class="alert-close" onclick="this.parentElement.remove()" aria-label="通知を閉じる">✕</button>
     <div class="alert-ttl">解約期限が近づいています</div>
-    ${urgent.map(x => `<div class="alert-item">・${x.svc.name} — あと${x.info.daysLeft}日</div>`).join('')}
+    ${urgent.map(x => `<div class="alert-item">・${x.svc.name} — ${x.info.daysLeft === 0 ? '本日期限' : 'あと' + x.info.daysLeft + '日'}</div>`).join('')}
   `;
   document.body.appendChild(el);
 
@@ -2276,7 +2278,7 @@ function buildSubListHTML() {
   return mySubs.map(sub => {
     const svc = SVC[sub.svcKey], info = getDeadlineInfo(sub);
     const dc = daysClass(info.daysLeft), uc = urgencyClass(info.daysLeft);
-    const dt = info.daysLeft < 0 ? `<span class="${dc}">期限切れ</span>` : `<span class="${dc}">あと${info.daysLeft}日</span>`;
+    const dt = info.daysLeft < 0 ? `<span class="${dc}">期限切れ</span>` : info.daysLeft === 0 ? `<span class="${dc}">本日期限</span>` : `<span class="${dc}">あと${info.daysLeft}日</span>`;
     return `<div class="sub-item ${uc}">
       <div class="sub-item-head">
         <span class="sub-dot" style="background:${svc.color}"></span>
