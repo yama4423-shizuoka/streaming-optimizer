@@ -1366,6 +1366,8 @@ async function requestNotifPermission() {
   const perm = await Notification.requestPermission();
   if (perm === 'granted') {
     if (btn) { btn.textContent = '通知が有効です'; btn.disabled = true; }
+  } else if (perm === 'denied') {
+    if (btn) { btn.textContent = '通知がブロックされています'; btn.disabled = true; }
   }
 }
 
@@ -1561,6 +1563,9 @@ function allItems() { return [...DB, ...customItems]; }
   setTimeout(checkDeadlineAlerts, 800);
   if (Notification.permission === 'granted') {
     document.getElementById('subNotifBtn').textContent = '通知が有効です';
+    document.getElementById('subNotifBtn').disabled = true;
+  } else if (Notification.permission === 'denied') {
+    document.getElementById('subNotifBtn').textContent = '通知がブロックされています';
     document.getElementById('subNotifBtn').disabled = true;
   }
   const _d = new Date();
@@ -2247,6 +2252,7 @@ function buildMobileSchedHTML() {
   const _d = new Date();
   const _today = _d.getFullYear() + '-' + String(_d.getMonth()+1).padStart(2,'0') + '-' + String(_d.getDate()).padStart(2,'0');
   const notifGranted = 'Notification' in window && Notification.permission === 'granted';
+  const notifDenied  = 'Notification' in window && Notification.permission === 'denied';
   return `<div class="sub-add-row">
     <select class="sub-select" id="mSubSel" aria-label="サービスを選択">${Object.entries(SVC).map(([k,v])=>`<option value="${k}">${v.name}</option>`).join('')}</select>
     <input type="date" class="sub-date" id="mSubDate" aria-label="開始日" value="${_today}">
@@ -2255,7 +2261,7 @@ function buildMobileSchedHTML() {
   <div id="mSubDateErr" class="warn" style="display:none;margin-bottom:0" role="alert">開始日を選択してください</div>
   <label class="sub-trial-chk"><input type="checkbox" id="mSubTrial"> 無料トライアル中</label>
   <div id="mSubListWrap">${buildSubListHTML()}</div>
-  <button class="sub-notif-btn" ${notifGranted ? 'disabled' : ''} onclick="requestNotifPermission()">${notifGranted ? '通知が有効です' : '通知を有効にする'}</button>`;
+  <button class="sub-notif-btn" ${(notifGranted || notifDenied) ? 'disabled' : ''} onclick="requestNotifPermission()">${notifGranted ? '通知が有効です' : notifDenied ? '通知がブロックされています' : '通知を有効にする'}</button>`;
 }
 
 function addSubMobile() {
