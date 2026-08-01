@@ -1350,9 +1350,10 @@ function checkDeadlineAlerts() {
 
   if (Notification.permission === 'granted') {
     urgent.forEach(x => {
-      new Notification(`【解約期限】${x.svc.name}`, {
-        body: `解約期限まであと${x.info.daysLeft}日です。忘れずに手続きしてください。`,
-      });
+      const _notifBody = x.info.daysLeft === 0
+        ? `${x.svc.name}の解約期限は本日です。今日中に手続きをしてください。`
+        : `解約期限まであと${x.info.daysLeft}日です。忘れずに手続きしてください。`;
+      new Notification(`【解約期限】${x.svc.name}`, { body: _notifBody });
     });
   }
 }
