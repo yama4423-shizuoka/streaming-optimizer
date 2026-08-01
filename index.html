@@ -1095,7 +1095,7 @@ async function tmdbSearch(q) {
 // ポスター画像 遅延ロード
 // ─────────────────────────────────────────────────────
 const POSTER_CACHE_V = 2;
-const _rawCache = JSON.parse(localStorage.getItem('poster_cache') || '{}');
+const _rawCache = (() => { try { return JSON.parse(localStorage.getItem('poster_cache') || '{}'); } catch { return {}; } })();
 const posterCache = (_rawCache._v === POSTER_CACHE_V) ? _rawCache : { _v: POSTER_CACHE_V };
 if (_rawCache._v !== POSTER_CACHE_V) localStorage.setItem('poster_cache', JSON.stringify(posterCache));
 let posterObserver = null;
