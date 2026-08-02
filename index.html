@@ -1568,7 +1568,13 @@ function allItems() { return [...DB, ...customItems]; }
 
   const addInput = document.getElementById('addInput');
   addInput.addEventListener('input', onAddInput);
-  addInput.addEventListener('keydown', e => { if (e.key === 'Escape') closeAdd(); });
+  addInput.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeAdd(); return; }
+    if (e.key === 'Enter') {
+      const first = document.querySelector('#addDd .dd-item');
+      if (first) { e.preventDefault(); first.click(); }
+    }
+  });
   document.addEventListener('click', e => {
     if (!e.target.closest('.add-wrap') && !e.target.closest('.add-manual')) closeDD();
   });
