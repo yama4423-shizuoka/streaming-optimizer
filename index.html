@@ -1779,8 +1779,8 @@ function onAddInput() {
   }
 }
 
-function localSearch(q) {
-  return DB.filter(it => it.t.toLowerCase().includes(q.toLowerCase())).slice(0, 5);
+function localSearch(q, limit = 5) {
+  return DB.filter(it => it.t.toLowerCase().includes(q.toLowerCase())).slice(0, limit);
 }
 
 async function performTmdbSearch(q) {
@@ -2375,7 +2375,7 @@ function onMobileAddSearch(q) {
   if (!results) return;
   const trimmed = q.trim();
   if (!trimmed || trimmed.length < 2) { results.innerHTML = ''; return; }
-  const hits = localSearch(trimmed);
+  const hits = localSearch(trimmed, 10);
   const genreLabel = { foreign:'海外ドラマ', anime:'アニメ', movie:'映画', kdrama:'韓国ドラマ', jdrama:'日本ドラマ', sports:'スポーツ', variety:'バラエティ' };
   if (!hits.length) {
     results.innerHTML = `<div style="border:1px solid rgba(124,111,245,.18);border-radius:var(--r2)"><div class="dd-status">「${esc(trimmed)}」はリストにありません</div></div>`;
