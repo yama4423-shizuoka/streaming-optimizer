@@ -1277,7 +1277,7 @@ function removeSub(id) {
 }
 
 function getNextRenewal(startDate) {
-  const start = new Date(startDate);
+  const start = parseLocalDate(startDate);
   const now   = new Date(); now.setHours(0,0,0,0);
   const origDay = start.getDate();
   const d     = new Date(start);
@@ -1294,7 +1294,7 @@ function getDeadlineInfo(sub) {
   const svc   = SVC[sub.svcKey];
   const today = new Date(); today.setHours(0,0,0,0);
   if (sub.isTrial && svc.trial) {
-    const trialEnd = new Date(sub.startDate);
+    const trialEnd = parseLocalDate(sub.startDate);
     trialEnd.setDate(trialEnd.getDate() + svc.trial);
     const days = Math.round((trialEnd - today) / 86400000);
     return { type:'trial', deadline: trialEnd, daysLeft: days, label:`無料期間終了 ${fmt(trialEnd)}` };
@@ -1303,6 +1303,11 @@ function getDeadlineInfo(sub) {
   const cancelBy = new Date(renewal); cancelBy.setDate(cancelBy.getDate() - 2);
   const days = Math.round((cancelBy - today) / 86400000);
   return { type:'renewal', deadline: cancelBy, daysLeft: days, label:`解約期限 ${fmt(cancelBy)}（更新日 ${fmt(renewal)}）` };
+}
+
+function parseLocalDate(s) {
+  const [y, m, d] = s.split('-').map(Number);
+  return new Date(y, m - 1, d);
 }
 
 function fmt(d) {
