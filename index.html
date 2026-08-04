@@ -1697,7 +1697,7 @@ function renderGrid() {
       </div>
       <div class="card-body">
         <div class="card-title">${hlText(it.t, q)}</div>
-        <div class="svc-tags">${it.s.map(k=>`<span class="svc-tag" style="background:${SVC[k].color}">${SVC[k].abbr}</span>`).join('')}</div>
+        <div class="svc-tags">${it.s.map(k=>`<span class="svc-tag" style="background:${SVC[k].color}" title="${esc(SVC[k].name)}">${SVC[k].abbr}</span>`).join('')}</div>
       </div>
     </div>`;
   }).join('');
@@ -1857,7 +1857,7 @@ async function performPersonSearch(q) {
             <div class="dd-meta">${item.type}${item.year ? ' · ' + item.year : ''}</div>
           </div>
           ${svcs.length
-            ? `<div class="dd-svcs">${svcs.map(k=>`<span class="svc-tag" style="background:${SVC[k].color};font-size:8px;padding:1px 4px">${SVC[k].abbr}</span>`).join('')}</div>`
+            ? `<div class="dd-svcs">${svcs.map(k=>`<span class="svc-tag" style="background:${SVC[k].color};font-size:8px;padding:1px 4px" title="${esc(SVC[k].name)}">${SVC[k].abbr}</span>`).join('')}</div>`
             : `<span class="dd-nosvcs">未配信</span>`}
         </div>`;
       }).join('')}
@@ -1885,7 +1885,7 @@ function renderDD(localHits, tmdbItems, q, status, errMsg) {
         return `<div class="dd-item" role="button" aria-label="${esc(it.t)}を追加" onclick="addFromDD_db(${it.id})" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();addFromDD_db(${it.id})}">
           <span class="dd-em">${esc(it.e)}</span>
           <div class="dd-info"><div class="dd-title">${hlText(it.t, q)}</div></div>
-          <div class="dd-svcs">${it.s.map(k=>`<span class="svc-tag" style="background:${SVC[k].color};font-size:8px;padding:1px 4px">${SVC[k].abbr}</span>`).join('')}</div>
+          <div class="dd-svcs">${it.s.map(k=>`<span class="svc-tag" style="background:${SVC[k].color};font-size:8px;padding:1px 4px" title="${esc(SVC[k].name)}">${SVC[k].abbr}</span>`).join('')}</div>
           ${alr ? '<span class="dd-added">✓済</span>' : ''}
         </div>`;
       }).join('')}
@@ -1921,7 +1921,7 @@ function renderDD(localHits, tmdbItems, q, status, errMsg) {
               <div class="dd-meta">${item.type}${item.year ? ' · '+item.year : ''}</div>
             </div>
             ${hasSvcs
-              ? `<div class="dd-svcs">${item.svcs.map(k=>`<span class="svc-tag" style="background:${SVC[k].color};font-size:8px;padding:1px 4px">${SVC[k].abbr}</span>`).join('')}</div>`
+              ? `<div class="dd-svcs">${item.svcs.map(k=>`<span class="svc-tag" style="background:${SVC[k].color};font-size:8px;padding:1px 4px" title="${esc(SVC[k].name)}">${SVC[k].abbr}</span>`).join('')}</div>`
               : `<span class="dd-nosvcs">サブスク未対応</span>`}
           </div>`;
         }).join('')}
@@ -2404,7 +2404,7 @@ function onMobileAddSearch(q) {
           <div class="dd-title">${hlText(it.t, trimmed)}</div>
           <div class="dd-meta">${genreLabel[it.g] || ''}</div>
         </div>
-        <div class="dd-svcs">${it.s.map(k=>`<span class="svc-tag" style="background:${SVC[k].color};font-size:8px;padding:1px 4px">${SVC[k].abbr}</span>`).join('')}</div>
+        <div class="dd-svcs">${it.s.map(k=>`<span class="svc-tag" style="background:${SVC[k].color};font-size:8px;padding:1px 4px" title="${esc(SVC[k].name)}">${SVC[k].abbr}</span>`).join('')}</div>
         ${alr ? '<span class="dd-added">選択済</span>' : ''}
       </div>`;
     }).join('') +
