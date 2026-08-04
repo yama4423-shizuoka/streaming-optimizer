@@ -1788,7 +1788,8 @@ function onAddInput() {
 }
 
 function localSearch(q, limit = 5) {
-  return DB.filter(it => it.t.toLowerCase().includes(q.toLowerCase())).slice(0, limit);
+  const lq = q.toLowerCase();
+  return [...DB, ...customItems].filter(it => it.t.toLowerCase().includes(lq)).slice(0, limit);
 }
 
 async function performTmdbSearch(q) {
