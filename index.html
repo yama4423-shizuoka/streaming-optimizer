@@ -2134,8 +2134,8 @@ function renderPlan(plan, isBest, allSel, idx, naiveCost, bestCost) {
         ${saving > 0 && isBest ? `<div class="plan-saving">個別登録より ¥${saving.toLocaleString()} お得</div>` : ''}
       </div>
     </div>
-    <button class="cov-toggle" onclick="toggleCov('${did}',this)" aria-expanded="false" aria-controls="${did}"><span aria-hidden="true">▶</span> 内訳を見る</button>
-    <div class="cov-detail" id="${did}">
+    <button class="cov-toggle" onclick="toggleCov('${did}',this)" aria-expanded="${isBest}" aria-controls="${did}"><span aria-hidden="true">${isBest ? '▼' : '▶'}</span> ${isBest ? '内訳を閉じる' : '内訳を見る'}</button>
+    <div class="cov-detail${isBest ? ' open' : ''}" id="${did}">
       ${plan.combo.map(svc => {
         const ts = cov[svc];
         if (!ts || !ts.length) return '';
