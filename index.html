@@ -1656,7 +1656,8 @@ function clearSearch() {
 function renderGrid() {
   const grid = document.getElementById('grid');
   const q = searchQ.trim().toLowerCase();
-  const items = DB.filter(it => {
+  const items = allItems().filter(it => {
+    if (it.g === 'custom') return !!q && it.t.toLowerCase().includes(q);
     const gOk = activeGenre === 'all' || it.g === activeGenre;
     const sOk = !q || it.t.toLowerCase().includes(q);
     return gOk && sOk;
