@@ -2061,7 +2061,7 @@ function calculate() {
       valid.push({ combo, cost });
     }
   }
-  valid.sort((a,b) => a.cost - b.cost);
+  valid.sort((a,b) => a.cost !== b.cost ? a.cost - b.cost : a.combo.length - b.combo.length);
   const withinBudget = budget ? valid.filter(p => p.cost <= budget) : valid;
   const overBudget   = budget && withinBudget.length === 0;
   renderResults((overBudget ? valid : withinBudget).slice(0, 3), items, uncoverable, overBudget);
