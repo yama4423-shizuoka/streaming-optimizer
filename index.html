@@ -1423,16 +1423,16 @@ function checkDeadlineAlerts() {
 }
 
 async function requestNotifPermission() {
-  const btn = document.getElementById('subNotifBtn');
+  const allBtns = document.querySelectorAll('.sub-notif-btn');
   if (!('Notification' in window)) {
-    if (btn) { btn.textContent = '通知はこのブラウザで未対応です'; btn.disabled = true; }
+    allBtns.forEach(b => { b.textContent = '通知はこのブラウザで未対応です'; b.disabled = true; });
     return;
   }
   const perm = await Notification.requestPermission();
   if (perm === 'granted') {
-    if (btn) { btn.textContent = '通知が有効です'; btn.disabled = true; }
+    allBtns.forEach(b => { b.textContent = '通知が有効です'; b.disabled = true; });
   } else if (perm === 'denied') {
-    if (btn) { btn.textContent = '通知がブロックされています'; btn.disabled = true; }
+    allBtns.forEach(b => { b.textContent = '通知がブロックされています'; b.disabled = true; });
   }
 }
 
