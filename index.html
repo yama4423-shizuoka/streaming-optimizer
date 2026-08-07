@@ -132,6 +132,8 @@
     .panel::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(124,111,245,.3),transparent); }
     .panel-ttl { font-size:13px; font-weight:700; color:var(--tx2); margin-bottom:16px; display:flex; align-items:center; gap:7px; text-transform:uppercase; letter-spacing:.6px; }
     .panel-ttl svg { color:var(--acc); }
+    .panel-ttl-btn { margin-left:auto; background:none; border:none; color:var(--tx2); cursor:pointer; font-size:10px; font-family:inherit; letter-spacing:normal; text-transform:none; font-weight:600; padding:2px 6px; border-radius:4px; transition:color .13s; }
+    .panel-ttl-btn:hover { color:var(--acc2); background:rgba(124,111,245,.08); }
 
     /* SELECTED LIST */
     .sel-list { list-style:none; max-height:240px; overflow-y:auto; margin-bottom:14px; }
@@ -604,6 +606,7 @@
       <h2 class="panel-ttl">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
         選択中の作品
+        <button id="clearAllBtn" class="panel-ttl-btn" style="display:none" onclick="clearAll()" aria-label="全ての選択を解除する">全解除</button>
       </h2>
       <ul class="sel-list" id="selList">
         <li class="sel-empty">左から観たい作品を<br>クリックして追加してください</li>
@@ -1741,10 +1744,21 @@ function syncUI() {
     badge.textContent = selected.size || '';
     badge.classList.toggle('show', selected.size > 0);
   }
+  const clearBtn = document.getElementById('clearAllBtn');
+  if (clearBtn) clearBtn.style.display = selected.size > 0 ? '' : 'none';
   const ra = document.getElementById('resultArea');
   if (ra && ra.innerHTML) ra.innerHTML = '';
   cloudSaveDebounced();
   if (!currentUser) saveLocalData();
+}
+
+function clearAll() {
+  selected.clear();
+  document.querySelectorAll('#grid .card.sel').forEach(c => {
+    c.classList.remove('sel');
+    c.setAttribute('aria-checked', 'false');
+  });
+  renderSelList(); syncUI(); renderRanking();
 }
 
 function renderSelList() {
@@ -2244,7 +2258,8 @@ function mobileCalc() {
 
 function buildMobileSelectedHTML() {
   const selItems = allItems().filter(c => selected.has(c.id));
-  let html = `<div class="mobile-sheet-ttl">選択中の作品</div>`;
+  const clearBtn = selItems.length ? `<button class="panel-ttl-btn" style="font-size:11px" onclick="clearAll();document.getElementById('mobileSheetContent').innerHTML=buildMobileSelectedHTML()" aria-label="全ての選択を解除する">全解除</button>` : '';
+  let html = `<div class="mobile-sheet-ttl" style="display:flex;align-items:center">選択中の作品${clearBtn}</div>`;
   if (!selItems.length) {
     html += `<div class="sel-empty" style="padding:40px 0">作品をタップして選択してください</div>`;
   } else {
