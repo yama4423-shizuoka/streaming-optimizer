@@ -2180,6 +2180,7 @@ function renderPlan(plan, isBest, allSel, idx, naiveCost, bestCost) {
           <span class="sr-only">（新しいタブで開く）</span>
         </a>`).join('')}
       </div>
+      ${isBest && plan.combo.some(k => SVC[k].trial) ? '<div style="font-size:11px;color:var(--tx2);margin-top:12px;line-height:1.6;opacity:.8">無料トライアルをご利用の場合は「解約スケジュール管理」に開始日を登録すると解約期限を自動計算します。</div>' : ''}
     </div>
   </div>`;
 }
