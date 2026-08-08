@@ -631,13 +631,13 @@
         解約スケジュール管理
       </h2>
       <div class="sub-add-row">
-        <select class="sub-select" id="subSvcSelect" aria-label="サービスを選択"></select>
+        <select class="sub-select" id="subSvcSelect" aria-label="サービスを選択" onchange="onSubSvcChange()"></select>
         <input type="date" class="sub-date" id="subStartDate" aria-label="開始日">
         <button class="sub-add-btn" onclick="addSub()">追加</button>
       </div>
       <div id="subDateErr" class="warn" style="display:none;margin-bottom:0" role="alert">開始日を選択してください</div>
-      <label class="sub-trial-chk">
-        <input type="checkbox" id="subIsTrial"> 無料トライアル中
+      <label class="sub-trial-chk" id="subTrialLabel">
+        <input type="checkbox" id="subIsTrial"> <span id="subTrialText">無料トライアル中</span>
       </label>
       <div class="sub-list" id="subList"></div>
       <button class="sub-notif-btn" id="subNotifBtn" onclick="requestNotifPermission()">ブラウザ通知を有効にする</button>
@@ -1279,6 +1279,29 @@ function addSub() {
   document.getElementById('subIsTrial').checked = false;
 }
 
+function onSubSvcChange() {
+  const key = document.getElementById('subSvcSelect').value;
+  const trialDays = SVC[key] ? SVC[key].trial : null;
+  const lbl = document.getElementById('subTrialLabel');
+  if (!lbl) return;
+  lbl.style.display = trialDays ? '' : 'none';
+  if (!trialDays) document.getElementById('subIsTrial').checked = false;
+  const txt = document.getElementById('subTrialText');
+  if (txt && trialDays) txt.textContent = '無料トライアル中（' + trialDays + '日間）';
+}
+
+function onMSubSvcChange() {
+  const sel = document.getElementById('mSubSel');
+  const key = sel ? sel.value : null;
+  const trialDays = key && SVC[key] ? SVC[key].trial : null;
+  const lbl = document.getElementById('mSubTrialLabel');
+  if (!lbl) return;
+  lbl.style.display = trialDays ? '' : 'none';
+  if (!trialDays) { const c = document.getElementById('mSubTrial'); if (c) c.checked = false; }
+  const txt = document.getElementById('mSubTrialText');
+  if (txt && trialDays) txt.textContent = '無料トライアル中（' + trialDays + '日間）';
+}
+
 function removeSub(id) {
   mySubs = mySubs.filter(s => s.id !== id);
   saveSubs();
@@ -1616,6 +1639,7 @@ function allItems() { return [...DB, ...customItems]; }
   });
 
   document.getElementById('subSvcSelect').innerHTML = Object.entries(SVC).map(([k,v])=>`<option value="${k}">${v.name}</option>`).join('');
+  onSubSvcChange();
   buildSvcCheckGrid();
   const _dbN = DB.length;
   document.getElementById('heroBadgeCount').textContent = _dbN;
@@ -2322,7 +2346,7 @@ function switchMoreTab(tab) {
   activeTab.setAttribute('aria-pressed', 'true');
   const c = document.getElementById('moreTabContent');
   if (tab === 'rank') c.innerHTML = buildMobileRankHTML();
-  else if (tab === 'sched') c.innerHTML = buildMobileSchedHTML();
+  else if (tab === 'sched') { c.innerHTML = buildMobileSchedHTML(); onMSubSvcChange(); }
   else if (tab === 'add') c.innerHTML = buildMobileAddHTML();
 }
 
@@ -2359,12 +2383,12 @@ function buildMobileSchedHTML() {
   const notifGranted = 'Notification' in window && Notification.permission === 'granted';
   const notifDenied  = 'Notification' in window && Notification.permission === 'denied';
   return `<div class="sub-add-row">
-    <select class="sub-select" id="mSubSel" aria-label="サービスを選択">${Object.entries(SVC).map(([k,v])=>`<option value="${k}">${v.name}</option>`).join('')}</select>
+    <select class="sub-select" id="mSubSel" aria-label="サービスを選択" onchange="onMSubSvcChange()">${Object.entries(SVC).map(([k,v])=>`<option value="${k}">${v.name}</option>`).join('')}</select>
     <input type="date" class="sub-date" id="mSubDate" aria-label="開始日" value="${_today}">
     <button class="sub-add-btn" onclick="addSubMobile()">追加</button>
   </div>
   <div id="mSubDateErr" class="warn" style="display:none;margin-bottom:0" role="alert">開始日を選択してください</div>
-  <label class="sub-trial-chk"><input type="checkbox" id="mSubTrial"> 無料トライアル中</label>
+  <label class="sub-trial-chk" id="mSubTrialLabel"><input type="checkbox" id="mSubTrial"> <span id="mSubTrialText">無料トライアル中</span></label>
   <div id="mSubListWrap">${buildSubListHTML()}</div>
   <button class="sub-notif-btn" ${(notifGranted || notifDenied) ? 'disabled' : ''} onclick="requestNotifPermission()">${notifGranted ? '通知が有効です' : notifDenied ? '通知がブロックされています' : '通知を有効にする'}</button>`;
 }
