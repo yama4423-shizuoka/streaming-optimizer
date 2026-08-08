@@ -1693,6 +1693,14 @@ function clearSearch() {
   renderGrid();
 }
 
+function clearGenreFilter() {
+  activeGenre = 'all';
+  document.querySelectorAll('.fb').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
+  const allBtn = document.querySelector('.fb[data-genre="all"]');
+  if (allBtn) { allBtn.classList.add('active'); allBtn.setAttribute('aria-pressed', 'true'); }
+  renderGrid();
+}
+
 function renderGrid() {
   const grid = document.getElementById('grid');
   const q = searchQ.trim().toLowerCase();
@@ -1707,10 +1715,12 @@ function renderGrid() {
   if (!items.length) {
     const GENRE_LABELS = { foreign:'海外ドラマ', anime:'アニメ', movie:'映画', kdrama:'韓国ドラマ', jdrama:'日本ドラマ', sports:'スポーツ', variety:'バラエティ' };
     let emptyHint;
+    let hasCrossHits = false;
     if (activeGenre !== 'all' && q) {
       const crossHits = DB.filter(it => it.t.toLowerCase().includes(q)).length;
       if (crossHits) {
         emptyHint = `「${GENRE_LABELS[activeGenre] || activeGenre}」フィルターを外すと${crossHits}件見つかります`;
+        hasCrossHits = true;
       } else if (window.innerWidth <= 768) {
         emptyHint = '下の「設定」タブ → 「作品追加」でリスト内を検索できます';
       } else {
@@ -1721,7 +1731,7 @@ function renderGrid() {
     } else {
       emptyHint = 'サイドバーの「リストにない作品を追加」からTMDb検索で探せます';
     }
-    grid.innerHTML = `<div class="grid-empty">「${esc(searchQ)}」に一致する作品が見つかりません<span style="display:block;font-size:12px;margin-top:10px;opacity:.8">${emptyHint}</span>${q ? '<button class="grid-empty-btn" onclick="clearSearch()">検索をクリア</button>' : ''}</div>`;
+    grid.innerHTML = `<div class="grid-empty">「${esc(searchQ)}」に一致する作品が見つかりません<span style="display:block;font-size:12px;margin-top:10px;opacity:.8">${emptyHint}</span>${q ? '<button class="grid-empty-btn" onclick="clearSearch()">検索をクリア</button>' : ''}${hasCrossHits ? ' <button class="grid-empty-btn" onclick="clearGenreFilter()">フィルターを解除</button>' : ''}</div>`;
     return;
   }
   grid.innerHTML = items.map(it => {
