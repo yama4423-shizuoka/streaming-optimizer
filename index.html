@@ -331,6 +331,10 @@
     .cov-tag { font-size:10px; background:rgba(255,255,255,.04); border:1px solid var(--bd); border-radius:5px; padding:3px 7px; color:var(--tx2); }
     .warn { background:rgba(248,113,113,.07); border:1px solid rgba(248,113,113,.22); border-radius:var(--r2); padding:12px; font-size:12px; color:#fca5a5; margin-bottom:13px; line-height:1.6; }
     .no-result-box { text-align:center; padding:36px 10px; color:var(--tx2); font-size:13px; }
+    .recalc-notice { text-align:center; padding:24px 14px; }
+    .recalc-notice-txt { font-size:12px; color:var(--tx2); margin-bottom:12px; }
+    .recalc-notice-btn { padding:9px 20px; background:linear-gradient(135deg,#7c6ff5,#a89cf7); border:none; border-radius:var(--r2); color:#fff; font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; box-shadow:0 4px 14px rgba(124,111,245,.3); transition:filter .15s; }
+    .recalc-notice-btn:hover { filter:brightness(1.08); }
     .plan-register { margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,.06); }
     .plan-register-lbl { font-size:11px; color:var(--tx2); margin-bottom:9px; letter-spacing:.3px; text-transform:uppercase; font-weight:600; }
     .plan-register-btns { display:flex; flex-direction:column; gap:7px; }
@@ -534,7 +538,7 @@
       "price": "0",
       "priceCurrency": "JPY"
     },
-    "dateModified": "2026-08-06"
+    "dateModified": "2026-08-08"
   }
   </script>
 </head>
@@ -1747,7 +1751,13 @@ function syncUI() {
   const clearBtn = document.getElementById('clearAllBtn');
   if (clearBtn) clearBtn.style.display = selected.size > 0 ? '' : 'none';
   const ra = document.getElementById('resultArea');
-  if (ra && ra.innerHTML) ra.innerHTML = '';
+  if (ra && ra.innerHTML) {
+    if (selected.size === 0) {
+      ra.innerHTML = '';
+    } else if (!ra.querySelector('.recalc-notice')) {
+      ra.innerHTML = '<div class="panel"><div class="recalc-notice"><div class="recalc-notice-txt">選択が変わりました — 再計算してください</div><button class="recalc-notice-btn" onclick="calculate()">再計算する →</button></div></div>';
+    }
+  }
   cloudSaveDebounced();
   if (!currentUser) saveLocalData();
 }
