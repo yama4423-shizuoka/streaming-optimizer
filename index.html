@@ -546,7 +546,7 @@
       "price": "0",
       "priceCurrency": "JPY"
     },
-    "dateModified": "2026-08-08"
+    "dateModified": "2026-08-09"
   }
   </script>
 </head>
@@ -1681,6 +1681,14 @@ function allItems() { return [...DB, ...customItems]; }
   const _d = new Date();
   document.getElementById('subStartDate').value =
     _d.getFullYear() + '-' + String(_d.getMonth()+1).padStart(2,'0') + '-' + String(_d.getDate()).padStart(2,'0');
+  const _gc = {};
+  DB.forEach(it => { _gc[it.g] = (_gc[it.g] || 0) + 1; });
+  document.querySelectorAll('#filterRow .fb[data-genre]').forEach(btn => {
+    const _g = btn.dataset.genre;
+    if (_g === 'all') return;
+    const _n = _gc[_g];
+    if (_n) btn.innerHTML = btn.textContent + '<span style="font-size:10px;opacity:.5;margin-left:3px;font-weight:400">(' + _n + ')</span>';
+  });
 })();
 
 // ─────────────────────────────────────────────────────
