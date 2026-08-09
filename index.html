@@ -1645,6 +1645,14 @@ function allItems() { return [...DB, ...customItems]; }
       const sheet = document.getElementById('mobileSheet');
       if (sheet && sheet.classList.contains('open')) closeMobileSheet();
     }
+    if (e.key === '/' && !e.target.matches('input,textarea,select,[contenteditable]')) {
+      const si = document.getElementById('searchInput');
+      if (si && si.offsetParent !== null) {
+        e.preventDefault();
+        si.focus();
+        si.select();
+      }
+    }
   });
 
   document.getElementById('subSvcSelect').innerHTML = Object.entries(SVC).map(([k,v])=>`<option value="${k}">${v.name}</option>`).join('');
