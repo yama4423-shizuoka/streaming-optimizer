@@ -1688,7 +1688,11 @@ function allItems() { return [...DB, ...customItems]; }
     const _g = btn.dataset.genre;
     if (_g === 'all') return;
     const _n = _gc[_g];
-    if (_n) btn.innerHTML = btn.textContent + '<span style="font-size:10px;opacity:.5;margin-left:3px;font-weight:400">(' + _n + ')</span>';
+    if (_n) {
+      const _label = btn.textContent;
+      btn.setAttribute('aria-label', _label + '（' + _n + '件）');
+      btn.innerHTML = _label + '<span aria-hidden="true" style="font-size:10px;opacity:.5;margin-left:3px;font-weight:400">(' + _n + ')</span>';
+    }
   });
 })();
 
