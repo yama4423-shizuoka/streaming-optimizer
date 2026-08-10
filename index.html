@@ -2251,13 +2251,13 @@ function renderPlan(plan, isBest, allSel, idx, naiveCost, bestCost) {
     <div class="plan-register">
       <div class="plan-register-lbl">このプランに登録する</div>
       <div class="plan-register-btns">
-        ${plan.combo.map(k=>`
+        ${plan.combo.map(k=>{const _r=mySubs.some(s=>s.svcKey===k);const _b=_r?'<span style="font-size:9px;font-weight:700;opacity:.85;margin-left:6px;background:rgba(255,255,255,.2);padding:1px 5px;border-radius:3px">登録済</span>':(SVC[k].trial?`<span style="font-size:9px;font-weight:700;opacity:.85;margin-left:6px;background:rgba(255,255,255,.2);padding:1px 5px;border-radius:3px">${SVC[k].trial}日間無料</span>`:'');return`
         <a href="${SVC[k].url}" target="_blank" rel="noopener noreferrer" class="plan-register-btn" style="background:${SVC[k].color}">
-          <span class="plan-register-btn-name">${SVC[k].name}${SVC[k].trial ? `<span style="font-size:9px;font-weight:700;opacity:.85;margin-left:6px;background:rgba(255,255,255,.2);padding:1px 5px;border-radius:3px">${SVC[k].trial}日間無料</span>` : ''}</span>
+          <span class="plan-register-btn-name">${SVC[k].name}${_b}</span>
           <span class="plan-register-btn-price">¥${SVC[k].price.toLocaleString()}/月${cov[k]?.length ? ` · ${cov[k].length}作品` : ''}</span>
           <span class="plan-register-btn-arrow" aria-hidden="true">→</span>
           <span class="sr-only">（新しいタブで開く）</span>
-        </a>`).join('')}
+        </a>`}).join('')}
       </div>
       ${isBest && plan.combo.some(k => SVC[k].trial) ? '<div style="font-size:11px;color:var(--tx2);margin-top:12px;line-height:1.6;opacity:.8">無料トライアルをご利用の場合は「解約スケジュール管理」に開始日を登録すると解約期限を自動計算します。</div>' : ''}
     </div>
