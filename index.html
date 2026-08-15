@@ -1532,6 +1532,10 @@ function onBudgetChange(val) {
   document.getElementById('budgetVal').textContent = txt;
   const sl = document.getElementById('budgetSlider');
   if (sl) sl.setAttribute('aria-valuetext', txt);
+  const ra = document.getElementById('resultArea');
+  if (ra && ra.innerHTML && !ra.querySelector('.recalc-notice')) {
+    ra.innerHTML = '<div class="panel"><div class="recalc-notice"><div class="recalc-notice-txt">予算が変わりました — 再計算してください</div><button class="recalc-notice-btn" onclick="calculate()">再計算する →</button></div></div>';
+  }
   cloudSaveDebounced();
   if (!currentUser) saveLocalData();
 }
