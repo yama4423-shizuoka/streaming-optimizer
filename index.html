@@ -2310,8 +2310,10 @@ function renderPlan(plan, isBest, allSel, idx, naiveCost, bestCost) {
   const cov = {};
   plan.combo.forEach(svc => { cov[svc] = allSel.filter(it => it.s && it.s.includes(svc)); });
   const did = `d${idx}`;
+  const coverableCount = allSel.filter(it => it.s && it.s.length).length;
   return `<div class="result-plan${isBest?' best':''}">
     ${isBest ? '<div class="best-badge">最安プラン</div>' : `<div class="plan-alt-label">代替プラン ${idx}${extra > 0 ? '<span style="color:var(--red);font-size:10px"> +¥' + extra.toLocaleString() + '/月</span>' : ''}</div>`}
+    ${isBest && coverableCount > 0 && coverableCount === allSel.length ? `<div style="font-size:12px;color:var(--green);margin-bottom:12px;font-weight:600">✓ 選択した全${coverableCount}作品を視聴できます</div>` : ''}
     <div class="plan-svcs">
       ${plan.combo.map(k=>`<div class="plan-svc-row">
         <div class="plan-dot" style="background:${SVC[k].color}"></div>
