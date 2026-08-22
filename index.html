@@ -644,7 +644,7 @@
       "price": "0",
       "priceCurrency": "JPY"
     },
-    "dateModified": "2026-08-18"
+    "dateModified": "2026-08-22"
   }
   </script>
   <script type="application/ld+json">
@@ -705,7 +705,7 @@
     </div>
     <div class="search-wrap" role="search">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <input class="search-input" id="searchInput" type="search" placeholder="作品名で検索..." aria-label="作品名で検索" autocomplete="off" spellcheck="false" enterkeyhint="search">
+      <input class="search-input" id="searchInput" type="search" placeholder="作品名で検索..." aria-label="作品名で検索" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="none" enterkeyhint="search">
     </div>
     <div class="header-badge">選択中 <span class="hbadge-num" id="countBadge">0</span></div>
     <div id="authArea"></div>
@@ -826,7 +826,7 @@
         <button class="mode-btn" id="modePerson" onclick="setSearchMode('person')" aria-pressed="false">出演者</button>
       </div>
       <div class="add-wrap">
-        <input class="add-input" id="addInput" type="search" placeholder="作品名を入力（日本語・英語）" autocomplete="off" spellcheck="false" aria-label="作品名を検索" enterkeyhint="search" aria-describedby="addHint">
+        <input class="add-input" id="addInput" type="search" placeholder="作品名を入力（日本語・英語）" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="none" aria-label="作品名を検索" enterkeyhint="search" aria-describedby="addHint">
         <div class="add-dd" id="addDd"></div>
       </div>
       <div class="sr-only" aria-live="polite" aria-atomic="true" id="addDdStatus"></div>
@@ -2628,7 +2628,7 @@ function buildSubListHTML() {
 
 function buildMobileAddHTML() {
   return `<div style="margin-bottom:8px">
-    <input type="search" id="mAddInput" class="add-input" placeholder="作品名でリスト内を検索..." autocomplete="off" aria-label="作品名でリスト内を検索" enterkeyhint="search" oninput="onMobileAddSearch(this.value)">
+    <input type="search" id="mAddInput" class="add-input" placeholder="作品名でリスト内を検索..." autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="none" aria-label="作品名でリスト内を検索" enterkeyhint="search" oninput="onMobileAddSearch(this.value)">
   </div>
   <div id="mAddResults"></div>
   <div style="font-size:11px;color:var(--tx2);margin-top:10px;padding:9px 11px;background:rgba(124,111,245,.06);border-radius:var(--r2);line-height:1.7;">
