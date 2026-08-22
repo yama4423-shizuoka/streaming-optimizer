@@ -1751,9 +1751,9 @@ function allItems() { return [...DB, ...customItems]; }
 // Init
 // ─────────────────────────────────────────────────────
 (function init() {
-  document.getElementById('searchInput').addEventListener('input', e => {
-    searchQ = e.target.value; renderGrid();
-  });
+  const _si = document.getElementById('searchInput');
+  _si.addEventListener('compositionend', e => { searchQ = e.target.value; renderGrid(); });
+  _si.addEventListener('input', e => { if (!e.isComposing) { searchQ = e.target.value; renderGrid(); } });
   document.getElementById('filterRow').addEventListener('click', e => {
     const btn = e.target.closest('.fb');
     if (!btn) return;
@@ -1765,7 +1765,8 @@ function allItems() { return [...DB, ...customItems]; }
   });
 
   const addInput = document.getElementById('addInput');
-  addInput.addEventListener('input', onAddInput);
+  addInput.addEventListener('compositionend', () => onAddInput());
+  addInput.addEventListener('input', e => { if (!e.isComposing) onAddInput(); });
   addInput.addEventListener('keydown', e => {
     if (e.key === 'Escape') { closeAdd(); return; }
     if (e.key === 'ArrowDown') {
