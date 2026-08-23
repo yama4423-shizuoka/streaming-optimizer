@@ -2128,7 +2128,7 @@ function renderDD(localHits, tmdbItems, q, status, errMsg) {
       <div class="dd-section-hd">登録済み作品</div>
       ${localHits.map(it => {
         const alr = selected.has(it.id);
-        return `<div class="dd-item" role="button" aria-label="${esc(it.t)}を追加" onclick="addFromDD_db(${it.id})" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();addFromDD_db(${it.id})}">
+        return `<div class="dd-item" role="button" aria-label="${esc(it.t)}${alr ? '（追加済み）' : 'を追加'}" onclick="addFromDD_db(${it.id})" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();addFromDD_db(${it.id})}">
           <span class="dd-em">${esc(it.e)}</span>
           <div class="dd-info"><div class="dd-title">${hlText(it.t, q)}</div></div>
           <div class="dd-svcs">${it.s.map(k=>`<span class="svc-tag" style="background:${SVC[k].color};font-size:8px;padding:1px 4px" title="${esc(SVC[k].name)}">${SVC[k].abbr}</span>`).join('')}</div>
