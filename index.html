@@ -893,15 +893,15 @@ const IS_DEPLOYED = location.protocol !== 'file:';
 // サービス定義
 // ─────────────────────────────────────────────────────
 const SVC = {
-  netflix: { name:'Netflix',             price:1590, color:'#E50914', abbr:'N',      url:'https://www.netflix.com/jp/signup',             trial:null, annual:null },
+  netflix: { name:'Netflix',             price:1590, color:'#E50914', abbr:'N',      url:'https://www.netflix.com/jp/signup',             homeUrl:'https://www.netflix.com/jp/',       trial:null, annual:null },
   amazon:  { name:'Amazon Prime Video',  price:600,  color:'#00A8E0', abbr:'Prime',  url:'https://www.amazon.co.jp/prime',                trial:30,   annual:5900 },
-  disney:  { name:'Disney+',             price:990,  color:'#0063E5', abbr:'D+',     url:'https://www.disneyplus.com/ja-jp/sign-up',      trial:null, annual:9900 },
-  hulu:    { name:'Hulu',                price:1026, color:'#1DB954', abbr:'Hulu',   url:'https://www.hulu.jp/account/register',          trial:14,   annual:null },
+  disney:  { name:'Disney+',             price:990,  color:'#0063E5', abbr:'D+',     url:'https://www.disneyplus.com/ja-jp/sign-up',      homeUrl:'https://www.disneyplus.com/ja-jp/', trial:null, annual:9900 },
+  hulu:    { name:'Hulu',                price:1026, color:'#1DB954', abbr:'Hulu',   url:'https://www.hulu.jp/account/register',          homeUrl:'https://www.hulu.jp/',              trial:14,   annual:null },
   unext:   { name:'U-NEXT',              price:2189, color:'#FF6B00', abbr:'U-NEXT', url:'https://video.unext.jp/',                       trial:31,   annual:null },
   apple:   { name:'Apple TV+',           price:900,  color:'#888888', abbr:'TV+',    url:'https://tv.apple.com/jp',                       trial:7,    annual:null },
-  abema:   { name:'ABEMA Premium',       price:960,  color:'#00C8FF', abbr:'ABEMA',  url:'https://abema.tv/premium',                      trial:14,   annual:8400 },
+  abema:   { name:'ABEMA Premium',       price:960,  color:'#00C8FF', abbr:'ABEMA',  url:'https://abema.tv/premium',                      homeUrl:'https://abema.tv/',                 trial:14,   annual:8400 },
   lemino:  { name:'Lemino',              price:990,  color:'#D4145A', abbr:'Lemino', url:'https://lemino.docomo.ne.jp/',                  trial:null, annual:null },
-  dazn:    { name:'DAZN',                price:3700, color:'#F5A623', abbr:'DAZN',   url:'https://www.dazn.com/ja-JP/account/signup',     trial:null, annual:null },
+  dazn:    { name:'DAZN',                price:3700, color:'#F5A623', abbr:'DAZN',   url:'https://www.dazn.com/ja-JP/account/signup',     homeUrl:'https://www.dazn.com/ja-JP/',       trial:null, annual:null },
 };
 
 // ─────────────────────────────────────────────────────
@@ -2394,7 +2394,7 @@ function renderPlan(plan, isBest, allSel, idx, naiveCost, bestCost) {
       <h3 class="plan-register-lbl">このプランに登録する</h3>
       <div class="plan-register-btns">
         ${plan.combo.map(k=>{const _r=mySubs.some(s=>s.svcKey===k);const _b=_r?'<span style="font-size:9px;font-weight:700;opacity:.85;margin-left:6px;background:rgba(255,255,255,.2);padding:1px 5px;border-radius:3px">登録済</span>':(SVC[k].trial?`<span style="font-size:9px;font-weight:700;opacity:.85;margin-left:6px;background:rgba(255,255,255,.2);padding:1px 5px;border-radius:3px">${SVC[k].trial}日間無料</span>`:'');return`
-        <a href="${SVC[k].url}" target="_blank" rel="noopener noreferrer" class="plan-register-btn" style="background:${SVC[k].color}">
+        <a href="${_r && SVC[k].homeUrl ? SVC[k].homeUrl : SVC[k].url}" target="_blank" rel="noopener noreferrer" class="plan-register-btn" style="background:${SVC[k].color}">
           <span class="plan-register-btn-name">${SVC[k].name}${_b}</span>
           <span class="plan-register-btn-price">¥${SVC[k].price.toLocaleString()}/月${cov[k]?.length ? ` · ${cov[k].length}作品` : ''}</span>
           <span class="plan-register-btn-arrow" aria-hidden="true">→</span>
