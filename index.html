@@ -644,7 +644,7 @@
       "price": "0",
       "priceCurrency": "JPY"
     },
-    "dateModified": "2026-08-22"
+    "dateModified": "2026-08-23"
   }
   </script>
   <script type="application/ld+json">
@@ -2391,7 +2391,7 @@ function renderPlan(plan, isBest, allSel, idx, naiveCost, bestCost) {
       }).join('')}
     </div>
     <div class="plan-register">
-      <div class="plan-register-lbl">このプランに登録する</div>
+      <h3 class="plan-register-lbl">このプランに登録する</h3>
       <div class="plan-register-btns">
         ${plan.combo.map(k=>{const _r=mySubs.some(s=>s.svcKey===k);const _b=_r?'<span style="font-size:9px;font-weight:700;opacity:.85;margin-left:6px;background:rgba(255,255,255,.2);padding:1px 5px;border-radius:3px">登録済</span>':(SVC[k].trial?`<span style="font-size:9px;font-weight:700;opacity:.85;margin-left:6px;background:rgba(255,255,255,.2);padding:1px 5px;border-radius:3px">${SVC[k].trial}日間無料</span>`:'');return`
         <a href="${SVC[k].url}" target="_blank" rel="noopener noreferrer" class="plan-register-btn" style="background:${SVC[k].color}">
