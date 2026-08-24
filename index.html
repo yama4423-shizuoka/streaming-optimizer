@@ -774,7 +774,7 @@
       </h2>
       <div class="sub-add-row">
         <select class="sub-select" id="subSvcSelect" aria-label="サービスを選択" onchange="onSubSvcChange()"></select>
-        <input type="date" class="sub-date" id="subStartDate" aria-label="開始日">
+        <input type="date" class="sub-date" id="subStartDate" aria-label="開始日" aria-required="true" aria-describedby="subDateErr">
         <button class="sub-add-btn" onclick="addSub()">追加</button>
       </div>
       <div id="subDateErr" class="warn" style="display:none;margin-bottom:0" role="alert">開始日を選択してください</div>
@@ -1410,8 +1410,10 @@ function addSub() {
   const startRaw = document.getElementById('subStartDate').value;
   const isTrial  = document.getElementById('subIsTrial').checked;
   const _errEl = document.getElementById('subDateErr');
-  if (!startRaw) { if (_errEl) _errEl.style.display = 'block'; return; }
+  const _dateInp = document.getElementById('subStartDate');
+  if (!startRaw) { if (_errEl) _errEl.style.display = 'block'; if (_dateInp) _dateInp.setAttribute('aria-invalid', 'true'); return; }
   if (_errEl) _errEl.style.display = 'none';
+  if (_dateInp) _dateInp.setAttribute('aria-invalid', 'false');
   mySubs.push({ id: 'sub' + (subSeq++), svcKey, startDate: startRaw, isTrial });
   saveSubs();
   renderSubList();
@@ -2582,7 +2584,7 @@ function buildMobileSchedHTML() {
   const notifDenied  = 'Notification' in window && Notification.permission === 'denied';
   return `<div class="sub-add-row">
     <select class="sub-select" id="mSubSel" aria-label="サービスを選択" onchange="onMSubSvcChange()">${Object.entries(SVC).map(([k,v])=>`<option value="${k}">${v.name}</option>`).join('')}</select>
-    <input type="date" class="sub-date" id="mSubDate" aria-label="開始日" value="${_today}">
+    <input type="date" class="sub-date" id="mSubDate" aria-label="開始日" value="${_today}" aria-required="true" aria-describedby="mSubDateErr">
     <button class="sub-add-btn" onclick="addSubMobile()">追加</button>
   </div>
   <div id="mSubDateErr" class="warn" style="display:none;margin-bottom:0" role="alert">開始日を選択してください</div>
@@ -2596,8 +2598,10 @@ function addSubMobile() {
   const startRaw = document.getElementById('mSubDate').value;
   const isTrial = document.getElementById('mSubTrial').checked;
   const _mErrEl = document.getElementById('mSubDateErr');
-  if (!startRaw) { if (_mErrEl) _mErrEl.style.display = 'block'; return; }
+  const _mDateInp = document.getElementById('mSubDate');
+  if (!startRaw) { if (_mErrEl) _mErrEl.style.display = 'block'; if (_mDateInp) _mDateInp.setAttribute('aria-invalid', 'true'); return; }
   if (_mErrEl) _mErrEl.style.display = 'none';
+  if (_mDateInp) _mDateInp.setAttribute('aria-invalid', 'false');
   mySubs.push({ id:'sub'+(subSeq++), svcKey, startDate:startRaw, isTrial });
   saveSubs(); renderSubList(); checkDeadlineAlerts();
   const _rd = new Date();
