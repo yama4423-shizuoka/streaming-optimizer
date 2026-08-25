@@ -1948,6 +1948,8 @@ function toggle(id) {
 }
 
 function removeItem(id) {
+  const selBefore = allItems().filter(c => selected.has(c.id));
+  const rmIdx = selBefore.findIndex(it => it.id === id);
   selected.delete(id);
   const prevLen = customItems.length;
   customItems = customItems.filter(it => it.id !== id);
@@ -1961,6 +1963,15 @@ function removeItem(id) {
     }
   }
   renderSelList(); syncUI(); renderRanking();
+  requestAnimationFrame(() => {
+    const btns = document.querySelectorAll('#selList .sel-rm');
+    if (btns.length) {
+      btns[Math.min(rmIdx, btns.length - 1)].focus();
+    } else {
+      const cb = document.getElementById('calcBtn');
+      if (cb) cb.focus();
+    }
+  });
 }
 
 function syncUI() {
