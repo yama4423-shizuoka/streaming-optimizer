@@ -2483,6 +2483,8 @@ function mobileOpenSheet(view) {
   } else if (view === 'results') {
     const resultArea = document.getElementById('resultArea');
     content.innerHTML = `<div class="mobile-sheet-ttl">最安計算結果</div><div class="mob-result-area">${resultArea.innerHTML || '<div class="no-result-box">計算結果がありません</div>'}</div>`;
+    content.querySelectorAll('[id]').forEach(el => { if (/^d\d+$/.test(el.id)) el.id = 'mob' + el.id; });
+    content.querySelectorAll('[aria-controls]').forEach(el => { const c = el.getAttribute('aria-controls'); if (/^d\d+$/.test(c)) el.setAttribute('aria-controls', 'mob' + c); });
   } else if (view === 'more') {
     content.innerHTML = buildMobileMoreHTML();
   }
