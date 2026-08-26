@@ -654,7 +654,7 @@
       "price": "0",
       "priceCurrency": "JPY"
     },
-    "dateModified": "2026-08-25"
+    "dateModified": "2026-08-26"
   }
   </script>
   <script type="application/ld+json">
@@ -1562,7 +1562,7 @@ function renderSubList() {
         : `<span class="${dc}">あと${info.daysLeft}日</span>`;
     return `<div class="sub-item ${uc}">
       <div class="sub-item-head">
-        <span class="sub-dot" style="background:${svc.color}"></span>
+        <span class="sub-dot" style="background:${svc.color}" aria-hidden="true"></span>
         <span class="sub-name">${svc.name}${sub.isTrial ? ' <span class="badge-trial">無料体験</span>' : ''}</span>
         <button class="sub-rm" onclick="removeSub('${sub.id}')" aria-label="${esc(svc.name)}を削除">✕</button>
       </div>
@@ -1730,7 +1730,7 @@ function renderRanking() {
   document.getElementById('rankListWrap').innerHTML = ranked.map((r, i) => `
     <div class="rank-item">
       <span class="rank-num${i < 3 ? ' '+numLabel[i] : ''}">${i+1}</span>
-      <span class="rank-dot" style="background:${r.svc.color}"></span>
+      <span class="rank-dot" style="background:${r.svc.color}" aria-hidden="true"></span>
       <div class="rank-info">
         <div class="rank-name">${r.svc.name}</div>
         <div class="rank-bar-bg" aria-hidden="true"><div class="rank-bar" style="width:${Math.round(r.score/maxScore*100)}%;background:${r.svc.color}"></div></div>
@@ -2262,9 +2262,9 @@ function addFromDD_tmdb(cid) {
 function buildSvcCheckGrid() {
   document.getElementById('svcCheckGrid').innerHTML = Object.entries(SVC).map(([k,v]) =>
     `<div class="svc-chk" id="chk-${k}" role="checkbox" aria-checked="false" tabindex="0" onclick="toggleSvcChk('${k}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleSvcChk('${k}')}">
-      <span class="svc-chk-dot" style="background:${v.color}"></span>
+      <span class="svc-chk-dot" style="background:${v.color}" aria-hidden="true"></span>
       <span class="svc-chk-name">${v.name}</span>
-      <span class="svc-chk-tick">✓</span>
+      <span class="svc-chk-tick" aria-hidden="true">✓</span>
     </div>`
   ).join('');
 }
@@ -2381,7 +2381,7 @@ function renderPlan(plan, isBest, allSel, idx, naiveCost, bestCost) {
     ${isBest && coverableCount > 0 && coverableCount === allSel.length ? `<div style="font-size:12px;color:var(--green);margin-bottom:12px;font-weight:600">✓ 選択した全${coverableCount}作品を視聴できます</div>` : ''}
     <div class="plan-svcs">
       ${plan.combo.map(k=>`<div class="plan-svc-row">
-        <div class="plan-dot" style="background:${SVC[k].color}"></div>
+        <div class="plan-dot" style="background:${SVC[k].color}" aria-hidden="true"></div>
         <span class="plan-svc-name">${SVC[k].name}</span>
         ${SVC[k].trial ? `<span class="svc-trial">${SVC[k].trial}日無料</span>` : ''}
         <span class="plan-svc-price">¥${SVC[k].price.toLocaleString()}/月</span>
@@ -2408,7 +2408,7 @@ function renderPlan(plan, isBest, allSel, idx, naiveCost, bestCost) {
         const ts = cov[svc];
         if (!ts || !ts.length) return '';
         return `<div class="cov-svc">
-          <div class="cov-svc-lbl"><span class="cov-dot" style="background:${SVC[svc].color}"></span>${SVC[svc].name}</div>
+          <div class="cov-svc-lbl"><span class="cov-dot" style="background:${SVC[svc].color}" aria-hidden="true"></span>${SVC[svc].name}</div>
           <div class="cov-titles">${ts.map(it=>`<span class="cov-tag">${esc(it.t)}</span>`).join('')}</div>
         </div>`;
       }).join('')}
@@ -2586,7 +2586,7 @@ function buildMobileRankHTML() {
   <div class="rank-list-wrap">${ranked.map((r,i) => `
     <div class="rank-item">
       <span class="rank-num${i<3?' '+numLabel[i]:''}">${i+1}</span>
-      <span class="rank-dot" style="background:${r.svc.color}"></span>
+      <span class="rank-dot" style="background:${r.svc.color}" aria-hidden="true"></span>
       <div class="rank-info">
         <div class="rank-name">${r.svc.name}</div>
         <div class="rank-bar-bg" aria-hidden="true"><div class="rank-bar" style="width:${Math.round(r.score/maxScore*100)}%;background:${r.svc.color}"></div></div>
@@ -2640,7 +2640,7 @@ function buildSubListHTML() {
     const dt = info.daysLeft < 0 ? `<span class="${dc}">期限切れ</span>` : info.daysLeft === 0 ? `<span class="${dc}">本日期限</span>` : `<span class="${dc}">あと${info.daysLeft}日</span>`;
     return `<div class="sub-item ${uc}">
       <div class="sub-item-head">
-        <span class="sub-dot" style="background:${svc.color}"></span>
+        <span class="sub-dot" style="background:${svc.color}" aria-hidden="true"></span>
         <span class="sub-name">${svc.name}${sub.isTrial?' <span class="badge-trial">無料体験</span>':''}</span>
         <button class="sub-rm" onclick="removeSub('${sub.id}');document.getElementById('mSubListWrap').innerHTML=buildSubListHTML()" aria-label="${esc(svc.name)}を削除">✕</button>
       </div>
@@ -2743,7 +2743,7 @@ function renderAuthUI() {
     const name = currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'User';
     const avatar = currentUser.user_metadata?.avatar_url || '';
     area.innerHTML = `<div class="user-menu">
-      <span class="sync-dot" title="クラウド同期中"></span>
+      <span class="sync-dot" title="クラウド同期中" aria-hidden="true"></span>
       ${avatar ? `<img class="user-avatar" src="${esc(avatar)}" alt="${esc(name)}のプロフィール画像">` : ''}
       <span class="user-name">${esc(name)}</span>
       <button class="logout-btn" onclick="signOut()">ログアウト</button>
