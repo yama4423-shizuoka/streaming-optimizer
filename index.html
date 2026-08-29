@@ -784,7 +784,7 @@
       <div class="sub-add-row">
         <select class="sub-select" id="subSvcSelect" aria-label="サービスを選択" onchange="onSubSvcChange()"></select>
         <input type="date" class="sub-date" id="subStartDate" aria-label="開始日" aria-required="true" aria-describedby="subDateErr">
-        <button class="sub-add-btn" onclick="addSub()">追加</button>
+        <button class="sub-add-btn" onclick="addSub()" aria-label="解約スケジュールに追加">追加</button>
       </div>
       <div id="subDateErr" class="warn" style="display:none;margin-bottom:0" role="alert">開始日を選択してください</div>
       <label class="sub-trial-chk" id="subTrialLabel">
@@ -2607,7 +2607,7 @@ function buildMobileSchedHTML() {
   return `<div class="sub-add-row">
     <select class="sub-select" id="mSubSel" aria-label="サービスを選択" onchange="onMSubSvcChange()">${Object.entries(SVC).map(([k,v])=>`<option value="${k}">${v.name}</option>`).join('')}</select>
     <input type="date" class="sub-date" id="mSubDate" aria-label="開始日" value="${_today}" aria-required="true" aria-describedby="mSubDateErr">
-    <button class="sub-add-btn" onclick="addSubMobile()">追加</button>
+    <button class="sub-add-btn" onclick="addSubMobile()" aria-label="解約スケジュールに追加">追加</button>
   </div>
   <div id="mSubDateErr" class="warn" style="display:none;margin-bottom:0" role="alert">開始日を選択してください</div>
   <label class="sub-trial-chk" id="mSubTrialLabel"><input type="checkbox" id="mSubTrial"> <span id="mSubTrialText">無料トライアル中</span></label>
