@@ -1984,8 +1984,13 @@ function removeItem(id) {
 }
 
 function syncUI() {
-  document.getElementById('calcBtn').disabled = selected.size === 0;
-  document.getElementById('countBadge').textContent = selected.size;
+  const n = selected.size;
+  const btn = document.getElementById('calcBtn');
+  btn.disabled = n === 0;
+  btn.innerHTML = n > 0
+    ? `${n}件で最安プランを計算する <span aria-hidden="true">→</span>`
+    : `最安プランを計算する <span aria-hidden="true">→</span>`;
+  document.getElementById('countBadge').textContent = n;
   const badge = document.getElementById('mSelBadge');
   if (badge) {
     badge.textContent = selected.size || '';
@@ -2538,7 +2543,7 @@ function buildMobileSelectedHTML() {
     <input type="range" class="budget-slider" min="0" max="15000" step="500" value="${bv}" aria-label="月額予算上限" aria-valuetext="${bv ? '¥'+bv.toLocaleString()+'/月' : '上限なし'}"
       oninput="onBudgetChange(this.value);const _t=budget?'¥'+budget.toLocaleString()+'/月':'上限なし';document.getElementById('mBudgetDisp').textContent=_t;document.getElementById('budgetSlider').value=budget;this.setAttribute('aria-valuetext',_t)">
   </div>
-  <button class="calc-btn" ${!selItems.length?'disabled':''} onclick="closeMobileSheet();mobileCalc()">最安プランを計算する <span aria-hidden="true">→</span></button>`;
+  <button class="calc-btn" ${!selItems.length?'disabled':''} onclick="closeMobileSheet();mobileCalc()">${selItems.length > 0 ? `${selItems.length}件で最安プランを計算する` : '最安プランを計算する'} <span aria-hidden="true">→</span></button>`;
   return html;
 }
 
