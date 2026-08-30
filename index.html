@@ -1596,7 +1596,7 @@ function checkDeadlineAlerts() {
   `;
   document.body.appendChild(el);
 
-  if (Notification.permission === 'granted') {
+  if ('Notification' in window && Notification.permission === 'granted') {
     urgent.forEach(x => {
       const _notifBody = x.info.daysLeft === 0
         ? `${x.svc.name}の解約期限は本日です。今日中に手続きをしてください。`
@@ -1849,10 +1849,10 @@ function allItems() { return [...DB, ...customItems]; }
   renderRanking();
   renderSubList();
   setTimeout(checkDeadlineAlerts, 800);
-  if (Notification.permission === 'granted') {
+  if ('Notification' in window && Notification.permission === 'granted') {
     document.getElementById('subNotifBtn').textContent = '通知が有効です';
     document.getElementById('subNotifBtn').disabled = true;
-  } else if (Notification.permission === 'denied') {
+  } else if ('Notification' in window && Notification.permission === 'denied') {
     document.getElementById('subNotifBtn').textContent = '通知がブロックされています';
     document.getElementById('subNotifBtn').disabled = true;
   }
