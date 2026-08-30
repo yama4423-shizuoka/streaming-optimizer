@@ -1526,9 +1526,14 @@ function exportICS(sub) {
   const ds   = `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}`;
   const next = new Date(d); next.setDate(next.getDate()+1);
   const ds2  = `${next.getFullYear()}${pad(next.getMonth()+1)}${pad(next.getDate())}`;
+  const now  = new Date();
+  const stamp = `${now.getUTCFullYear()}${pad(now.getUTCMonth()+1)}${pad(now.getUTCDate())}T${pad(now.getUTCHours())}${pad(now.getUTCMinutes())}${pad(now.getUTCSeconds())}Z`;
+  const uid   = `${ds}-${sub.id}-${sub.svcKey}@streaming-optimizer-sigma.vercel.app`;
   const ics  = [
     'BEGIN:VCALENDAR','VERSION:2.0','CALSCALE:GREGORIAN',
     'BEGIN:VEVENT',
+    `DTSTAMP:${stamp}`,
+    `UID:${uid}`,
     `DTSTART;VALUE=DATE:${ds}`,
     `DTEND;VALUE=DATE:${ds2}`,
     `SUMMARY:【解約期限】${svc.name}`,
