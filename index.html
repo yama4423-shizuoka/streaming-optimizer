@@ -764,7 +764,7 @@
         選択中の作品
         <button id="clearAllBtn" class="panel-ttl-btn" style="display:none" onclick="clearAll()" aria-label="全ての選択を解除する">全解除</button>
       </h2>
-      <ul class="sel-list" id="selList">
+      <ul class="sel-list" id="selList" aria-label="選択中の作品一覧">
         <li class="sel-empty">左から観たい作品を<br>クリックして追加してください</li>
       </ul>
       <div class="budget-wrap">
@@ -2531,7 +2531,7 @@ function buildMobileSelectedHTML() {
   if (!selItems.length) {
     html += `<div class="sel-empty" style="padding:40px 0">作品をタップして選択してください</div>`;
   } else {
-    html += `<ul class="sel-list" style="max-height:none;margin-bottom:0">` +
+    html += `<ul class="sel-list" style="max-height:none;margin-bottom:0" aria-label="選択中の作品一覧">` +
       selItems.map(it => `<li class="sel-item">
         <span class="sel-em">${esc(it.e)}</span>
         <span class="sel-name">${esc(it.t)}</span>
