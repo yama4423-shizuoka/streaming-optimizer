@@ -655,7 +655,7 @@
       "price": "0",
       "priceCurrency": "JPY"
     },
-    "dateModified": "2026-08-29"
+    "dateModified": "2026-08-31"
   }
   </script>
   <script type="application/ld+json">
@@ -2563,7 +2563,7 @@ let moreCurrentTab = 'rank';
 function buildMobileMoreHTML() {
   moreCurrentTab = 'rank';
   return `<div class="mobile-sheet-ttl">設定 / ランキング</div>
-    <div class="mob-inner-tabs">
+    <div class="mob-inner-tabs" role="group" aria-label="コンテンツ切り替え">
       <button class="mob-inner-tab active" id="miTabRank" onclick="switchMoreTab('rank')" aria-pressed="true">ランキング</button>
       <button class="mob-inner-tab" id="miTabSched" onclick="switchMoreTab('sched')" aria-pressed="false">解約管理</button>
       <button class="mob-inner-tab" id="miTabAdd" onclick="switchMoreTab('add')" aria-pressed="false">作品追加</button>
