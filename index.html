@@ -423,7 +423,8 @@
         overscroll-behavior:contain; z-index:1;
       }
       .mobile-sheet-inner { padding:0 16px 80px; }
-      .mobile-sheet-handle { width:36px; height:4px; background:var(--bd); border-radius:2px; margin:14px auto 20px; }
+      .mobile-sheet-handle { display:block; width:100%; padding:14px 0 20px; background:transparent; border:none; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+      .mobile-sheet-handle::before { content:''; display:block; width:36px; height:4px; background:var(--bd); border-radius:2px; margin:0 auto; }
       .mobile-sheet-ttl { font-size:18px; font-weight:800; margin-bottom:20px; letter-spacing:-.4px; }
       .mob-inner-tabs { display:flex; gap:5px; margin-bottom:18px; }
       .mob-inner-tab {
@@ -887,7 +888,7 @@
   <div class="mobile-sheet-bg" onclick="closeMobileSheet()"></div>
   <div class="mobile-sheet-card">
     <div class="mobile-sheet-inner">
-      <div class="mobile-sheet-handle"></div>
+      <button type="button" class="mobile-sheet-handle" onclick="closeMobileSheet()" aria-label="シートを閉じる"></button>
       <div id="mobileSheetContent"></div>
     </div>
   </div>
