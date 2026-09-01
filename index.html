@@ -2600,7 +2600,7 @@ function buildMobileRankHTML() {
   const numLabel = ['gold','silver','bronze'];
   const annSave = v => v.annual ? Math.round((v.price*12-v.annual)/12) : 0;
   const m = METRICS.find(x => x.key === currentMetric);
-  return `<div class="metric-tabs">${METRICS.map(me =>
+  return `<div class="metric-tabs" role="group" aria-label="ランキング指標">${METRICS.map(me =>
     `<button class="metric-tab${currentMetric===me.key?' active':''}" onclick="currentMetric='${me.key}';document.getElementById('moreTabContent').innerHTML=buildMobileRankHTML()" aria-pressed="${currentMetric===me.key}">${me.label}</button>`
   ).join('')}</div>
   <div class="rank-metric" style="margin-bottom:12px">${m.desc}</div>
