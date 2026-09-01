@@ -162,7 +162,7 @@
     /* TMDB SETUP */
     .tmdb-setup { background:rgba(255,255,255,.03); border:1px solid var(--bd); border-radius:var(--r2); padding:13px; margin-bottom:13px; }
     .tmdb-setup-title { font-size:12px; font-weight:700; color:var(--tx); margin-bottom:7px; }
-    .tmdb-setup-steps { font-size:11px; color:var(--tx2); line-height:1.9; margin-bottom:11px; }
+    .tmdb-setup-steps { font-size:11px; color:var(--tx2); line-height:1.9; margin-bottom:11px; padding-left:16px; }
     .tmdb-setup-steps a { color:var(--acc2); text-decoration:none; }
     .tmdb-setup-steps a:hover { text-decoration:underline; }
     .tmdb-key-row { display:flex; gap:6px; }
@@ -815,11 +815,11 @@
       <!-- TMDb 未設定時 -->
       <div id="tmdbSetup" class="tmdb-setup">
         <div class="tmdb-setup-title">配信サービスを自動検索するには</div>
-        <div class="tmdb-setup-steps">
-          1. <a href="https://www.themoviedb.org/" target="_blank" rel="noopener noreferrer">themoviedb.org<span class="sr-only">（新しいタブで開く）</span></a> で無料アカウント作成<br>
-          2. 設定 → API → 「APIキーをリクエスト」<br>
-          3. 発行されたAPIキーを下に貼り付け
-        </div>
+        <ol class="tmdb-setup-steps">
+          <li><a href="https://www.themoviedb.org/" target="_blank" rel="noopener noreferrer">themoviedb.org<span class="sr-only">（新しいタブで開く）</span></a> で無料アカウント作成</li>
+          <li>設定 → API → 「APIキーをリクエスト」</li>
+          <li>発行されたAPIキーを下に貼り付け</li>
+        </ol>
         <div class="tmdb-key-row">
           <input class="tmdb-key-inp" id="tmdbKeyInput" type="password" autocomplete="off" placeholder="APIキーを貼り付け（無料）" aria-label="TMDb APIキー" onkeydown="if(event.key==='Enter')saveTmdbKey()">
           <button class="tmdb-key-btn" onclick="saveTmdbKey()">保存</button>
