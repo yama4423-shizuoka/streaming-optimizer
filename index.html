@@ -838,7 +838,7 @@
         <button class="mode-btn" id="modePerson" onclick="setSearchMode('person')" aria-pressed="false">出演者</button>
       </div>
       <div class="add-wrap">
-        <input class="add-input" id="addInput" type="search" placeholder="作品名を入力（日本語・英語）" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="none" aria-label="作品名を検索" enterkeyhint="search" aria-describedby="addHint">
+        <input class="add-input" id="addInput" type="search" placeholder="作品名を入力（日本語・英語）" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="none" aria-label="作品名を検索" enterkeyhint="search" aria-describedby="addHint" aria-expanded="false">
         <div class="add-dd" id="addDd"></div>
       </div>
       <div class="sr-only" aria-live="polite" aria-atomic="true" id="addDdStatus"></div>
@@ -1812,6 +1812,10 @@ function allItems() { return [...DB, ...customItems]; }
       }
     }
   });
+  new MutationObserver(() => {
+    const open = document.getElementById('addDd').classList.contains('open');
+    addInput.setAttribute('aria-expanded', String(open));
+  }).observe(document.getElementById('addDd'), { attributes: true, attributeFilter: ['class'] });
   document.addEventListener('click', e => {
     if (!e.target.closest('.add-wrap') && !e.target.closest('.add-manual')) closeDD();
   });
