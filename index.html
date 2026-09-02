@@ -1953,7 +1953,7 @@ function renderGrid() {
       </div>
       <div class="card-body">
         <div class="card-title">${hlText(it.t, q)}</div>
-        <div class="svc-tags">${it.s.map(k=>`<span class="svc-tag" style="background:${SVC[k].color}" title="${esc(SVC[k].name)}">${SVC[k].abbr}</span>`).join('')}</div>
+        <div class="svc-tags" aria-hidden="true">${it.s.map(k=>`<span class="svc-tag" style="background:${SVC[k].color}" title="${esc(SVC[k].name)}">${SVC[k].abbr}</span>`).join('')}</div>
       </div>
     </div>`;
   }).join('');
