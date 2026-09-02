@@ -1642,7 +1642,7 @@ function onBudgetChange(val) {
   if (sl) sl.setAttribute('aria-valuetext', txt);
   const ra = document.getElementById('resultArea');
   if (ra && ra.innerHTML && !ra.querySelector('.recalc-notice')) {
-    ra.innerHTML = '<div class="panel"><div class="recalc-notice"><div class="recalc-notice-txt">予算が変わりました — 再計算してください</div><button class="recalc-notice-btn" onclick="calculate()">再計算する →</button></div></div>';
+    ra.innerHTML = '<div class="panel"><div class="recalc-notice"><div class="recalc-notice-txt">予算が変わりました — 再計算してください</div><button class="recalc-notice-btn" onclick="calculate()">再計算する <span aria-hidden="true">→</span></button></div></div>';
   }
   cloudSaveDebounced();
   if (!currentUser) saveLocalData();
@@ -2018,7 +2018,7 @@ function syncUI() {
     if (selected.size === 0) {
       ra.innerHTML = '';
     } else if (!ra.querySelector('.recalc-notice')) {
-      ra.innerHTML = '<div class="panel"><div class="recalc-notice"><div class="recalc-notice-txt">選択が変わりました — 再計算してください</div><button class="recalc-notice-btn" onclick="calculate()">再計算する →</button></div></div>';
+      ra.innerHTML = '<div class="panel"><div class="recalc-notice"><div class="recalc-notice-txt">選択が変わりました — 再計算してください</div><button class="recalc-notice-btn" onclick="calculate()">再計算する <span aria-hidden="true">→</span></button></div></div>';
     }
   }
   cloudSaveDebounced();
