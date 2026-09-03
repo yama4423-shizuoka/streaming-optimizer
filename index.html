@@ -188,6 +188,7 @@
     .metric-tab.active { background:rgba(124,111,245,.18); border-color:var(--acc); color:var(--acc2); font-weight:700; }
     .rank-metric { font-size:10px; color:var(--tx2); margin-bottom:11px; opacity:.7; }
     .rank-list-wrap { display:flex; flex-direction:column; gap:9px; }
+    ul.rank-list { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:9px; }
     .rank-item { display:flex; align-items:center; gap:9px; }
     .rank-num { font-size:12px; font-weight:800; color:var(--tx2); width:16px; text-align:center; flex-shrink:0; }
     .rank-num.gold { color:#f0c040; }
@@ -656,7 +657,7 @@
       "price": "0",
       "priceCurrency": "JPY"
     },
-    "dateModified": "2026-09-02"
+    "dateModified": "2026-09-03"
   }
   </script>
   <script type="application/ld+json">
@@ -1739,8 +1740,8 @@ function renderRanking() {
   const numLabel = ['gold','silver','bronze'];
   const annualSave = (v) => v.annual ? Math.round((v.price * 12 - v.annual) / 12) : 0;
 
-  document.getElementById('rankListWrap').innerHTML = ranked.map((r, i) => `
-    <div class="rank-item">
+  document.getElementById('rankListWrap').innerHTML = `<ul class="rank-list">${ranked.map((r, i) => `
+    <li class="rank-item">
       <span class="rank-num${i < 3 ? ' '+numLabel[i] : ''}">${i+1}</span>
       <span class="rank-dot" style="background:${r.svc.color}" aria-hidden="true"></span>
       <div class="rank-info">
@@ -1752,7 +1753,7 @@ function renderRanking() {
         </div>
       </div>
       <span class="rank-score">${r.display}</span>
-    </div>`).join('');
+    </li>`).join('')}</ul>`;
 }
 
 function setSearchMode(mode) {
@@ -2604,8 +2605,8 @@ function buildMobileRankHTML() {
     `<button class="metric-tab${currentMetric===me.key?' active':''}" onclick="currentMetric='${me.key}';document.getElementById('moreTabContent').innerHTML=buildMobileRankHTML()" aria-pressed="${currentMetric===me.key}">${me.label}</button>`
   ).join('')}</div>
   <div class="rank-metric" style="margin-bottom:12px">${m.desc}</div>
-  <div class="rank-list-wrap">${ranked.map((r,i) => `
-    <div class="rank-item">
+  <ul class="rank-list">${ranked.map((r,i) => `
+    <li class="rank-item">
       <span class="rank-num${i<3?' '+numLabel[i]:''}">${i+1}</span>
       <span class="rank-dot" style="background:${r.svc.color}" aria-hidden="true"></span>
       <div class="rank-info">
@@ -2617,7 +2618,7 @@ function buildMobileRankHTML() {
         </div>
       </div>
       <span class="rank-score">${r.display}</span>
-    </div>`).join('')}</div>`;
+    </li>`).join('')}</ul>`;
 }
 
 function buildMobileSchedHTML() {
