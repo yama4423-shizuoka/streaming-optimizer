@@ -657,7 +657,7 @@
       "price": "0",
       "priceCurrency": "JPY"
     },
-    "dateModified": "2026-09-03"
+    "dateModified": "2026-09-04"
   }
   </script>
   <script type="application/ld+json">
@@ -1805,6 +1805,7 @@ function allItems() { return [...DB, ...customItems]; }
     }
   });
   document.getElementById('addDd').addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeAdd(); addInput.focus(); return; }
     if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
       const items = [...document.querySelectorAll('#addDd .dd-item')];
       const idx = items.indexOf(document.activeElement);
