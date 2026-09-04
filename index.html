@@ -1896,7 +1896,7 @@ function allItems() { return [...DB, ...customItems]; }
 function clearSearch() {
   searchQ = '';
   const inp = document.getElementById('searchInput');
-  if (inp) inp.value = '';
+  if (inp) { inp.value = ''; inp.focus(); }
   renderGrid();
 }
 
