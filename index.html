@@ -1742,7 +1742,7 @@ function renderRanking() {
 
   document.getElementById('rankListWrap').innerHTML = `<ul class="rank-list">${ranked.map((r, i) => `
     <li class="rank-item">
-      <span class="rank-num${i < 3 ? ' '+numLabel[i] : ''}">${i+1}</span>
+      <span class="rank-num${i < 3 ? ' '+numLabel[i] : ''}">${i+1}<span class="sr-only">位</span></span>
       <span class="rank-dot" style="background:${r.svc.color}" aria-hidden="true"></span>
       <div class="rank-info">
         <div class="rank-name">${r.svc.name}</div>
@@ -2608,7 +2608,7 @@ function buildMobileRankHTML() {
   <div class="rank-metric" style="margin-bottom:12px">${m.desc}</div>
   <ul class="rank-list">${ranked.map((r,i) => `
     <li class="rank-item">
-      <span class="rank-num${i<3?' '+numLabel[i]:''}">${i+1}</span>
+      <span class="rank-num${i<3?' '+numLabel[i]:''}">${i+1}<span class="sr-only">位</span></span>
       <span class="rank-dot" style="background:${r.svc.color}" aria-hidden="true"></span>
       <div class="rank-info">
         <div class="rank-name">${r.svc.name}</div>
