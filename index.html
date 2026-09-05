@@ -1322,7 +1322,7 @@ async function tmdbSearch(q) {
 const POSTER_CACHE_V = 2;
 const _rawCache = (() => { try { return JSON.parse(localStorage.getItem('poster_cache') || '{}'); } catch { return {}; } })();
 const posterCache = (_rawCache._v === POSTER_CACHE_V) ? _rawCache : { _v: POSTER_CACHE_V };
-if (_rawCache._v !== POSTER_CACHE_V) localStorage.setItem('poster_cache', JSON.stringify(posterCache));
+if (_rawCache._v !== POSTER_CACHE_V) { try { localStorage.setItem('poster_cache', JSON.stringify(posterCache)); } catch {} }
 let posterObserver = null;
 let posterConcurrent = 0;
 const posterPending = [];
