@@ -657,7 +657,7 @@
       "price": "0",
       "priceCurrency": "JPY"
     },
-    "dateModified": "2026-09-05"
+    "dateModified": "2026-09-06"
   }
   </script>
   <script type="application/ld+json">
@@ -2498,6 +2498,7 @@ function mobileOpenSheet(view) {
   const sheet = document.getElementById('mobileSheet');
   const content = document.getElementById('mobileSheetContent');
   sheet.classList.add('open');
+  document.querySelectorAll('.header,.hero-section,.layout,.footer,.mobile-tabbar').forEach(el => el.setAttribute('inert', ''));
   const _sheetLabels = { selected:'選択中の作品', results:'最安計算結果', more:'設定 / ランキング' };
   sheet.setAttribute('aria-label', _sheetLabels[view] || '');
 
@@ -2519,6 +2520,7 @@ function mobileOpenSheet(view) {
 
 function closeMobileSheet() {
   document.getElementById('mobileSheet').classList.remove('open');
+  document.querySelectorAll('.header,.hero-section,.layout,.footer,.mobile-tabbar').forEach(el => el.removeAttribute('inert'));
   mobileSheetView = null;
   document.querySelectorAll('.mobile-tab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-pressed', 'false'); });
   const g = document.getElementById('mTabGrid');
