@@ -2700,7 +2700,7 @@ function onMobileAddSearch(q) {
   results.innerHTML = `<div style="border:1px solid rgba(124,111,245,.18);border-radius:var(--r2);overflow:hidden;margin-top:4px">` +
     hits.map(it => {
       const alr = selected.has(it.id);
-      return `<div class="dd-item" role="button" aria-label="${esc(it.t)}を追加" onclick="mobileAddFromDB(${it.id})" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mobileAddFromDB(${it.id})}">
+      return `<div class="dd-item" role="button" aria-label="${esc(it.t)}${alr ? '（追加済み）' : 'を追加'}" onclick="mobileAddFromDB(${it.id})" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mobileAddFromDB(${it.id})}">
         <div class="dd-info">
           <div class="dd-title">${hlText(it.t, trimmed)}</div>
           <div class="dd-meta">${genreLabel[it.g] || ''}</div>
