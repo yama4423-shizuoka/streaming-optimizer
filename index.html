@@ -657,7 +657,7 @@
       "price": "0",
       "priceCurrency": "JPY"
     },
-    "dateModified": "2026-09-06"
+    "dateModified": "2026-09-07"
   }
   </script>
   <script type="application/ld+json">
@@ -2360,7 +2360,8 @@ function calculate() {
   if (window.innerWidth <= 768) {
     setTimeout(() => mobileOpenSheet('results'), 60);
   } else {
-    setTimeout(() => document.getElementById('resultArea').scrollIntoView({ behavior:'smooth', block:'nearest' }), 60);
+    const _rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    setTimeout(() => document.getElementById('resultArea').scrollIntoView({ behavior: _rm ? 'instant' : 'smooth', block:'nearest' }), 60);
   }
 }
 
