@@ -2333,6 +2333,8 @@ function closeAdd() {
   checkedSvcs.clear();
   document.querySelectorAll('.svc-chk').forEach(el => el.classList.remove('on'));
   document.getElementById('addEmoji').value = '';
+  const inp = document.getElementById('addInput');
+  if (inp) inp.focus();
 }
 
 // ─────────────────────────────────────────────────────
